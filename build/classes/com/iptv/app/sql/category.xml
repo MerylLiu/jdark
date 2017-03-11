@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="category">
+	<select id="getRootNodes" resultType="java.util.HashMap">
+		SELECT a.Id as id,a.Name as name,'' as url,true as open,a.*
+		FROM biz_category a WHERE a.ParentId IS NULL OR a.ParentId = 0
+		ORDER BY a.OrderNum
+	</select>
+
+	<select id="getNodesByParentID" resultType="java.util.HashMap">
+		SELECT a.Id as id,a.Name as name,'' as url,true as open,a.*
+		FROM biz_category a WHERE a.ParentId = #{ParentId}
+		ORDER BY a.OrderNum
+	</select>
+
+	<select id="getCategoryById" resultType="java.util.HashMap">
+		SELECT * FROM biz_category a WHERE a.Id = #{Id}
+	</select>
+
+	<insert id="saveCategory" parameterType="java.util.HashMap">
+		INSERT INTO biz_category (Name, ParentId, Remark, Status, OrderNum)
+		VALUES (#{Name}, #{ParentId}, #{Remark}, #{Status}, #{OrderNum})
+	</insert>
+
+	<update id="updateCategory" parameterType="java.util.HashMap">
+		UPDATE biz_category SET Name = #{Name}, ParentId = #{ParentId},
+			Remark = #{Remark}, Status = #{Status}, OrderNum = #{OrderNum}
+		WHERE Id = #{Id}
+	</update>
+
+	<delete id="deleteCategory" parameterType="java.util.HashMap">
+		DELETE FROM biz_category WHERE Id = #{Id}
+	</delete>
+
+	<update id="hideCategory" parameterType="java.util.HashMap">
+		UPDATE biz_category SET Status=0 WHERE Id = #{Id}
+	</update>
+</mapper>
