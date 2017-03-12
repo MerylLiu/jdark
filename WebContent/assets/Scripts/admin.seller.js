@@ -3,8 +3,14 @@ iv = {
 		this.bind();
 		this.getInfo();
 		
-		$('#btn-add,#btn-edit').click(function(){
+		$('#btn-add').click(function(){
 			iv.edit();
+		})
+		$('#btn-edit').click(function(){
+			var ids = $("#grid").gridSelIds();
+			if(ids.length >0){
+				iv.edit(ids[0]);
+			}
 		})
 	},
 	bind:function(){
@@ -87,9 +93,9 @@ iv = {
 				attributes:{ 'class':'center'}
 	        },
 	        {
-	            title: "录入时间",
+	            title: "开店时间",
 	            width: "145px",
-	            field: "CreateDate",
+	            field: "SetUpDate",
 	            encoded: false,
 				attributes:{ 'class':'center'},
 				format:'{0:yyyy-MM-dd HH:mm:ss}'
@@ -106,7 +112,7 @@ iv = {
 			},
 			autoBind:false,
 	        dataSource: createDataSource(basePath + 'admin/seller/sellerList',{
-				CreateDate: {type: "date", parse: function(value) { return new Date(value);}},
+				SetUpDate: {type: "date", parse: function(value) { return new Date(value);}},
 				VedioCount: {type: "number"},
 				Province: {type: "number"} 
 			})
@@ -116,6 +122,34 @@ iv = {
 	    var grid = $('#grid').data('kendoGrid');
 	    grid.dataSource.filter({});
 	},
+	bindDropDownList:function(){
+		$('#txt-province').kendoDropDownList({
+			dataTextField: "text",
+			dataValueField: "value",
+			optionLabel:'请选择省',
+			dataSource: createDataSource(basePath+'region/getRegions'),
+			change:function(){
+				var urlCity = basePath+'region/getRegions?parentId=' + $('#txt-province').data('kendoDropDownList').value();
+
+				$('#txt-city').kendoDropDownList({
+					dataTextField: "text",
+					dataValueField: "value",
+					optionLabel:'请选择市',
+					dataSource: createDataSource(urlCity),
+					change:function(){
+						var urlArea = basePath+'region/getRegions?parentId=' + $('#txt-city').data('kendoDropDownList').value();
+						
+						$('#txt-area').kendoDropDownList({
+							dataTextField: "text",
+							dataValueField: "value",
+							optionLabel:'请选择区／县',
+							dataSource: createDataSource(urlArea),
+						});
+					}
+				});
+			}
+		});
+	},
 	edit:function(id){
 		$.mdlg({
 			title:'商家',
@@ -123,32 +157,7 @@ iv = {
 				return $('#data-tmpl').html();
 			},
 			dialogShow:function(){
-				$('#txt-province').kendoDropDownList({
-					dataTextField: "text",
-                    dataValueField: "value",
-                    optionLabel:'请选择省',
-                    dataSource: createDataSource(basePath+'region/getRegions'),
-                    change:function(){
-						var urlCity = basePath+'region/getRegions?parentId=' + $('#txt-province').data('kendoDropDownList').value();
-
-						$('#txt-city').kendoDropDownList({
-							dataTextField: "text",
-							dataValueField: "value",
-							optionLabel:'请选择市',
-							dataSource: createDataSource(urlCity),
-							change:function(){
-								var urlArea = basePath+'region/getRegions?parentId=' + $('#txt-city').data('kendoDropDownList').value();
-								
-								$('#txt-area').kendoDropDownList({
-									dataTextField: "text",
-									dataValueField: "value",
-									optionLabel:'请选择区／县',
-									dataSource: createDataSource(urlArea),
-								});
-							}
-						});
-                    }
-                });
+				iv.bindDropDownList();
 
 				$('#txt-city').kendoDropDownList({});
 				$('#txt-area').kendoDropDownList({});
@@ -164,6 +173,23 @@ iv = {
 				$('#txt-set-date').kendoDatePicker({
 					format:"yyyy-MM-dd"
 				});
+
+				if(id){
+					$.get(basePath + 'admin/seller/getSeller',{Id:id},function(data){
+						$('#form-data').formData(data);
+						iv.bindDropDownList();
+						
+						var province = $('#txt-province').data("kendoDropDownList");
+						province.value(data.Province);
+						province.trigger("change");
+
+						var city = $('#txt-city').data("kendoDropDownList");
+						city.value(data.City);
+						city.trigger("change");
+
+						$('#txt-area').data("kendoDropDownList").value(data.Area);
+					});
+				}
 			},
 			showCloseButton:false,
 			otherButtons:["确定","取消"],

@@ -14,12 +14,18 @@ import com.iptv.core.utils.DateUtil;
 import com.iptv.core.utils.QueryUtil;
 
 @Service
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class SellerServiceImpl extends BaseServiceImpl implements SellerService {
 
 	@Override
 	public KendoResult getSellersPaged(Map map) {
-		KendoResult data = QueryUtil.getRecordsPaged("seller.getSellers","seller.getSellersCount", null, map);
+		KendoResult data = QueryUtil.getRecordsPaged("seller.getSellers", "seller.getSellersCount", null, map);
+		return data;
+	}
+
+	@Override
+	public Map getSeller(Integer id) {
+		Map data = getDao().selectOne("seller.getSellerById", id);
 		return data;
 	}
 
@@ -32,9 +38,6 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 		}
 		if (map.get("Name") == null) {
 			errMsg.add("请输入商家名称。");
-		}
-		if (map.get("SellerId") == null) {
-			errMsg.add("请输入商家家服网ID。");
 		}
 		if (map.get("Tel") == null) {
 			errMsg.add("请输入商家电话。");
@@ -54,26 +57,36 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 		if (map.get("SetUpDate") == null) {
 			errMsg.add("请选择商家开店时间。");
 		}
-		
-		Integer existCount = getDao().selectOne("seller.getExistCount",map);
-		if(existCount > 0){
-			errMsg.add("您输入的商家编号已存在。");
-		}
-		
-		if (errMsg.size() > 0) {
-			throw new BizException(errMsg);
-		}
 
+		Integer existCount = getDao().selectOne("seller.getExistCount", map);
 		if (map.get("Id") == null || map.get("Id").equals(0)) {
+			if (existCount > 0) {
+				errMsg.add("您输入的商家编号已存在。");
+			}
+
+			if (errMsg.size() > 0) {
+				throw new BizException(errMsg);
+			}
+
 			map.put("CreateDate", DateUtil.getNow());
 			getDao().insert("seller.saveSeller", map);
 		} else {
+			Map curr = getDao().selectOne("seller.getSellerById", map.get("Id"));
+
+			if (!map.get("Code").equals(curr.get("Code")) && existCount > 0) {
+				errMsg.add("您输入的商家编号已存在。");
+			}
+
+			if (errMsg.size() > 0) {
+				throw new BizException(errMsg);
+			}
+
 			getDao().update("seller.updateSeller", map);
 		}
 	}
 
 	@Override
-	public void delete(Map map) throws BizException{
+	public void delete(Map map) throws BizException {
 		List errMsg = new ArrayList();
 
 		if (map.get("Id") == null) {
@@ -83,9 +96,9 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
+
 		getDao().delete("seller.deleteSeller", map);
-		
+
 	}
 
 }

@@ -10,6 +10,10 @@
 		SELECT count(*) as Count FROM biz_seller a
 	</select>
 
+	<select id="getSellerById" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_seller a Where a.Id = #{Id}
+	</select>
+
 	<select id="getExistCount" resultType="java.lang.Integer">
 		SELECT count(*) as Count FROM biz_seller a WHERE a.Code = #{Code}
 	</select>	

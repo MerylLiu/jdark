@@ -54,6 +54,14 @@ public class AdminSellerController extends AdminBaseController{
 
 		return data;
 	}
+	
+	@RequestMapping(value="/getSeller",method = RequestMethod.GET)
+	public @ResponseBody Map getSeller(HttpServletRequest request,HttpServletResponse response){
+		Map param = BaseUtil.getParameterMap(request);
+		Map data = sellerService.getSeller(Integer.valueOf(param.get("Id").toString()));
+
+		return data;
+	}
 
 	@RequestMapping(value="/save",method = RequestMethod.POST)
 	public @ResponseBody Map save(@RequestBody Map map){

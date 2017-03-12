@@ -657,8 +657,18 @@
     	});
 
       return data;
-    }
+    };
+    
+	$.fn.gridSelIds=function(){
+		var gridObj = $(this).data("kendoGrid");
+		var res = Array();
+		gridObj.select().each(function() {
+			var dataItem = gridObj.dataItem($(this));
+			res.push(dataItem.Id);
+		});
 
+		return res;
+	}
 })(jQuery,window);
 
 $.ajaxSetup({

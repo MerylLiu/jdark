@@ -10,6 +10,8 @@ import com.iptv.core.service.BaseService;
 public interface SellerService extends BaseService{
 	public KendoResult getSellersPaged(Map map);
 	
+	public Map getSeller(Integer id);
+	
 	public void save(Map map) throws BizException;
 	
 	public void delete(Map map) throws BizException; 
