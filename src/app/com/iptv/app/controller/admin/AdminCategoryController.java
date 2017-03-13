@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.iptv.app.service.CategoryService;
 import com.iptv.core.common.BizException;
 import com.iptv.core.utils.BaseUtil;
+import com.iptv.core.utils.JsonUtil;
 
 @Controller
 @RequestMapping("/admin/category")
@@ -27,7 +28,11 @@ public class AdminCategoryController extends AdminBaseController {
 
 	@RequestMapping("/index")
 	public ModelAndView index(){
-		return view("/admin/category/index");
+		Map map = new HashMap();
+		List status = BaseUtil.getSysParam("CategoryStatus");
+		map.put("status",JsonUtil.getJson(status));
+		
+		return view("/admin/category/index",map);
 	}
 	
 	@RequestMapping(value="/categoryNodes",method = RequestMethod.GET)

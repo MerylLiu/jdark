@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iptv.app.service.RegionService;
 import com.iptv.app.service.SellerService;
 import com.iptv.core.common.BizException;
@@ -37,9 +36,6 @@ public class AdminSellerController extends AdminBaseController{
 	@RequestMapping("/index")
 	public ModelAndView index() throws JsonProcessingException{
 		Map res = new HashMap();
-
-		Map map = new HashMap();
-		map.put("parentId", 1);
 
 		List province = regionService.getRegions();
 		res.put("province", JsonUtil.getJson(province));
@@ -99,7 +95,7 @@ public class AdminSellerController extends AdminBaseController{
 		} catch (BizException biz) {
 			messages.addAll(biz.getMessages());
 		} catch (Exception ex) {
-			log.error("数据库错误：" + ex.getMessage());
+			log.error("错误信息：" + ex.getMessage());
 			messages.add("未知错误。");
 		}
 

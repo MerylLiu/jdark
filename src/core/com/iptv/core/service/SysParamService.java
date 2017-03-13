@@ -6,5 +6,5 @@ import java.util.List;
 public interface SysParamService extends BaseService {
 	public void saveLog(String logInfo);
 	
-	public List getSysParam(String key);
+	public List getSysParam(String key,Boolean isAll);
 }

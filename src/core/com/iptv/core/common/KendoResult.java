@@ -8,6 +8,9 @@ public class KendoResult {
 	private List data;
 	private Integer total;
 
+	public KendoResult(){
+	}
+
 	public KendoResult(List data){
 		this.data = data;
 	}

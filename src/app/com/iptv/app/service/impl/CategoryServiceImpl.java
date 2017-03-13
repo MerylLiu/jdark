@@ -83,6 +83,12 @@ public class CategoryServiceImpl extends BaseServiceImpl implements CategoryServ
 		
 		getDao().delete("category.deleteCategory", map);
 	}
+
+	@Override
+	public List getAllCategories() {
+		List data = getDao().selectList("category.getAllCategory");
+		return data;
+	}
 	
 	
 }

@@ -13,16 +13,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.iptv.app.service.LoginService;
 import com.iptv.app.service.SysMenuService;
-import com.iptv.core.utils.BaseUtil;
 
 @Controller
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class AdminLoginController extends AdminBaseController {
 	@Resource
 	private LoginService loginServiceImpl;
 	@Resource
 	SysMenuService sysMenuService;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@RequestMapping("/login")
 	public ModelAndView login(HttpServletRequest req, Map user) {
 		Map map = new HashMap();

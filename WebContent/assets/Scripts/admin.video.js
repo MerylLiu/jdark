@@ -29,18 +29,26 @@ iv = {
 				clientTemplete:"#= renderNumber(data) #"
 	        },
 	        {
-	            title: "商家编号",
+	            title: "视频编号",
 	            width: "15%",
 	            field: "Code",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
-	            title: "商家名称",
+	            title: "视频名称",
 	            width: "20%",
 	            field: "Name",
 	            encoded: false,
 				attributes:{ 'class':'center'}
+	        },
+	        {
+	            title: "所属商家",
+	            width: "15%",
+	            field: "SellerKeyId",
+	            encoded: false,
+				attributes:{ 'class':'center'},
+				values:sellers
 	        },
 	        {
 	            title: "商家家服网ID",
@@ -74,31 +82,32 @@ iv = {
 				values: provinces
 	        },
 	        {
-	            title: "联系电话",
+	            title: "视频状态",
 	            width: "100px",
-	            field: "Tel",
+	            field: "Status",
 	            encoded: false,
 				attributes:{ 'class':'center'},
-				//values: $.parseJSON($('#role-list').val())
+				values: videoStatus
 	        },
 	        {
-	            title: "联系地址",
-	            width: "20%",
-	            field: "Address",
+	            title: "视频分类",
+	            width: "15%",
+	            field: "CategoryId",
+	            encoded: false,
+				attributes:{ 'class':'center'},
+				values:category
+	        },
+	        {
+	            title: "视频收费",
+	            width: "15%",
+	            field: "CostFZ",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
-	            title: "视频数",
-	            width: "10%",
-	            field: "VedioCount",
-	            encoded: false,
-				attributes:{ 'class':'center'}
-	        },
-	        {
-	            title: "开店时间",
+	            title: "到期时间",
 	            width: "145px",
-	            field: "SetUpDate",
+	            field: "EndDate",
 	            encoded: false,
 				attributes:{ 'class':'center'},
 				format:'{0:yyyy-MM-dd HH:mm:ss}'
@@ -114,10 +123,14 @@ iv = {
 				"buttonCount": 10
 			},
 			autoBind:false,
-	        dataSource: createDataSource(basePath + 'admin/seller/sellerList',{
+	        dataSource: createDataSource(basePath + 'admin/video/videoList',{
 				SetUpDate: {type: "date", parse: function(value) { return new Date(value);}},
 				VedioCount: {type: "number"},
-				Province: {type: "number"} 
+				Province: {type: "number"},
+				SellerKeyId:{type: "number"},
+				CategoryId:{type: "number"},
+				Status:{type: "number"},
+				CostFZ:{type: "number"} 
 			})
 	    });	
 	},
@@ -125,7 +138,55 @@ iv = {
 	    var grid = $('#grid').data('kendoGrid');
 	    grid.dataSource.filter({});
 	},
+	bindSellerInfo:function(id){
+		$.get(basePath + 'admin/seller/getSeller',{Id:id},function(data){
+			$('#txt-sel-code').val(data.Code);
+			$('#txt-sel-tel').val(data.Tel);
+			$('#txt-sel-sid').val(data.SellerId);
+			$('#txt-sel-addr').val(data.Address);
+			$('#txt-sel-sdate').val(data.SetUpDate);
+
+			$('input[name="IsInstall"]').prop('checked','false');
+			$('input[value="'+data.IsInstall+'"][name="IsInstall"]').prop('checked','true');
+		});
+	},
 	bindDropDownList:function(){
+		$('#txt-sel-name').kendoDropDownList({
+			dataTextField: "Name",
+			dataValueField: "Id",
+			optionLabel:'==请选择商家==',
+			dataSource: createDataSource(basePath+'admin/video/sellerList'),
+			change:function(){
+				var id = $('#txt-sel-name').data('kendoDropDownList').value();
+				iv.bindSellerInfo(id);
+				$('input[name="SellerKeyId"]').val(id);
+			}
+		});
+		$('#txt-cost').kendoDropDownList({
+			dataTextField: "text",
+			dataValueField: "value",
+			optionLabel:'==请选择视频制作费==',
+			dataSource: cost
+		});
+		$('#txt-costfz').kendoDropDownList({
+			dataTextField: "text",
+			dataValueField: "value",
+			optionLabel:'==请选择视放置费==',
+			dataSource: costFZ
+		});
+		$('#txt-style').kendoDropDownList({
+			dataTextField: "text",
+			dataValueField: "value",
+			optionLabel:'==请选择视频风格==',
+			dataSource: videoStyle
+		});
+		$('#txt-category').kendoDropDownList({
+			dataTextField: "text",
+			dataValueField: "value",
+			optionLabel:'==请选择视频分类==',
+			dataSource: category
+		});
+
 		$('#txt-province').kendoDropDownList({
 			dataTextField: "text",
 			dataValueField: "value",
@@ -156,30 +217,22 @@ iv = {
 	edit:function(id){
 		$.mdlg({
 			title:'商家',
+			width:'850px',
 			content:function(){
 				return $('#data-tmpl').html();
 			},
 			onShow:function(){
 				iv.bindDropDownList();
 
-				$('#txt-city').kendoDropDownList({});
-				$('#txt-area').kendoDropDownList({});
+				$('#txt-city,#txt-area').kendoDropDownList({});
 
-				$('#txt-order').kendoNumericTextBox({
-					 format: "#",
-                     decimals: 0,
-                     min: 1,
-                     max:99999999,
-                     value:1
-				});
-
-				$('#txt-set-date').kendoDatePicker({
+				$('input[name="StartDate"],input[name="EndDate"]').kendoDatePicker({
 					format:"yyyy-MM-dd"
 				});
 
 				if(id){
 					$.get(basePath + 'admin/seller/getSeller',{Id:id},function(data){
-						$('#form-data').formData(data);
+						$('#form-video').formData(data);
 						iv.bindDropDownList();
 						
 						var province = $('#txt-province').data("kendoDropDownList");
@@ -201,9 +254,9 @@ iv = {
 				var self = this;
 
 				if(index == 0){
-					var params = $("#form-data").serializeJson();
+					var params = $("#form-video").serializeJson();
 
-					$.post(basePath + 'admin/seller/save',JSON.stringify(params) , function(data) {
+					$.post(basePath + 'admin/video/save',JSON.stringify(params) , function(data) {
 						if(data.result == true){
 							$.mdlg.alert('提示',data.message);
 							$('#form-menu').clearForm();

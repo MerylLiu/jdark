@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="video">
+	<select id="getAllVideo" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_video a ORDER BY a.OrderNum 
+	</select>
+
+	<select id="getVideoPaged" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_video a
+		ORDER BY a.OrderNum DESC
+		LIMIT ${offset},${rows}
+	</select>
+
+	<select id="getVideoCount" resultType="java.lang.Integer">
+		SELECT count(*) as Count FROM biz_video a
+		ORDER BY a.OrderNum  DESC
+	</select>
+
+	<select id="getVideoById" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_video a Where a.Id = #{Id}
+	</select>
+
+	<select id="getExistCount" resultType="java.lang.Integer">
+		SELECT count(*) as Count FROM biz_video a WHERE a.Code = #{Code}
+	</select>	
+	
+	<insert id="saveVideo" parameterType="java.util.HashMap">
+		INSERT INTO biz_video
+			(Code, Name, Jianpin, Quanpin, Cost, CostFZ, VideoUrl, StartDate, EndDate, Style, CategoryId, Description,
+			 ImageUrl, GifUrl, QrCode, Province, City, Area, Provider, Maker, Status, CreateDate, SellerKeyId, OrderNum)
+		VALUES
+			(#{Code} #{Name}, #{Jianpin}, #{Quanpin}, #{Cost}, #{CostFZ}, #{VideoUrl}, #{StartDate}, #{EndDate}, #{Style},
+			 #{CategoryId}, #{Description}, #{ImageUrl}, #{GifUrl}, #{QrCode}, #{Province}, #{City},
+			#{Area}, #{Provider}, #{Maker}, #{Status}, #{CreateDate}, #{SellerKeyId}, #{OrderNum})
+	</insert>
+
+	<update id="updateSeller" parameterType="java.util.HashMap">
+		UPDATE biz_seller SET Code = #{Code}, Name = #{Name}, SellerId = #{SellerId},
+			Tel = #{Tel}, Address = #{Address}, Province = #{Province}, City = #{City}, Area = #{Area},
+			IsInstall = #{IsInstall}, SetUpDate = #{SetUpDate}, OrderNum = #{OrderNum}
+		WHERE Id = #{Id}
+	</update>
+</mapper>

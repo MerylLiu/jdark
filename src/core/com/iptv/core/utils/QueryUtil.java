@@ -7,7 +7,7 @@ import com.iptv.core.common.KendoResult;
 
 @SuppressWarnings({"rawtypes","unchecked"})
 public class QueryUtil {
-	public static KendoResult getRecordsPaged(String dataStatement,String countStatement ,StringBuilder sql, Map param) {
+	public static KendoResult getRecordsPaged(String dataStatement,String countStatement ,StringBuilder sqlCondition, Map param) {
 		String page = param.get("page").toString();
 		String pageSize = param.get("pageSize").toString();
 		Integer offset = (Integer.valueOf(page) - 1) * Integer.valueOf(pageSize);

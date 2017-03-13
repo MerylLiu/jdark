@@ -72,16 +72,7 @@
 							</div>
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-10">
-									<div class="radio">
-										<label class="radio-inline"> <input type="radio"
-											name="Status" id="stsHide" value="0"> 隐藏
-										</label>
-										<label class="radio-inline"> <input type="radio"
-											name="Status" id="stsNormal" value="1" checked> 草稿
-										</label>
-										<label class="radio-inline"> <input type="radio"
-											name="Status" id="stsPub" value="2"> 发布
-										</label>
+									<div class="radio" id="sts-status">
 									</div>
 								</div>
 							</div>
@@ -98,5 +89,8 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+	var status = '${status}';
+	</script>
 </body>
 </html>

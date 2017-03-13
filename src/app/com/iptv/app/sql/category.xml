@@ -3,14 +3,18 @@
 
 <mapper namespace="category">
 	<select id="getRootNodes" resultType="java.util.HashMap">
-		SELECT a.Id as id,a.Name as name,'' as url,true as open,a.*
-		FROM biz_category a WHERE a.ParentId IS NULL OR a.ParentId = 0
+		SELECT a.Id as id,concat('[',b.Text,']  ',a.Name) as name,'' as url,true as open,a.*
+		FROM biz_category a
+		LEFT JOIN (SELECT x.Text,x.Value FROM sys_dictionary x WHERE x.Key = 'CategoryStatus') b ON a.Status = b.Value 
+		WHERE a.ParentId IS NULL OR a.ParentId = 0
 		ORDER BY a.OrderNum
 	</select>
 
 	<select id="getNodesByParentID" resultType="java.util.HashMap">
-		SELECT a.Id as id,a.Name as name,'' as url,true as open,a.*
-		FROM biz_category a WHERE a.ParentId = #{ParentId}
+		SELECT a.Id as id,concat('[',b.Text,']  ',a.Name) as name,'' as url,true as open,a.*
+		FROM biz_category a 
+		LEFT JOIN (SELECT x.Text,x.Value FROM sys_dictionary x WHERE x.Key = 'CategoryStatus') b ON a.Status = b.Value 
+		WHERE a.ParentId = #{ParentId}
 		ORDER BY a.OrderNum
 	</select>
 
@@ -36,4 +40,9 @@
 	<update id="hideCategory" parameterType="java.util.HashMap">
 		UPDATE biz_category SET Status=0 WHERE Id = #{Id}
 	</update>
+
+	<select id="getAllCategory" resultType="java.util.HashMap">
+		SELECT a.Name,a.Id,a.Name as text,a.Id as value
+	    FROM biz_category a ORDER BY a.OrderNum
+	</select>
 </mapper>

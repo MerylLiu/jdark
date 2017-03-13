@@ -1,6 +1,7 @@
 package com.iptv.core.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +18,7 @@ public class SysParamServiceImpl extends BaseServiceImpl implements SysParamServ
 	@Override
 	public void saveLog(String logInfo) {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
+
 		Map map = new HashMap();
 		map.put("UserCode", "test");
 		map.put("UserName", "test");
@@ -31,11 +32,16 @@ public class SysParamServiceImpl extends BaseServiceImpl implements SysParamServ
 	}
 
 	@Override
-	public List getSysParam(String key) {
+	public List getSysParam(String key, Boolean isAll) {
 		Map map = new HashMap();
 		map.put("Key", key);
+		List res = new ArrayList();
 
-		List res = getDao().selectList("sysParams.getSysDic",map);
+		if (isAll == true) {
+			res = getDao().selectList("sysParams.getAllSysDic", map);
+		} else {
+			res = getDao().selectList("sysParams.getSysDic", map);
+		}
 
 		return res;
 	}

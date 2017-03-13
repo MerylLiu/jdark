@@ -1,4 +1,4 @@
-package com.iptv.app.controller.force;
+package com.iptv.app.controller.admin;
 
 import java.util.List;
 import java.util.Map;
@@ -12,27 +12,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.iptv.app.service.RegionService;
 import com.iptv.core.common.KendoResult;
-import com.iptv.core.controller.BaseController;
+import com.iptv.core.service.SysParamService;
 import com.iptv.core.utils.BaseUtil;
 
 @Controller
-@RequestMapping("/region")
-@SuppressWarnings({"rawtypes","unchecked"})
-public class RegionController extends BaseController{
+@RequestMapping("/admin/common")
+@SuppressWarnings({"rawtypes"})
+public class AdminCommonController extends AdminBaseController {
 	@Resource
-	private RegionService regionService;
+	private SysParamService sysParamService;
 
-	@RequestMapping(value="/getRegions",method = RequestMethod.GET)
-	public @ResponseBody KendoResult getRegions(HttpServletRequest request,HttpServletResponse response){
+	@RequestMapping(value="/sysParams",method = RequestMethod.GET)
+	public @ResponseBody KendoResult sysParams(HttpServletRequest request,HttpServletResponse response){
 		Map param = BaseUtil.getParameterMap(request);
-
-		if(param.get("parentId") == null){
-			param.put("parentId", 1);
-		}
-
-		List data = regionService.getRegionsByParentId(param);
+		List data = sysParamService.getSysParam(param.get("key").toString(), false);
 		return new KendoResult(data);
 	}
 }

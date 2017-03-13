@@ -487,14 +487,14 @@
             width:'',
             content: '<p>内容</p>',
             showCloseButton: true,
-            otherButtons: [],
-            otherButtonStyles: [],
+            buttons: [],
+            buttonStyles: [],
             bootstrapModalOption: {},
-            dialogShow: function() {},
-            dialogShown: function() {},
-            dialogHide: function() {},
-            dialogHidden: function() {},
-            clickButton: function(sender, modal, index) {},
+            onShow: function() {},
+            onShown: function() {},
+            onHide: function() {},
+            onHidden: function() {},
+            onButtonClick: function(sender, modal, index) {},
         };
         options = $.extend(defaults, options);
         var modalID = '';
@@ -522,13 +522,13 @@
             modalID = getModalID();
             var tmpHtml = '<div class="modal fade" id="{ID}" role="dialog" aria-hidden="true"><div class="modal-dialog" style="width:{width}"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">{title}</h4></div><div class="modal-body">{body}</div><div class="modal-footer">{button}</div></div></div></div>';
             var buttonHtml = '<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>';
-            if (!options.showCloseButton && options.otherButtons.length > 0) {
+            if (!options.showCloseButton && options.buttons.length > 0) {
                 buttonHtml = '';
             }
             //生成按钮
             var btnClass = 'cls-' + modalID;
-            for (var i = 0; i < options.otherButtons.length; i++) {
-                buttonHtml += '<button buttonIndex="' + i + '" class="' + btnClass + ' btn ' + options.otherButtonStyles[i] + '">' + options.otherButtons[i] + '</button>';
+            for (var i = 0; i < options.buttons.length; i++) {
+                buttonHtml += '<button buttonIndex="' + i + '" class="' + btnClass + ' btn ' + options.buttonStyles[i] + '">' + options.buttons[i] + '</button>';
             }
             //替换模板标记
             tmpHtml = tmpHtml.replace(/{ID}/g, modalID).replace(/{width}/,options.width).replace(/{title}/g, options.title).replace(/{body}/g, options.content).replace(/{button}/g, buttonHtml);
@@ -538,20 +538,20 @@
             //绑定按钮事件,不包括关闭按钮
             $('.' + btnClass).click(function() {
                 var index = $(this).attr('buttonIndex');
-                options.clickButton($(this), modalObj, index);
+                options.onButtonClick($(this), modalObj, index);
             });
             //绑定本身的事件
             modalObj.on('show.bs.modal', function() {
-                options.dialogShow();
+                options.onShow();
             });
             modalObj.on('shown.bs.modal', function() {
-                options.dialogShown();
+                options.onShown();
             });
             modalObj.on('hide.bs.modal', function() {
-                options.dialogHide();
+                options.onHide();
             });
             modalObj.on('hidden.bs.modal', function() {
-                options.dialogHidden();
+                options.onHidden();
                 modalObj.remove();
             });
             modalObj.modal(options.bootstrapModalOption);
@@ -578,6 +578,23 @@
 		});
 	}
 
+	$.mdlg.confirm = function(title,content,onButtonClick){
+		var ok = function (sender,modal,index){
+			if(index == 0 && typeof onButtonClick == 'function'){
+				onButtonClick();
+			}
+			$(this).closeDialog(modal)
+		} 
+
+		$("body").mdlg({
+			title:title,
+			buttons:["确定","取消"],
+			buttonStyles:['btn-success','btn-default'],
+			showCloseButton:false,
+			content:content,
+			onButtonClick:ok
+		});
+	}
 })(jQuery);
 
 /*
@@ -632,42 +649,60 @@
     		transport: {
     			read: {
     				url: url,
-    				type: 'GET',
     				dataType: 'json',
     				contentType: 'application/json; charset=utf-8',
-    			},
-    			parameterMap: function (options, operation) {
-    				if (operation == "read") {
-    					return {page:options.page,pageSize:options.pageSize};
-    				}
     			}
     		},
+    		pageSize: 20,
+    		serverPaging:true,
+    		serverSorting:true,
+    		serverFiltering:true,
     		schema: {
-    			data: "data",
-    			total: "total",
+    			data: function(d){return d.data},
+    			total: function(d){return d.total},
     			errors: "errors",
     			model: {
     				fields: fields
     			}
-    		},
-    		batch: true,
-    		pageSize: 20,
-    		serverPaging:true,
-    		serverFiltering:true
+    		}
     	});
 
       return data;
     };
     
-	$.fn.gridSelIds=function(){
+	$.fn.gridSelectedCols=function(colName){
 		var gridObj = $(this).data("kendoGrid");
-		var res = Array();
+		var data = Array();
 		gridObj.select().each(function() {
 			var dataItem = gridObj.dataItem($(this));
-			res.push(dataItem.Id);
+			data.push(dataItem[colName]);
 		});
+		
+		var res = {};
+		res[colName] = data;
 
 		return res;
+	}
+	
+	$.fn.radioButtonList = function(data,nameField,textField,valueField,defaultValue){
+		if(typeof data == "string") data = $.parseJSON(data.toString());
+
+		var tmpl = '<div class="radio">';
+		$.each(data,function(i,v){
+			tmpl += '<label class="radio-inline">';
+			var disabled = v['IsEnable'] == 0 ?'disabled="disabled"' : '';
+			
+			if(v[valueField] == defaultValue){
+				tmpl += '<input type="radio" name="'+nameField+'" value="'+v[valueField]+'" checked '+disabled+'> '+ v[textField];
+			}else{
+				tmpl += '<input type="radio" name="'+nameField+'" value="'+v[valueField]+'" '+disabled+'> '+ v[textField];
+			}
+
+			tmpl += '</label>';
+		})
+		tmpl+='</div>';
+		
+		$(this).html(tmpl);
 	}
 })(jQuery,window);
 

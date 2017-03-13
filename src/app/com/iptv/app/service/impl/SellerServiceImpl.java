@@ -89,7 +89,7 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 	public void delete(Map map) throws BizException {
 		List errMsg = new ArrayList();
 
-		if (map.get("Id") == null) {
+		if (map.get("Id") == null || ((ArrayList)map.get("Id")).size() <= 0) {
 			errMsg.add("请选择要删除的商家。");
 		}
 
@@ -98,7 +98,13 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 		}
 
 		getDao().delete("seller.deleteSeller", map);
+	}
 
+
+	@Override
+	public KendoResult getAllSellers() {
+		List data = getDao().selectList("seller.getAllSellers");
+		return new KendoResult(data);
 	}
 
 }

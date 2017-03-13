@@ -57,9 +57,9 @@ $(document).ready( function() {
 			title:'提示',
 			content:'确认删除本条记录?',
 			showCloseButton:false,
-			otherButtons:["确定","取消"],
-			otherButtonStyles:['btn-success','btn-default'],
-			clickButton:function(sender,modal,index){
+			buttons:["确定","取消"],
+			buttonStyles:['btn-success','btn-default'],
+			onButtonClick:function(sender,modal,index){
 				if(index == 0){
 					var params = {Id:nodes[0].Id};
 

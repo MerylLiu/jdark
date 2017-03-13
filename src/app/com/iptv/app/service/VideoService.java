@@ -2,19 +2,19 @@ package com.iptv.app.service;
 
 import java.util.Map;
 
+import org.apache.axis2.AxisFault;
+
 import com.iptv.core.common.BizException;
 import com.iptv.core.common.KendoResult;
 import com.iptv.core.service.BaseService;
 
 @SuppressWarnings("rawtypes")
-public interface SellerService extends BaseService{
-	public KendoResult getSellersPaged(Map map);
+public interface VideoService extends BaseService {
+	public void UploadVedio() throws AxisFault;
 	
-	public Map getSeller(Integer id);
-	
+	public KendoResult getVideosPaged(Map map);
+
 	public void save(Map map) throws BizException;
 	
-	public void delete(Map map) throws BizException; 
-	
-	public KendoResult getAllSellers();
+	public void offline(Map map) throws BizException; 
 }

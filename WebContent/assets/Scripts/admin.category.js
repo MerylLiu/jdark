@@ -3,11 +3,15 @@ $(document).ready( function() {
 		callback : {
 			onClick : function(event, treeId, treeNode) {
 				$('#form-data').formData(treeNode);
+				$('#sts-status').radioButtonList(status,'Status','Text','Value',treeNode.Status,2);
+				$('input[name="Name"]').val(treeNode.Name.substr(6));
 			}
 		}
 	};
 	
 	var bindData = function(){
+		$('#sts-status').radioButtonList(status,'Status','Text','Value',1,2);
+		
 		$.get(basePath + 'admin/category/categoryNodes', null, function(data) {
 			zTreeObj = $.fn.zTree.init($("#tree-category"), setting, data);
 		})
@@ -54,9 +58,9 @@ $(document).ready( function() {
 			title:'提示',
 			content:'确认删除本条记录?',
 			showCloseButton:false,
-			otherButtons:["确定","取消"],
-			otherButtonStyles:['btn-success','btn-default'],
-			clickButton:function(sender,modal,index){
+			buttons:["确定","取消"],
+			buttonStyles:['btn-success','btn-default'],
+			onButtonClick:function(sender,modal,index){
 				if(index == 0){
 					var params = {Id:nodes[0].Id};
 					
