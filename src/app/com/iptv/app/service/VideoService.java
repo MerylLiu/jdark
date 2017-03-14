@@ -23,4 +23,6 @@ public interface VideoService extends BaseService {
 	public void online(Map map) throws BizException; 
 
 	public void offline(Map map) throws BizException; 
+
+	public void submit(Map map) throws BizException; 
 }

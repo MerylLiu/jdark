@@ -1,5 +1,6 @@
 package com.iptv.core.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,5 +30,11 @@ public class QueryUtil {
 
 		Integer count = BaseUtil.getDao().selectOne(statement, param);
 		return count;
+	}
+	
+	public static String buildFilterCondition(Map map){
+		ArrayList filter  = (ArrayList)map.get("filter");
+		
+		return null;
 	}
 }

@@ -205,7 +205,7 @@ iv = {
 				}
 			},
 			showCloseButton:false,
-			buttons:["确定","取消"],
+			buttons:["保存","取消"],
 			buttonStyles:['btn-success','btn-default'],
 			onButtonClick:function(sender,modal,index){
 				var self = this;

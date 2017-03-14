@@ -683,6 +683,20 @@
 
 		return res;
 	}
+
+	$.fn.getTextField = function(value,list){
+		var obj = this;
+
+		if(typeof list != "undefined"){
+			$.each(list,function(i,v){
+				if(v.value == value){
+					$(obj).html( v.text);
+					return;
+				}
+			})
+		}
+		
+	}
 	
 	$.fn.radioButtonList = function(data,nameField,textField,valueField,defaultValue){
 		if(typeof data == "string") data = $.parseJSON(data.toString());
@@ -708,6 +722,7 @@
 
 $.ajaxSetup({
     cache: false,
-    contentType: 'application/json;charset=utf-8'
+    contentType: 'application/json;charset=utf-8',
 });
+//$.ajaxSettings.traditional = true;
 

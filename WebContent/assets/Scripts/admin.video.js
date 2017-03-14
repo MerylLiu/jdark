@@ -13,6 +13,9 @@ iv = {
 		$('#btn-del').click(function(){
 			iv.delete();
 		})
+		$('#btn-submit').click(function(){
+			iv.submit();
+		})
 		$('#btn-online').click(function(){
 			iv.online();
 		})
@@ -280,11 +283,14 @@ iv = {
 							format:"yyyy-MM-dd HH:mm:ss",
 							value: new Date(data.EndDate)
 						});
+						
+						$('#info-status').getTextField(data.Status,videoStatus);
+						$('#info-remark').html(data.Remark);
 					});
 				}
 			},
 			showCloseButton:false,
-			buttons:["确定","取消"],
+			buttons:["保存","取消"],
 			buttonStyles:['btn-success','btn-default'],
 			onButtonClick:function(sender,modal,index){
 				var self = this;
@@ -341,6 +347,22 @@ iv = {
 			var params = $("#grid").gridSelectedCols('Id');
 
 			$.post(basePath + 'admin/video/offline', JSON.stringify(params), function (data) {
+				if (data.result) {
+					$.mdlg.alert('提示',data.message);
+					iv.getInfo();
+				} else {
+					$.mdlg.error('错误',data.message);
+				}
+			}).fail(errors);
+		})
+	},
+	submit:function(){
+		$.mdlg.confirm("删除","您确认要将所选择的视频提交到电信进行审核么？",function(){
+			var params = $("#grid").gridSelectedCols('Id');
+			var params2 = $("#grid").gridSelectedCols('Status');
+			params.Status = params2.Status;
+
+			$.post(basePath + 'admin/video/submit', JSON.stringify(params), function (data) {
 				if (data.result) {
 					$.mdlg.alert('提示',data.message);
 					iv.getInfo();

@@ -1,10 +1,14 @@
 package com.iptv.app.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.springframework.stereotype.Service;
 
 import com.iptv.app.service.CSPRequestServiceStub;
@@ -17,6 +21,7 @@ import com.iptv.core.common.KendoResult;
 import com.iptv.core.service.impl.BaseServiceImpl;
 import com.iptv.core.utils.DateUtil;
 import com.iptv.core.utils.QueryUtil;
+import com.iptv.core.utils.XmlUtil;
 
 @Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -167,7 +172,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 			throw new BizException(errMsg);
 		}
 
-		getDao().delete("video.deleteVideo", map);
+		getDao().update("video.deleteVideo", map);
 	}
 
 	@Override
@@ -182,7 +187,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 			throw new BizException(errMsg);
 		}
 
-		getDao().delete("video.videoOnline", map);
+		getDao().update("video.videoOnline", map);
 	}
 
 	@Override
@@ -197,6 +202,31 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 			throw new BizException(errMsg);
 		}
 
-		getDao().delete("video.videoOffline", map);
+		getDao().update("video.videoOffline", map);
+	}
+
+	@Override
+	public void submit(Map map) throws BizException {
+		List errMsg = new ArrayList();
+		
+		ArrayList ids = ((ArrayList)map.get("Id"));
+		if (map.get("Id") == null || ids.size() <= 0) {
+			errMsg.add("请选择要提交到电信进行审核的视频。");
+		}
+		
+		ArrayList status = (ArrayList)map.get("Status");
+		if(status.contains(0) || status.contains(2) || status.contains(2)){
+			errMsg.add("您选择的视频包含“已下线”、“已提交” 或 “已发布” 的视频，请重新选择。");
+		}
+
+		if (errMsg.size() > 0) {
+			throw new BizException(errMsg);
+		}
+		
+		//生成XML
+		for(Object item : ids){
+		}
+
+		//getDao().update("video.videoSubmit", map);
 	}
 }

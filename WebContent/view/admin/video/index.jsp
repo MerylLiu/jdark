@@ -27,13 +27,17 @@
 					onclick=''>
 					<i class='fa fa-edit text-success'></i>编辑
 				</button>
+				<button id='btn-submit' class='btn btn-default' style='' type='Button'
+					onclick=''>
+					<i class='fa fa-check text-primary'></i>提交
+				</button>
 				<button id='btn-online' class='btn btn-default' style='' type='Button'
 					onclick=''>
 					<i class='fa fa-cloud-upload text-primary'></i>上线
 				</button>
 				<button id='btn-offline' class='btn btn-default' style='' type='Button'
 					onclick=''>
-					<i class='fa fa-cloud-upload text-primary'></i>下线
+					<i class='fa fa-cloud-download text-primary'></i>下线
 				</button>
 				<button id='btn-del' class='btn btn-default' style='' type='Button'
 					onclick=''>
@@ -62,33 +66,39 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label">商家名称</label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control" placeholder="商家名称" maxlength="16" id="txt-sel-name">
+						<div class="col-sm-11">
+							<input type="text" class="form-control" placeholder="商家名称" maxlength="16" id="txt-sel-name">
+						</div>
+						<span class="cols-sm-1 required">*</span>
 					</div>
 					<label class="col-sm-2 control-label">商家编号</label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control" placeholder="商家编号" maxlength="25" id="txt-sel-code" readonly>
+						<div class="col-sm-11">
+							<input type="text" class="form-control" placeholder="商家编号" maxlength="25" id="txt-sel-code" readonly>
+						</div>
+						<span class="cols-sm-1 required"></span>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label">商家电话</label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control" placeholder="商家电话" maxlength="26" id="txt-sel-tel" readonly>
+						<div class="col-sm-11">
+							<input type="text" class="form-control" placeholder="商家电话" maxlength="26" id="txt-sel-tel" readonly>
+						</div>
 					</div>
 					<label class="col-sm-2 control-label">家服网ID</label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control" placeholder="家服网ID" maxlength="20" id="txt-sel-sid" readonly>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-sm-2 control-label">商家地址</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" placeholder="商家地址" maxlength="150" id="txt-sel-addr" readonly>
+						<div class="col-sm-11">
+							<input type="text" class="form-control" placeholder="家服网ID" maxlength="20" id="txt-sel-sid" readonly>
+						</div>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label">开店时间</label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control" placeholder="开店时间" maxlength="15" id="txt-sel-sdate" readonly>
+						<div class="col-sm-11">
+							<input type="text" class="form-control" placeholder="开店时间" maxlength="15" id="txt-sel-sdate" readonly>
+						</div>
 					</div>
 					<label class="col-sm-3 control-label">是否安装电信宽带</label>
 					<div class="col-sm-3">
@@ -101,12 +111,18 @@
 						</div>
 					</div>
 				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">商家地址</label>
+					<div class="col-sm-9">
+						<input type="text" class="form-control" placeholder="商家地址" maxlength="150" id="txt-sel-addr" readonly>
+					</div>
+				</div>
 			</fieldset>
 		</form>
 		<br/>
 		<form class="form-horizontal" id="form-video">
-			<input type="text" name="Id">
-			<input type="text" name="SellerKeyId">
+			<input type="hidden" name="Id">
+			<input type="hidden" name="SellerKeyId">
 			<fieldset>
 				<legend><h5>视频信息</h5></legend>
 				<div class="form-group">
@@ -278,6 +294,19 @@
 							<input type="text" class="form-control" name="Maker" placeholder="视频制作商" maxlength="50">
 						</div>
 						<span class="cols-sm-1 required">*</span>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset>
+				<legend><h5>视频状态</h5></legend>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">状态</label>
+					<div class="col-sm-9 control-label text-danger" style="text-align:left" id="info-status">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">备注</label>
+					<div class="col-sm-9 control-label" style="text-align:left" id="info-remark">
 					</div>
 				</div>
 			</fieldset>

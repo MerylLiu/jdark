@@ -1,5 +1,7 @@
 package com.iptv.core.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.cache.annotation.Cacheable;
 
 import com.iptv.core.common.ServiceLocator;
 import com.iptv.core.dao.BasicDao;
@@ -39,6 +42,7 @@ public class BaseUtil {
 		sysParamService.saveLog(logInfo);
 	}
 
+	@Cacheable
 	public static List getSysParam(String key) {
 		SysParamService sysParamService = (SysParamService) getService("sysParamService");
 		List data = sysParamService.getSysParam(key, false);
@@ -90,33 +94,40 @@ public class BaseUtil {
 		}
 		return ip;
 	}
-
-	public static Map getParameterMap(HttpServletRequest request) {
-		// 参数Map
-		Map properties = request.getParameterMap();
-		// 返回值Map
-		Map returnMap = new HashMap();
-		Iterator entries = properties.entrySet().iterator();
-		Map.Entry entry;
-		String name = "";
-		String value = "";
-		while (entries.hasNext()) {
-			entry = (Map.Entry) entries.next();
-			name = (String) entry.getKey();
-			Object valueObj = entry.getValue();
-			if (null == valueObj) {
-				value = "";
-			} else if (valueObj instanceof String[]) {
-				String[] values = (String[]) valueObj;
-				for (int i = 0; i < values.length; i++) {
-					value = values[i] + ",";
-				}
-				value = value.substring(0, value.length() - 1);
-			} else {
-				value = valueObj.toString();
-			}
-			returnMap.put(name, value);
-		}
-		return returnMap;
-	}
+	
+	public static Map getParamsMap(String queryString, String enc) {     
+        Map paramsMap = new HashMap();     
+        if (queryString != null && queryString.length() > 0) {     
+          int ampersandIndex, lastAmpersandIndex = 0;     
+          String subStr, param, value;     
+          String[] paramPair, values, newValues;     
+          do {     
+            ampersandIndex = queryString.indexOf('&', lastAmpersandIndex) + 1;     
+            if (ampersandIndex > 0) {     
+              subStr = queryString.substring(lastAmpersandIndex, ampersandIndex - 1);     
+              lastAmpersandIndex = ampersandIndex;     
+            } else {     
+              subStr = queryString.substring(lastAmpersandIndex);     
+            }     
+            paramPair = subStr.split("=");     
+            param = paramPair[0];     
+            value = paramPair.length == 1 ? "" : paramPair[1];     
+            try {     
+              value = URLDecoder.decode(value, enc);     
+            } catch (UnsupportedEncodingException ignored) {     
+            }     
+            if (paramsMap.containsKey(param)) {     
+              values = (String[])paramsMap.get(param);     
+              int len = values.length;     
+              newValues = new String[len + 1];     
+              System.arraycopy(values, 0, newValues, 0, len);     
+              newValues[len] = value;     
+            } else {     
+              newValues = new String[] { value };     
+            }     
+            paramsMap.put(param, newValues);     
+          } while (ampersandIndex > 0);     
+        }     
+        return paramsMap;     
+      }     
 }

@@ -73,4 +73,12 @@
             #{item}   
 		 </foreach>
 	</update>
+
+	<update id="videoSubmit" parameterType="java.util.HashMap">
+		UPDATE biz_video SET Status = 2
+		WHERE Id IN
+		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		 </foreach>
+	</update>
 </mapper>

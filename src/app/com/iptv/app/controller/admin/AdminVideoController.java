@@ -2,6 +2,7 @@ package com.iptv.app.controller.admin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -76,24 +78,30 @@ public class AdminVideoController extends AdminBaseController {
 	}
 	
 	@RequestMapping(value="/sellerList",method = RequestMethod.GET)
-	public @ResponseBody KendoResult sellerList(HttpServletRequest request,HttpServletResponse response){
+	public @ResponseBody KendoResult sellerList(@RequestParam Map<String,Object> param){
 		KendoResult data = sellerService.getAllSellers();
 		return data;
 	}
 
+//	@RequestMapping(value="/videoList",method = RequestMethod.GET)
+//	public @ResponseBody KendoResult videoList(@RequestParam Map<String,Object> param){
+//		System.out.println(param.toString());
+//
+//		KendoResult data = videoService.getVideosPaged(param);
+//
+//		return data;
+//	}
+
 	@RequestMapping(value="/videoList",method = RequestMethod.GET)
-	public @ResponseBody KendoResult videoList(HttpServletRequest request,HttpServletResponse response){
-		Map param = BaseUtil.getParameterMap(request);
+	public @ResponseBody KendoResult videoList(@RequestParam Map<String,Object> param){
 		KendoResult data = videoService.getVideosPaged(param);
 
 		return data;
 	}
 
 	@RequestMapping(value="/getVideo",method = RequestMethod.GET)
-	public @ResponseBody Map getVideo(HttpServletRequest request,HttpServletResponse response){
-		Map param = BaseUtil.getParameterMap(request);
+	public @ResponseBody Map getVideo(@RequestParam Map<String,Object> param){
 		Map data = videoService.getVideo(Integer.valueOf(param.get("Id").toString()));
-
 		return data;
 	}
 		
@@ -200,7 +208,32 @@ public class AdminVideoController extends AdminBaseController {
 		log.info("视频下线");
 		return res;
 	}
-	
+
+	@RequestMapping(value = "/submit", method = RequestMethod.POST)
+	public @ResponseBody Map submit(@RequestBody Map map) {
+		List<String> messages = new ArrayList<String>();
+		Map res = new HashMap();
+
+		try {
+			videoService.submit(map);
+		} catch (BizException biz) {
+			messages.addAll(biz.getMessages());
+		} catch (Exception ex) {
+			log.error("错误信息：" + ex.getMessage());
+			messages.add("未知错误。");
+		}
+
+		if (messages.size() > 0) {
+			res.put("result", false);
+			res.put("message", BaseUtil.toHtml(messages));
+		}else{
+			res.put("result", true);
+			res.put("message", "已提交电信进行审核。");
+		}
+
+		log.info("视频提交电信审核");
+		return res;
+	}
 	
 
 	/*

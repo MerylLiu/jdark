@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -44,18 +43,15 @@ public class AdminSellerController extends AdminBaseController{
 	}
 	
 	@RequestMapping(value="/sellerList",method = RequestMethod.GET)
-	public @ResponseBody KendoResult sellerList(HttpServletRequest request,HttpServletResponse response){
-		Map param = BaseUtil.getParameterMap(request);
+	public @ResponseBody KendoResult sellerList(@RequestParam Map<String,Object> param){
 		KendoResult data = sellerService.getSellersPaged(param);
 
 		return data;
 	}
 	
 	@RequestMapping(value="/getSeller",method = RequestMethod.GET)
-	public @ResponseBody Map getSeller(HttpServletRequest request,HttpServletResponse response){
-		Map param = BaseUtil.getParameterMap(request);
+	public @ResponseBody Map getSeller(@RequestParam Map<String,Object> param){
 		Map data = sellerService.getSeller(Integer.valueOf(param.get("Id").toString()));
-
 		return data;
 	}
 
