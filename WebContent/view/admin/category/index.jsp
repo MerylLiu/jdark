@@ -38,16 +38,16 @@
 					</h4>
 				</div>
 				<div class='toolbar'>
-					<button id='btn-add' class='btn btn-default' style='' type='Button'
-						onclick=''>
+					<button id='btn-add' class='btn btn-default' style='' type='Button'>
 						<i class='fa fa-plus text-success'></i>新增
 					</button>
-					<button id='btn-save' class='btn btn-default' style='' type='Button'
-						onclick=''>
+					<button id='btn-save' class='btn btn-default' style='' type='Button'>
 						<i class='fa fa-save text-success'></i>保存
 					</button>
-					<button id='btn-del' class='btn btn-default' style='' type='Button'
-						onclick=''>
+					<button id='btn-sync' class='btn btn-default' style='' type='Button'>
+						<i class='fa fa-refresh text-primary'></i>提交同步
+					</button>
+					<button id='btn-del' class='btn btn-default' style='' type='Button'>
 						<i class='fa fa-trash text-danger'></i>删除
 					</button>
 				</div>

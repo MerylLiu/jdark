@@ -13,6 +13,9 @@ iv = {
 		$('#btn-del').click(function(){
 			iv.delete();
 		})
+		$('#btn-online').click(function(){
+			iv.online();
+		})
 		$('#btn-offline').click(function(){
 			iv.offline();
 		})
@@ -310,6 +313,20 @@ iv = {
 			var params = $("#grid").gridSelectedCols('Id');
 
 			$.post(basePath + 'admin/video/delete', JSON.stringify(params), function (data) {
+				if (data.result) {
+					$.mdlg.alert('提示',data.message);
+					iv.getInfo();
+				} else {
+					$.mdlg.error('错误',data.message);
+				}
+			}).fail(errors);
+		})
+	},
+	online:function(){
+		$.mdlg.confirm("删除","您确认要将所选择的视频上线么？<br/>上线前请线确实该视频是否已经通过电信的审核。",function(){
+			var params = $("#grid").gridSelectedCols('Id');
+
+			$.post(basePath + 'admin/video/online', JSON.stringify(params), function (data) {
 				if (data.result) {
 					$.mdlg.alert('提示',data.message);
 					iv.getInfo();

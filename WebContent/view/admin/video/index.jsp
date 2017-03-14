@@ -27,9 +27,13 @@
 					onclick=''>
 					<i class='fa fa-edit text-success'></i>编辑
 				</button>
+				<button id='btn-online' class='btn btn-default' style='' type='Button'
+					onclick=''>
+					<i class='fa fa-cloud-upload text-primary'></i>上线
+				</button>
 				<button id='btn-offline' class='btn btn-default' style='' type='Button'
 					onclick=''>
-					<i class='fa fa-trash text-danger'></i>下线
+					<i class='fa fa-cloud-upload text-primary'></i>下线
 				</button>
 				<button id='btn-del' class='btn btn-default' style='' type='Button'
 					onclick=''>

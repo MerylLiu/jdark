@@ -171,6 +171,21 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 	}
 
 	@Override
+	public void online(Map map) throws BizException {
+		List errMsg = new ArrayList();
+
+		if (map.get("Id") == null || ((ArrayList)map.get("Id")).size() <= 0) {
+			errMsg.add("请选择要上线的视频。");
+		}
+
+		if (errMsg.size() > 0) {
+			throw new BizException(errMsg);
+		}
+
+		getDao().delete("video.videoOnline", map);
+	}
+
+	@Override
 	public void offline(Map map) throws BizException {
 		List errMsg = new ArrayList();
 
@@ -184,5 +199,4 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 
 		getDao().delete("video.videoOffline", map);
 	}
-
 }

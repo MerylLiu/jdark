@@ -15,6 +15,14 @@ $(document).ready( function() {
 		$.get(basePath + 'admin/category/categoryNodes', null, function(data) {
 			zTreeObj = $.fn.zTree.init($("#tree-category"), setting, data);
 		})
+
+		$('input[name="OrderNum"]').kendoNumericTextBox({
+			 format: "#",
+			 decimals: 0,
+			 min: 1,
+			 max:99999999,
+			 value:1
+		});
 	};
 	
 	$('#btn-add').click( function() {
@@ -29,6 +37,25 @@ $(document).ready( function() {
 		$('#form-data').resetForm();
 		$('#parentId').val(nodes[0].Id);
 		$('#stsNormal').prop('checked',true)
+	});
+
+	$('#btn-sync').click( function() {
+		$.mdlg.confirm('提示','您确认要将分类同步到前段展示么？',function(){
+			var params = {};
+			$.post(basePath + 'admin/category/sync', JSON.stringify(params), function(data) {
+				if(data.result == true){
+					$.mdlg.alert('提示',data.message);
+					$('#form-data').resetForm();
+					bindData();
+				}else{
+					$.mdlg.error('错误',data.message);
+				}
+			})
+
+			$('#form-data').resetForm();
+			//$('#parentId').val(nodes[0].Id);
+			$('#stsNormal').prop('checked',true)
+		})
 	});
 
 	$('#btn-save').click( function() {

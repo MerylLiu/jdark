@@ -26,7 +26,7 @@ iv = {
 	            encoded: false,
 				attributes:{ 'class':'center'},
 				filterable:false,
-				clientTemplete:"#= renderNumber(data) #"
+				template: "<span class='row-number'></span>" 
 	        },
 	        {
 	            title: "商家编号",
@@ -118,7 +118,17 @@ iv = {
 				SetUpDate: {type: "date", parse: function(value) { return new Date(value);}},
 				VedioCount: {type: "number"},
 				Province: {type: "number"} 
-			})
+			}),
+			dataBound:function(){
+				var rows = this.items();  
+                var page = this.pager.page() - 1;  
+                var pagesize = this.pager.pageSize();  
+                $(rows).each(function () {  
+                    var index = $(this).index() + 1 + page * pagesize;  
+                    var rowLabel = $(this).find(".row-number");  
+                    $(rowLabel).html(index);  
+                });  	
+			}
 	    });	
 	},
 	getInfo:function(){

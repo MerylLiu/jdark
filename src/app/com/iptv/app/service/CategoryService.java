@@ -15,4 +15,6 @@ public interface CategoryService extends BaseService {
 	public void delete(Map map) throws BizException;
 	
 	public List getAllCategories();
+
+	public void sync(Map map) throws BizException;
 }

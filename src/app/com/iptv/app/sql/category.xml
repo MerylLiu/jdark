@@ -41,6 +41,10 @@
 		UPDATE biz_category SET Status=0 WHERE Id = #{Id}
 	</update>
 
+	<update id="syncCategory" parameterType="java.util.HashMap">
+		UPDATE biz_category SET Status=2
+	</update>
+
 	<select id="getAllCategory" resultType="java.util.HashMap">
 		SELECT a.Name,a.Id,a.Name as text,a.Id as value
 	    FROM biz_category a

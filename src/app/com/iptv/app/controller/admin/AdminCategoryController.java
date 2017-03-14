@@ -92,4 +92,30 @@ public class AdminCategoryController extends AdminBaseController {
 		log.info("删除分类");
 		return res;
 	}
+
+	@RequestMapping(value = "/sync", method = RequestMethod.POST)
+	public @ResponseBody Map sync(@RequestBody Map map) {
+		List<String> messages = new ArrayList<String>();
+		Map res = new HashMap();
+
+		try {
+			categoryService.sync(map);
+		} catch (BizException biz) {
+			messages.addAll(biz.getMessages());
+		} catch (Exception ex) {
+			log.error("数据库错误：" + ex.getMessage());
+			messages.add("未知错误。");
+		}
+
+		if (messages.size() > 0) {
+			res.put("result", false);
+			res.put("message", BaseUtil.toHtml(messages));
+		}else{
+			res.put("result", true);
+			res.put("message", "同步成功。");
+		}
+
+		log.info("同步分类");
+		return res;
+	}
 }

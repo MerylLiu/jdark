@@ -149,6 +149,32 @@ public class AdminVideoController extends AdminBaseController {
 		return res;
 	}
 
+	@RequestMapping(value = "/online", method = RequestMethod.POST)
+	public @ResponseBody Map online(@RequestBody Map map) {
+		List<String> messages = new ArrayList<String>();
+		Map res = new HashMap();
+
+		try {
+			videoService.online(map);
+		} catch (BizException biz) {
+			messages.addAll(biz.getMessages());
+		} catch (Exception ex) {
+			log.error("错误信息：" + ex.getMessage());
+			messages.add("未知错误。");
+		}
+
+		if (messages.size() > 0) {
+			res.put("result", false);
+			res.put("message", BaseUtil.toHtml(messages));
+		}else{
+			res.put("result", true);
+			res.put("message", "上线成功。");
+		}
+
+		log.info("视频上线");
+		return res;
+	}
+
 	@RequestMapping(value = "/offline", method = RequestMethod.POST)
 	public @ResponseBody Map offline(@RequestBody Map map) {
 		List<String> messages = new ArrayList<String>();
@@ -168,10 +194,10 @@ public class AdminVideoController extends AdminBaseController {
 			res.put("message", BaseUtil.toHtml(messages));
 		}else{
 			res.put("result", true);
-			res.put("message", "删除成功。");
+			res.put("message", "下线成功。");
 		}
 
-		log.info("删除商家");
+		log.info("视频下线");
 		return res;
 	}
 	
