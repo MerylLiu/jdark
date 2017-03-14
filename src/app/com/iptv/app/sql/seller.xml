@@ -3,15 +3,20 @@
 
 <mapper namespace="seller">
 	<select id="getAllSellers" resultType="java.util.HashMap">
-		SELECT a.*,a.Name as text,a.Id as value FROM biz_seller a ORDER BY a.OrderNum 
+		SELECT a.*,a.Name as text,a.Id as value FROM biz_seller a
+		WHERE a.IsDel IS NULL OR a.IsDel = 0
+		ORDER BY a.OrderNum 
 	</select>
 
 	<select id="getSellers" resultType="java.util.HashMap">
-		SELECT a.* FROM biz_seller a ORDER BY a.OrderNum LIMIT ${offset},${rows}
+		SELECT a.* FROM biz_seller a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
+		ORDER BY a.OrderNum LIMIT ${offset},${rows}
 	</select>
 
 	<select id="getSellersCount" resultType="java.lang.Integer">
 		SELECT count(*) as Count FROM biz_seller a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
 		ORDER BY a.OrderNum 
 	</select>
 
@@ -20,7 +25,8 @@
 	</select>
 
 	<select id="getExistCount" resultType="java.lang.Integer">
-		SELECT count(*) as Count FROM biz_seller a WHERE a.Code = #{Code}
+		SELECT count(*) as Count FROM biz_seller a
+		WHERE a.Code = #{Code} AND (a.IsDel IS NULL OR a.IsDel = 0)
 	</select>	
 
 	<insert id="saveSeller" parameterType="java.util.HashMap">
@@ -39,7 +45,8 @@
 	</update>
 
 	<delete id="deleteSeller" parameterType="java.util.HashMap">
-		DELETE FROM biz_seller WHERE Id IN
+		UPDATE biz_seller SET IsDel = 1 
+		WHERE Id IN
 		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
             #{item}   
 		</foreach>

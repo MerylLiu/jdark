@@ -52,6 +52,12 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 		KendoResult data = QueryUtil.getRecordsPaged("video.getVideoPaged", "video.getVideoCount", null, map);
 		return data;
 	}
+	
+	@Override
+	public Map getVideo(Integer id) {
+		Map data = getDao().selectOne("video.getVideoById", id);
+		return data;
+	}
 
 	@Override
 	public void save(Map map) throws BizException {
@@ -150,6 +156,21 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 	}
 
 	@Override
+	public void delete(Map map) throws BizException {
+		List errMsg = new ArrayList();
+
+		if (map.get("Id") == null || ((ArrayList)map.get("Id")).size() <= 0) {
+			errMsg.add("请选择要删除的视频。");
+		}
+
+		if (errMsg.size() > 0) {
+			throw new BizException(errMsg);
+		}
+
+		getDao().delete("video.deleteVideo", map);
+	}
+
+	@Override
 	public void offline(Map map) throws BizException {
 		List errMsg = new ArrayList();
 
@@ -161,7 +182,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 			throw new BizException(errMsg);
 		}
 
-		getDao().delete("seller.deleteSeller", map);
+		getDao().delete("video.videoOffline", map);
 	}
 
 }

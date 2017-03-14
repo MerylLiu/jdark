@@ -6,7 +6,7 @@
 		SELECT a.Id as id,concat('[',b.Text,']  ',a.Name) as name,'' as url,true as open,a.*
 		FROM biz_category a
 		LEFT JOIN (SELECT x.Text,x.Value FROM sys_dictionary x WHERE x.Key = 'CategoryStatus') b ON a.Status = b.Value 
-		WHERE a.ParentId IS NULL OR a.ParentId = 0
+		WHERE (a.ParentId IS NULL OR a.ParentId = 0) AND (a.IsDel IS NULL OR a.IsDel = 0)
 		ORDER BY a.OrderNum
 	</select>
 
@@ -14,7 +14,7 @@
 		SELECT a.Id as id,concat('[',b.Text,']  ',a.Name) as name,'' as url,true as open,a.*
 		FROM biz_category a 
 		LEFT JOIN (SELECT x.Text,x.Value FROM sys_dictionary x WHERE x.Key = 'CategoryStatus') b ON a.Status = b.Value 
-		WHERE a.ParentId = #{ParentId}
+		WHERE (a.ParentId = #{ParentId}) AND (a.IsDel IS NULL OR a.IsDel = 0)
 		ORDER BY a.OrderNum
 	</select>
 
@@ -34,7 +34,7 @@
 	</update>
 
 	<delete id="deleteCategory" parameterType="java.util.HashMap">
-		DELETE FROM biz_category WHERE Id = #{Id}
+		UPDATE biz_category SET IsDel=1 WHERE Id = #{Id}
 	</delete>
 
 	<update id="hideCategory" parameterType="java.util.HashMap">
@@ -43,6 +43,8 @@
 
 	<select id="getAllCategory" resultType="java.util.HashMap">
 		SELECT a.Name,a.Id,a.Name as text,a.Id as value
-	    FROM biz_category a ORDER BY a.OrderNum
+	    FROM biz_category a
+		WHERE a.IsDel IS NULL OR a.IsDel = 0
+	    ORDER BY a.OrderNum
 	</select>
 </mapper>

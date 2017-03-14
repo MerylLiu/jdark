@@ -14,7 +14,11 @@ public interface VideoService extends BaseService {
 	
 	public KendoResult getVideosPaged(Map map);
 
+	public Map getVideo(Integer id);
+
 	public void save(Map map) throws BizException;
 	
+	public void delete(Map map) throws BizException; 
+
 	public void offline(Map map) throws BizException; 
 }

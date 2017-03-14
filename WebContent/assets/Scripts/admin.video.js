@@ -8,12 +8,13 @@ iv = {
 		})
 		$('#btn-edit').click(function(){
 			var param = $("#grid").gridSelectedCols("Id");
-			if(param.Id.length >0){
-				iv.edit(param.Id[0]);
-			}
+			if(param.Id.length >0) iv.edit(param.Id[0]);
 		})
 		$('#btn-del').click(function(){
 			iv.delete();
+		})
+		$('#btn-offline').click(function(){
+			iv.offline();
 		})
 	},
 	bind:function(){
@@ -26,7 +27,7 @@ iv = {
 	            encoded: false,
 				attributes:{ 'class':'center'},
 				filterable:false,
-				clientTemplete:"#= renderNumber(data) #"
+				template: "<span class='row-number'></span>" 
 	        },
 	        {
 	            title: "视频编号",
@@ -86,7 +87,7 @@ iv = {
 	            width: "100px",
 	            field: "Status",
 	            encoded: false,
-				attributes:{ 'class':'center'},
+				attributes:{ 'class':'center text-danger'},
 				values: videoStatus
 	        },
 	        {
@@ -102,7 +103,8 @@ iv = {
 	            width: "15%",
 	            field: "CostFZ",
 	            encoded: false,
-				attributes:{ 'class':'center'}
+				attributes:{ 'class':'center'},
+				values:costFZ
 	        },
 	        {
 	            title: "到期时间",
@@ -124,14 +126,24 @@ iv = {
 			},
 			autoBind:false,
 	        dataSource: createDataSource(basePath + 'admin/video/videoList',{
-				SetUpDate: {type: "date", parse: function(value) { return new Date(value);}},
+				EndDate: {type: "date", parse: function(value) { return new Date(value);}},
 				VedioCount: {type: "number"},
 				Province: {type: "number"},
 				SellerKeyId:{type: "number"},
 				CategoryId:{type: "number"},
 				Status:{type: "number"},
 				CostFZ:{type: "number"} 
-			})
+			}),
+			dataBound:function(){
+				var rows = this.items();  
+                var page = this.pager.page() - 1;  
+                var pagesize = this.pager.pageSize();  
+                $(rows).each(function () {  
+                    var index = $(this).index() + 1 + page * pagesize;  
+                    var rowLabel = $(this).find(".row-number");  
+                    $(rowLabel).html(index);  
+                });  	
+			}
 	    });	
 	},
 	getInfo:function(){
@@ -226,14 +238,26 @@ iv = {
 
 				$('#txt-city,#txt-area').kendoDropDownList({});
 
-				$('input[name="StartDate"],input[name="EndDate"]').kendoDatePicker({
-					format:"yyyy-MM-dd"
+				$('input[name="StartDate"],input[name="EndDate"]').kendoDateTimePicker({
+					format:"yyyy-MM-dd HH:mm:ss"
+				});
+
+				$('#txt-order').kendoNumericTextBox({
+					 format: "#",
+                     decimals: 0,
+                     min: 1,
+                     max:99999999,
+                     value:1
 				});
 
 				if(id){
-					$.get(basePath + 'admin/seller/getSeller',{Id:id},function(data){
+					$.get(basePath + 'admin/video/getVideo',{Id:id},function(data){
 						$('#form-video').formData(data);
 						iv.bindDropDownList();
+						iv.bindSellerInfo(data.SellerKeyId);
+
+						var seller = $('#txt-sel-name').data("kendoDropDownList");
+						seller.value(data.SellerKeyId);
 						
 						var province = $('#txt-province').data("kendoDropDownList");
 						province.value(data.Province);
@@ -244,6 +268,15 @@ iv = {
 						city.trigger("change");
 
 						$('#txt-area').data("kendoDropDownList").value(data.Area);
+
+						$('input[name="StartDate"]').kendoDateTimePicker({
+							format:"yyyy-MM-dd HH:mm:ss",
+							value: new Date(data.StartDate)
+						});
+						$('input[name="EndDate"]').kendoDateTimePicker({
+							format:"yyyy-MM-dd HH:mm:ss",
+							value: new Date(data.EndDate)
+						});
 					});
 				}
 			},
@@ -273,10 +306,24 @@ iv = {
 		})
 	},
 	delete:function(){
-		$.mdlg.confirm("删除","您确认要删除么？",function(){
+		$.mdlg.confirm("删除","您确认要将所选择的视删除么？",function(){
 			var params = $("#grid").gridSelectedCols('Id');
 
-			$.post(basePath + 'admin/seller/delete', JSON.stringify(params), function (data) {
+			$.post(basePath + 'admin/video/delete', JSON.stringify(params), function (data) {
+				if (data.result) {
+					$.mdlg.alert('提示',data.message);
+					iv.getInfo();
+				} else {
+					$.mdlg.error('错误',data.message);
+				}
+			}).fail(errors);
+		})
+	},
+	offline:function(){
+		$.mdlg.confirm("删除","您确认要将所选择的视频下线么？",function(){
+			var params = $("#grid").gridSelectedCols('Id');
+
+			$.post(basePath + 'admin/video/offline', JSON.stringify(params), function (data) {
 				if (data.result) {
 					$.mdlg.alert('提示',data.message);
 					iv.getInfo();

@@ -88,6 +88,14 @@ public class AdminVideoController extends AdminBaseController {
 
 		return data;
 	}
+
+	@RequestMapping(value="/getVideo",method = RequestMethod.GET)
+	public @ResponseBody Map getVideo(HttpServletRequest request,HttpServletResponse response){
+		Map param = BaseUtil.getParameterMap(request);
+		Map data = videoService.getVideo(Integer.valueOf(param.get("Id").toString()));
+
+		return data;
+	}
 		
 	@RequestMapping(value="/save",method = RequestMethod.POST)
 	public @ResponseBody Map save(@RequestBody Map map){
@@ -112,6 +120,32 @@ public class AdminVideoController extends AdminBaseController {
 		}
 
 		log.info("添加或者修改商家");
+		return res;
+	}
+
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
+	public @ResponseBody Map delete(@RequestBody Map map) {
+		List<String> messages = new ArrayList<String>();
+		Map res = new HashMap();
+
+		try {
+			videoService.delete(map);
+		} catch (BizException biz) {
+			messages.addAll(biz.getMessages());
+		} catch (Exception ex) {
+			log.error("错误信息：" + ex.getMessage());
+			messages.add("未知错误。");
+		}
+
+		if (messages.size() > 0) {
+			res.put("result", false);
+			res.put("message", BaseUtil.toHtml(messages));
+		}else{
+			res.put("result", true);
+			res.put("message", "删除成功。");
+		}
+
+		log.info("删除商家");
 		return res;
 	}
 

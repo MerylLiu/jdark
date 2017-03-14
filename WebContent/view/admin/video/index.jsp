@@ -27,6 +27,10 @@
 					onclick=''>
 					<i class='fa fa-edit text-success'></i>编辑
 				</button>
+				<button id='btn-offline' class='btn btn-default' style='' type='Button'
+					onclick=''>
+					<i class='fa fa-trash text-danger'></i>下线
+				</button>
 				<button id='btn-del' class='btn btn-default' style='' type='Button'
 					onclick=''>
 					<i class='fa fa-trash text-danger'></i>删除
@@ -224,7 +228,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-3 control-label">排序号</label>
+					<label class="col-sm-2 control-label">排序号</label>
 					<div class="col-sm-9">
 						<input type="text" class="form-control" id="txt-order" name="OrderNum" placeholder="排序号" maxlength="8">
 					</div>

@@ -3,17 +3,22 @@
 
 <mapper namespace="video">
 	<select id="getAllVideo" resultType="java.util.HashMap">
-		SELECT a.* FROM biz_video a ORDER BY a.OrderNum 
+		SELECT a.* FROM biz_video a
+		WHERE a.IsDel IS NULL OR a.IsDel = 0
+		ORDER BY a.OrderNum 
 	</select>
 
 	<select id="getVideoPaged" resultType="java.util.HashMap">
-		SELECT a.* FROM biz_video a
+		SELECT a.*,b.SellerId FROM biz_video a
+		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
 		ORDER BY a.OrderNum DESC
 		LIMIT ${offset},${rows}
 	</select>
 
 	<select id="getVideoCount" resultType="java.lang.Integer">
 		SELECT count(*) as Count FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
 		ORDER BY a.OrderNum  DESC
 	</select>
 
@@ -22,7 +27,8 @@
 	</select>
 
 	<select id="getExistCount" resultType="java.lang.Integer">
-		SELECT count(*) as Count FROM biz_video a WHERE a.Code = #{Code}
+		SELECT count(*) as Count FROM biz_video a
+		WHERE a.Code = #{Code} AND (a.IsDel IS NULL OR a.IsDel = 0)
 	</select>	
 	
 	<insert id="saveVideo" parameterType="java.util.HashMap">
@@ -30,15 +36,33 @@
 			(Code, Name, Jianpin, Quanpin, Cost, CostFZ, VideoUrl, StartDate, EndDate, Style, CategoryId, Description,
 			 ImageUrl, GifUrl, QrCode, Province, City, Area, Provider, Maker, Status, CreateDate, SellerKeyId, OrderNum)
 		VALUES
-			(#{Code} #{Name}, #{Jianpin}, #{Quanpin}, #{Cost}, #{CostFZ}, #{VideoUrl}, #{StartDate}, #{EndDate}, #{Style},
+			(#{Code}, #{Name}, #{Jianpin}, #{Quanpin}, #{Cost}, #{CostFZ}, #{VideoUrl}, #{StartDate}, #{EndDate}, #{Style},
 			 #{CategoryId}, #{Description}, #{ImageUrl}, #{GifUrl}, #{QrCode}, #{Province}, #{City},
 			#{Area}, #{Provider}, #{Maker}, #{Status}, #{CreateDate}, #{SellerKeyId}, #{OrderNum})
 	</insert>
 
-	<update id="updateSeller" parameterType="java.util.HashMap">
-		UPDATE biz_seller SET Code = #{Code}, Name = #{Name}, SellerId = #{SellerId},
-			Tel = #{Tel}, Address = #{Address}, Province = #{Province}, City = #{City}, Area = #{Area},
-			IsInstall = #{IsInstall}, SetUpDate = #{SetUpDate}, OrderNum = #{OrderNum}
+	<update id="updateVideo" parameterType="java.util.HashMap">
+		UPDATE biz_video SET Code = #{Code}, Name = #{Name}, Jianpin = #{Jianpin}, Quanpin = #{Quanpin}, Cost = #{Cost},
+			CostFZ = #{CostFZ}, VideoUrl = #{VideoUrl}, StartDate = #{StartDate}, EndDate = #{EndDate}, Style = #{Style}, 
+			CategoryId = #{CategoryId}, Description = #{Description}, ImageUrl = #{ImageUrl}, GifUrl = #{GifUrl},
+			QrCode = #{QrCode}, Province = #{Province}, City = #{City}, Area = #{Area}, Provider = #{Provider},
+			Maker = #{Maker}, SellerKeyId = #{SellerKeyId}, OrderNum = #{OrderNum}
 		WHERE Id = #{Id}
+	</update>
+
+	<update id="deleteVideo" parameterType="java.util.HashMap">
+		UPDATE biz_video SET IsDel = 1
+		WHERE Id IN
+		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		 </foreach>
+	</update>
+
+	<update id="videoOffline" parameterType="java.util.HashMap">
+		UPDATE biz_video SET Status = 0
+		WHERE Id IN
+		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		 </foreach>
 	</update>
 </mapper>
