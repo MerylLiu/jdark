@@ -36,16 +36,16 @@
 			(Code, Name, Jianpin, Quanpin, Cost, CostFZ, VideoUrl, StartDate, EndDate, Style, CategoryId, Description,
 			 ImageUrl, GifUrl, QrCode, Province, City, Area, Provider, Maker, Status, CreateDate, SellerKeyId, OrderNum)
 		VALUES
-			(#{Code}, #{Name}, #{Jianpin}, #{Quanpin}, #{Cost}, #{CostFZ}, #{VideoUrl}, #{StartDate}, #{EndDate}, #{Style},
-			 #{CategoryId}, #{Description}, #{ImageUrl}, #{GifUrl}, #{QrCode}, #{Province}, #{City},
+			(#{Code}, #{Name}, #{Jianpin}, #{Quanpin}, #{Cost}, #{CostFZ}, <![CDATA[#{VideoUrl}]]>, #{StartDate}, #{EndDate}, #{Style},
+			 #{CategoryId}, #{Description}, <![CDATA[#{ImageUrl}]]>, <![CDATA[#{GifUrl}]]>, <![CDATA[#{QrCode}]]>, #{Province}, #{City},
 			#{Area}, #{Provider}, #{Maker}, #{Status}, #{CreateDate}, #{SellerKeyId}, #{OrderNum})
 	</insert>
 
 	<update id="updateVideo" parameterType="java.util.HashMap">
 		UPDATE biz_video SET Code = #{Code}, Name = #{Name}, Jianpin = #{Jianpin}, Quanpin = #{Quanpin}, Cost = #{Cost},
-			CostFZ = #{CostFZ}, VideoUrl = #{VideoUrl}, StartDate = #{StartDate}, EndDate = #{EndDate}, Style = #{Style}, 
-			CategoryId = #{CategoryId}, Description = #{Description}, ImageUrl = #{ImageUrl}, GifUrl = #{GifUrl},
-			QrCode = #{QrCode}, Province = #{Province}, City = #{City}, Area = #{Area}, Provider = #{Provider},
+			CostFZ = #{CostFZ}, VideoUrl = <![CDATA[#{VideoUrl}]]>, StartDate = #{StartDate}, EndDate = #{EndDate}, Style = #{Style}, 
+			CategoryId = #{CategoryId}, Description = #{Description}, ImageUrl = <![CDATA[#{ImageUrl}]]>, GifUrl = <![CDATA[#{GifUrl}]]>,
+			QrCode = <![CDATA[#{QrCode}]]>, Province = #{Province}, City = #{City}, Area = #{Area}, Provider = #{Provider},
 			Maker = #{Maker}, SellerKeyId = #{SellerKeyId}, OrderNum = #{OrderNum}
 		WHERE Id = #{Id}
 	</update>
@@ -75,10 +75,32 @@
 	</update>
 
 	<update id="videoSubmit" parameterType="java.util.HashMap">
-		UPDATE biz_video SET Status = 2
-		WHERE Id IN
-		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
-            #{item}   
-		 </foreach>
+		UPDATE biz_video SET Status = 2,DxCode = #{DxCode},CorrelateID = #{CorrelateID}
+		WHERE Id = #{Id}
 	</update>
+
+	<update id="autitSuccess" parameterType="java.util.HashMap">
+		UPDATE biz_video SET Status = 3 
+		WHERE CorrelateID = #{CorrelateID}
+	</update>
+
+	<update id="autitFail" parameterType="java.util.HashMap">
+		UPDATE biz_video SET Status = 4 AND Remark = #{Remark}
+		WHERE CorrelateID = #{CorrelateID}
+	</update>
+
+	<select id="getHomeVideo" resultType="java.util.HashMap">
+		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		ORDER BY a.OrderNum AND a.CommitDate DESC
+		limit 0,9
+	</select>
+
+	<select id="getHomeVideoPaged" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		ORDER BY a.OrderNum AND a.CommitDate DESC
+		LIMIT #{offset},#{rows}
+	</select>
+
 </mapper>

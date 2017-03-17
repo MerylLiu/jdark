@@ -334,35 +334,4 @@ public class XmlUtil {
 		xmlWriter.close();
 		return writer.toString();
 	}
-
-	public static void main(String[] args) throws DocumentException, IOException {
-		Map map1 = new HashMap();
-		
-		Map map11 = new HashMap();
-		
-		List list = new ArrayList();
-
-		Map map111_1 = new HashMap();
-		map111_1.put("Property", "test");
-		list.add(map111_1);
-
-		Map map111_2 = new HashMap();
-		map111_2.put("Property", "test");
-		list.add(map111_2);
-
-		Map map111_3 = new HashMap();
-		map111_3.put("Property", "test");
-		list.add(map111_3);
-
-		map11.put("Object", list);
-
-		map1.put("Objects", map11);
-		map1.put("Mapping", "mytestl");
-
-		Document doc = map2xml(map1, "ADT");  
-        System.out.println(formatXml(doc)); 
-        
-        Map res = xml2map(formatXml(doc), true);
-        System.out.println(res); 
-	}
 }

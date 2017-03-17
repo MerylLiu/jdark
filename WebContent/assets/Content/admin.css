@@ -124,9 +124,14 @@
     background-color: #eee;
 }
 
-/* .modal.in .modal-dialog{-webkit-transform:translate(0,-40%);-ms-transform:translate(0,-40%);-o-transform:translate(0,-40%);transform:translate(0,-40%)}
+.modal.in .modal-dialog{-webkit-transform:translate(0,-40%);-ms-transform:translate(0,-40%);-o-transform:translate(0,-40%);transform:translate(0,-40%)}
 .modal-dialog{position:absolute;width:auto;margin:10px auto;left:0;right:0;top:40%}
-@media (min-width:768px){.modal-dialog{width:600px} */
+@media (min-width:768px){.modal-dialog{width:600px}}
+
+.modal-body{
+  max-height:400px;
+  overflow-y:auto;
+}
 
 .modal-footer {
     padding: 10px 15px;

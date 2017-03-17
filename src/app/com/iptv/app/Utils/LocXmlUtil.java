@@ -1,43 +1,88 @@
 package com.iptv.app.Utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Map;
+
+import com.iptv.core.common.Configuration;
+import com.iptv.core.utils.FtpUtil;
+import com.iptv.core.utils.XmlUtil;
 
 @SuppressWarnings("rawtypes")
 public class LocXmlUtil {
 
-	public static String BuildXml(Map data){
+	public static String BuildXml(Map data) {
+		String ftpUrl = "ftp://" + Configuration.webCfg.getProperty("ftp.user") + ":"
+				+ Configuration.webCfg.getProperty("ftp.pwd") + "@" + Configuration.webCfg.getProperty("ftp.ip") + ":"
+				+ Configuration.webCfg.getProperty("ftp.port") + "/";
+
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 		xml += "<ADI xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
-		xml += "  <Objects>";
-		xml += "     <Object ElementType=\"Program\" ID=\"1001\" Action=\"REGIST\" Code=\"code1001\">";
-		xml += "	    <Property Name=\"Name\">迷尚</Property>";
-		xml += "	    <Property Name=\"Language\">中文</Property>";
-		xml += "	    <Property Name=\"Type\">时尚生活</Property>";
-		xml += "	    <Property Name=\"DefinitionFlag\">2<Property>";
-		xml += "	    <Property Name=\"ReleaseYear\">2017<Property>";
-		xml += "	    <Property Name=\"Description\">迷尚德国酸菜捞</Property>";
-		xml += "	 </Object>";
-		xml += "     <Object ElementType=\"Movie\" ID=\"2001\" Action=\"REGIST\" Code=\"code2001\">";
-		xml += "	    <Property Name=\"Type\">1</Property>";
-		xml += "	    <Property Name=\"FileURL\">ftp://ftpuser:111111@115.28.77.76:22000/test1.mp4<Property>";
-		xml += "	 </Object>";
-		xml += "     <Object ElementType=\"Movie\" ID=\"2002\" Action=\"REGIST\" Code=\"code2002\">";
-		xml += "	    <Property Name=\"Type\">2</Property>";
-		xml += "	    <Property Name=\"FileURL\">ftp://ftpuser:111111@115.28.77.76:22000/test1.mp4<Property>";
-		xml += "	 </Object>";
-		xml += "     <Object ElementType=\"Picture\" ID=\"3001\" Action=\"REGIST\" Code=\"code3001\">";
-		xml += "	    <Property Name=\"FileURL\">ftp://ftpuser:111111@115.28.77.76:22000/test.png<Property>";
-		xml += "	 </Object>";
-		xml += "  </Objects>";
-		xml += "  <Mappings>";
-		xml += "      <Mapping ParentType=\"Program\" ParentID=\"1001\" ElementType=\"Movie\" ElementID=\"2001\" ParentCode=\"code1001\" ElementCode=\"code2001\" Action=\"REGIST\"></Mapping>";
-		xml += "      <Mapping ParentType=\"Program\" ParentID=\"1001\" ElementType=\"Movie\" ElementID=\"2002\" ParentCode=\"code1001\" ElementCode=\"code2002\" Action=\"REGIST\"></Mapping>";
-		xml += "      <Mapping ParentType=\"Picture\" ParentID=\"3001\" ElementType=\"Program\" ElementID=\"1002\" ParentCode=\"code3001\" ElementCode=\"code1002\" Action=\"REGIST\">";
-		xml += "	    <Property Name=\"Type\">2</Property>";
-		xml += "	    <Property Name=\"Sequence\">123</Property>";
-		xml += "      </Mapping>";
-		xml += "  </Mappings>";
+		xml += "  <Objects>\n";
+		xml += "     <Object ElementType=\"Program\" ID=\"" + data.get("Code") + "\" Action=\"REGIST\" Code=\"P"
+				+ data.get("Code") + "\">\n";
+		xml += "	    <Property Name=\"Name\">" + data.get("Name") + "</Property>\n";
+		xml += "	    <Property Name=\"Language\">中文</Property>\n";
+		xml += "	    <Property Name=\"Type\">时尚生活</Property>\n";
+		xml += "	    <Property Name=\"DefinitionFlag\">2</Property>\n";
+		// xml += " <Property Name=\"ReleaseYear\">2017</Property>\n";
+		xml += "	    <Property Name=\"Description\">" + data.get("Description") + "</Property>\n";
+		// xml += " <Property Name=\"LicensingWindowStart\">" +
+		// data.get("StartDate") + "</Property>\n";
+		// xml += " <Property Name=\"LicensingWindowEnd\">" +
+		// data.get("EndDate") + "</Property>\n";
+		xml += "	    <Property Name=\"PriceTaxIn\">" + data.get("CostFZ") + "</Property>\n";
+		xml += "	    <Property Name=\"Keywords\">" + data.get("Name") + "</Property>\n";
+		xml += "	 </Object>\n";
+		xml += "     <Object ElementType=\"Movie\" ID=\"" + data.get("Code") + "_1\" Action=\"REGIST\" Code=\"M"
+				+ data.get("Code") + "_1\">\n";
+		xml += "	    <Property Name=\"Type\">1</Property>\n";
+		xml += "	    <Property Name=\"FileURL\">" + ftpUrl + getSubUrl(data.get("VideoUrl").toString()) + "</Property>\n";
+		xml += "	 </Object>\n";
+		xml += "     <Object ElementType=\"Picture\" ID=\"" + data.get("Code") + "_3\" Action=\"REGIST\" Code=\"C"
+				+ data.get("Code") + "_1\">\n";
+		xml += "	    <Property Name=\"FileURL\">" + ftpUrl + getSubUrl(data.get("ImageUrl").toString()) + "</Property>\n";
+		xml += "	 </Object>\n";
+		xml += "  </Objects>\n";
+		xml += "  <Mappings>\n";
+		xml += "      <Mapping ParentType=\"Program\" ParentID=\"" + data.get("Code")
+				+ "\" ElementType=\"Movie\" ElementID=\"" + data.get("Code") + "_1\" " + "ParentCode=\"P"
+				+ data.get("Code") + "\" ElementCode=\"M" + data.get("Code") + "_1\" Action=\"REGIST\"></Mapping>\n";
+		xml += "      <Mapping ParentType=\"Picture\" ParentID=\"" + data.get("Code")
+				+ "_3\" ElementType=\"Program\" ElementID=\"" + data.get("Code") + "\" " + "ParentCode=\"C"
+				+ data.get("Code") + "_1\" ElementCode=\"P" + data.get("Code") + "\" Action=\"REGIST\">\n";
+		xml += "	    <Property Name=\"Type\">0</Property>\n";
+		xml += "	    <Property Name=\"Sequence\">" + data.get("Id") + "</Property>\n";
+		xml += "      </Mapping>\n";
+		xml += "  </Mappings>\n";
+		xml += "</ADI>";
 
-		return null;
+		return xml;
+	}
+	
+	private static String getSubUrl(String url){
+		if(url.startsWith("/")){
+			return url.substring(1);
+		}
+		return url;
+	}
+
+	public static void main(String[] args) throws Exception {
+//		boolean result = FtpUtil.upload("cnshengshiqu.zip", "/Users/mac/Downloads/", "/tests/");
+//		System.out.println(result);
+//
+//		String result = FtpUtil.readFile("mytest.xml", "/xml");
+//		Map map = XmlUtil.xml2map(result, false);
+//		System.out.println(map);
+//		System.out.println(((Map)map.get("Reply")).get("Property"));
+//
+//		
+//		 boolean up = FtpUtil.download("115.28.77.76", 22000, "ftpuser",
+//		 "111111", "text.xml", "/Users/mac/Downloads/", "/");
+//		 System.out.println(up);
+
+		InputStream result = FtpUtil.readFileStream("/test.png");
+		System.out.println(result.read());
 	}
 }

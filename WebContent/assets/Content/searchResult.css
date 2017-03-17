@@ -1,0 +1,77 @@
+/*顶部*/
+.top .title {
+	color: #fff;
+	font-size: 26px;
+	line-height: 40px;
+}
+.top .menu {
+    padding-top: 3px;
+    padding-right: 40px;
+}
+
+/*视频*/
+.video {
+	height: 495px;
+	position: relative;
+	padding-left: 60px;
+}
+.video ul li {
+	width: 200px;
+	height: 150px;
+	margin: 0 40px 15px 0;
+	float: left;
+	position: relative;
+}
+.video ul li a:focus + .vid {
+	border: #fff solid 2px;
+	border-radius: 5px;
+	box-shadow: 0 0 10px 5px rgba(61, 146, 255, .8);
+	overflow: hidden;
+	height: 150px;
+	position: absolute;
+	left: -2px;
+	top: -2px;
+	z-index: 5;
+	transform: scale(1.05, 1.05);
+	-ms-transform: scale(1.05, 1.05);
+	-webkit-transform: scale(1.05, 1.05);
+	-o-transform: scale(1.05, 1.05);
+	-moz-transform: scale(1.05, 1.05);
+}
+
+/*底部*/
+.bottom {
+	height: 55px;
+	position: relative;
+}
+.bottom .tips {
+	width: 270px;
+	height: 50px;
+	position: absolute;
+	top: -5px;
+	left: 60px;
+	background-color: rgba(55, 149, 255, .2);
+	border-radius: 10px;
+	line-height: 50px;
+	color: #fff;
+	font-size: 21px;
+	text-align: center;
+	display: none;
+}
+.bottom .more {
+	position: absolute;
+	top: 10px;
+	left: 50%;
+	margin-left: -15px;
+	opacity: .5;
+}
+.bottom .page {
+	color: #fff;
+	font-size: 18px;
+	line-height: 38px;
+	text-align: right;
+	position: absolute;
+	right: 60px;
+	top: 0;
+	opacity: .5;
+}

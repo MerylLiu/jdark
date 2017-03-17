@@ -1,5 +1,6 @@
 package com.iptv.app.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
@@ -24,5 +25,9 @@ public interface VideoService extends BaseService {
 
 	public void offline(Map map) throws BizException; 
 
-	public void submit(Map map) throws BizException; 
+	public void doSubmit(Map map) throws BizException; 
+	
+	public List getHomeVideo();
+
+	public List getHomeNextVideo();
 }

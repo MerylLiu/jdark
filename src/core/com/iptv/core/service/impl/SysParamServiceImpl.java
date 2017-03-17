@@ -7,13 +7,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.iptv.core.service.SysParamService;
+import com.iptv.core.utils.BaseUtil;
 
 @Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SysParamServiceImpl extends BaseServiceImpl implements SysParamService {
+	@Resource  
+	private HttpSession session;  
+	@Resource  
+	private HttpServletRequest request; 
 
 	@Override
 	public void saveLog(String logInfo) {
@@ -23,10 +33,29 @@ public class SysParamServiceImpl extends BaseServiceImpl implements SysParamServ
 		map.put("UserCode", "test");
 		map.put("UserName", "test");
 		map.put("IPAddress", "127.0.0.1");
-		map.put("OperationType", "0");
+		map.put("OperationType", "8");
 		map.put("Operation", "test");
 		map.put("CreateDate", format.format(new Date()));
 		map.put("Remark", logInfo);
+
+		getDao().insert("sysParams.saveLog", map);
+	}
+
+	/*
+	 * opreationType:0.错误日志,1.插入数据，2.修改数据，3，删除数据，8，其他
+	 */
+	public void saveLog(int opreationType,String operation,String remark) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		HttpSession session = request.getSession();
+
+		Map map = new HashMap();
+		map.put("UserCode", session.getAttribute("useCode"));
+		map.put("UserName", session.getAttribute("userName"));
+		map.put("IPAddress", BaseUtil.getIpAddress(request));
+		map.put("OperationType", opreationType);
+		map.put("Operation", operation);
+		map.put("CreateDate", format.format(new Date()));
+		map.put("Remark", remark);
 
 		getDao().insert("sysParams.saveLog", map);
 	}

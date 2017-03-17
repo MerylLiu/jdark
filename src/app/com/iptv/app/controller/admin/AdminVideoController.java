@@ -31,6 +31,7 @@ import com.iptv.core.common.BizException;
 import com.iptv.core.common.KendoResult;
 import com.iptv.core.service.SysParamService;
 import com.iptv.core.utils.BaseUtil;
+import com.iptv.core.utils.DateUtil;
 import com.iptv.core.utils.JsonUtil;
 
 @Controller
@@ -215,7 +216,8 @@ public class AdminVideoController extends AdminBaseController {
 		Map res = new HashMap();
 
 		try {
-			videoService.submit(map);
+			map.put("CommitDate", DateUtil.getNow());
+			videoService.doSubmit(map);
 		} catch (BizException biz) {
 			messages.addAll(biz.getMessages());
 		} catch (Exception ex) {

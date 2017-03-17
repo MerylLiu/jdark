@@ -1,4 +1,4 @@
-package com.iptv.app.controller.force;
+package com.iptv.app.controller.tv;
 
 import java.util.List;
 import java.util.Map;

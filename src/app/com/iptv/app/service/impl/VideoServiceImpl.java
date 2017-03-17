@@ -1,31 +1,35 @@
 package com.iptv.app.service.impl;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.springframework.stereotype.Service;
 
+import com.iptv.app.Utils.LocXmlUtil;
 import com.iptv.app.service.CSPRequestServiceStub;
 import com.iptv.app.service.CSPRequestServiceStub.CSPResult;
 import com.iptv.app.service.CSPRequestServiceStub.ExecCmd;
 import com.iptv.app.service.CSPRequestServiceStub.ExecCmdResponse;
 import com.iptv.app.service.VideoService;
 import com.iptv.core.common.BizException;
+import com.iptv.core.common.Configuration;
 import com.iptv.core.common.KendoResult;
 import com.iptv.core.service.impl.BaseServiceImpl;
+import com.iptv.core.utils.BaseUtil;
 import com.iptv.core.utils.DateUtil;
+import com.iptv.core.utils.FtpUtil;
 import com.iptv.core.utils.QueryUtil;
-import com.iptv.core.utils.XmlUtil;
 
 @Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
+public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 
 	@Override
 	public void UploadVedio() throws AxisFault {
@@ -42,10 +46,10 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 			cmd.setCorrelateID("001");
 			cmd.setCmdFileURL("ftp://ftpuser:111111@139.129.129.184/test.xml");
 
-			ExecCmdResponse resp=stub.execCmd(cmd);
-			CSPResult res= resp.getExecCmdReturn();
+			ExecCmdResponse resp = stub.execCmd(cmd);
+			CSPResult res = resp.getExecCmdReturn();
 
-			System.out.println("调用结果："+res.getResult());
+			System.out.println("调用结果：" + res.getResult());
 			System.out.println(res.getErrorDescription());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -57,7 +61,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 		KendoResult data = QueryUtil.getRecordsPaged("video.getVideoPaged", "video.getVideoCount", null, map);
 		return data;
 	}
-	
+
 	@Override
 	public Map getVideo(Integer id) {
 		Map data = getDao().selectOne("video.getVideoById", id);
@@ -164,7 +168,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 	public void delete(Map map) throws BizException {
 		List errMsg = new ArrayList();
 
-		if (map.get("Id") == null || ((ArrayList)map.get("Id")).size() <= 0) {
+		if (map.get("Id") == null || ((ArrayList) map.get("Id")).size() <= 0) {
 			errMsg.add("请选择要删除的视频。");
 		}
 
@@ -179,7 +183,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 	public void online(Map map) throws BizException {
 		List errMsg = new ArrayList();
 
-		if (map.get("Id") == null || ((ArrayList)map.get("Id")).size() <= 0) {
+		if (map.get("Id") == null || ((ArrayList) map.get("Id")).size() <= 0) {
 			errMsg.add("请选择要上线的视频。");
 		}
 
@@ -194,7 +198,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 	public void offline(Map map) throws BizException {
 		List errMsg = new ArrayList();
 
-		if (map.get("Id") == null || ((ArrayList)map.get("Id")).size() <= 0) {
+		if (map.get("Id") == null || ((ArrayList) map.get("Id")).size() <= 0) {
 			errMsg.add("请选择要下线的视频。");
 		}
 
@@ -206,27 +210,100 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService{
 	}
 
 	@Override
-	public void submit(Map map) throws BizException {
+	public void doSubmit(Map map) throws BizException {
 		List errMsg = new ArrayList();
-		
-		ArrayList ids = ((ArrayList)map.get("Id"));
+
+		ArrayList ids = ((ArrayList) map.get("Id"));
 		if (map.get("Id") == null || ids.size() <= 0) {
 			errMsg.add("请选择要提交到电信进行审核的视频。");
 		}
-		
-		ArrayList status = (ArrayList)map.get("Status");
-		if(status.contains(0) || status.contains(2) || status.contains(2)){
+
+		ArrayList status = (ArrayList) map.get("Status");
+		if (status.contains(0) || status.contains(2) || status.contains(2)) {
 			errMsg.add("您选择的视频包含“已下线”、“已提交” 或 “已发布” 的视频，请重新选择。");
 		}
 
 		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
-		//生成XML
-		for(Object item : ids){
+
+		// 生成XML
+		boolean res = false;
+		for (Object item : ids) {
+			Integer id = Integer.valueOf(item.toString());
+			Map data = this.getVideo(id);
+
+			String xml = LocXmlUtil.BuildXml(data);
+			// System.out.println(xml);
+
+			InputStream is = new ByteArrayInputStream(xml.getBytes());
+			String xmlDir = Configuration.webCfg.getProperty("cfg.ftp.xmlPath");
+			String code = data.get("Code").toString();
+			String xmlFileName = code + ".xml";
+			res = FtpUtil.upload(is, xmlFileName, xmlDir);
+
+			// Invoke WebService
+			try {
+				SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
+				String correlateID = format.format(new Date());
+				CSPResult cspResult = commitVideo(correlateID, xmlDir + "/" + xmlFileName);
+
+				if (cspResult.getResult() == 0) {
+					Map videoMap = new HashMap();
+					videoMap.put("Id", id);
+					videoMap.put("DxCode", data.get("Code"));
+					videoMap.put("CorrelateID", correlateID);
+
+					BaseUtil.saveLog(8, "提交工单到电信审核视频", "CorrelateID:" + correlateID);
+					getDao().update("video.videoSubmit", videoMap);
+				} else {
+					BaseUtil.saveLog(0, "提交工单到电信审核视频",
+							"CorrelateID:" + correlateID + "|" + cspResult.getErrorDescription());
+					throw new BizException(cspResult.getErrorDescription());
+				}
+			} catch (AxisFault e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private CSPResult commitVideo(String correlateID, String xmlPath) throws AxisFault {
+		CSPResult res = new CSPResult();
+		CSPRequestServiceStub stub = new CSPRequestServiceStub();
+
+		String cspid = Configuration.webCfg.getProperty("cfg.CSPID");
+		String lspid = Configuration.webCfg.getProperty("cfg.LSPID");
+		String ftpUrl = "ftp://" + Configuration.webCfg.getProperty("ftp.user") + ":"
+				+ Configuration.webCfg.getProperty("ftp.pwd") + "@" + Configuration.webCfg.getProperty("ftp.ip") + ":"
+				+ Configuration.webCfg.getProperty("ftp.port") + "/";
+
+		try {
+			ExecCmd cmd = new ExecCmd();
+			cmd.setCSPID(cspid);
+			cmd.setLSPID(lspid);
+			cmd.setCorrelateID(correlateID);
+			cmd.setCmdFileURL(ftpUrl + xmlPath);
+
+			ExecCmdResponse resp = stub.execCmd(cmd);
+			res = resp.getExecCmdReturn();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
-		//getDao().update("video.videoSubmit", map);
+		return res;
+	}
+	
+
+	@Override
+	public List getHomeVideo() {
+		List data = getDao().selectList("video.getHomeVideo");
+		return data;
+	}
+	
+	@Override
+	public List getHomeNextVideo() {
+		List data = getDao().selectList("video.getNextVideo");
+		return data;
 	}
 }

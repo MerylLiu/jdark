@@ -1,7 +1,9 @@
 package com.iptv.core.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.URLDecoder;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,9 +39,18 @@ public class BaseUtil {
 		return sqlSession;
 	}
 
-	public static void saveLog(String logInfo) {
+	/*public static void saveLog(String logInfo) {
 		SysParamService sysParamService = (SysParamService) getService("sysParamService");
 		sysParamService.saveLog(logInfo);
+	}*/
+
+	/*
+	 * 将日志记录到数据库
+	 * @opreationType:0.错误日志,1.插入数据，2.修改数据，3，删除数据，4访问记录,8.其他
+	 */
+	public static void saveLog(int opreationType,String operation,String remark) {
+		SysParamService sysParamService = (SysParamService) getService("sysParamService");
+		sysParamService.saveLog(opreationType,operation,remark);
 	}
 
 	@Cacheable
@@ -76,26 +87,36 @@ public class BaseUtil {
 	}
 
 	public static String getIpAddress(HttpServletRequest request) {
-		String ip = request.getHeader("x-forwarded-for");
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("Proxy-Client-IP");
-		}
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("WL-Proxy-Client-IP");
-		}
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("HTTP_CLIENT_IP");
-		}
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-		}
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getRemoteAddr();
-		}
-		return ip;
+		String ipAddress = request.getHeader("x-forwarded-for");  
+        if(ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {  
+            ipAddress = request.getHeader("Proxy-Client-IP");  
+        }  
+        if(ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {  
+            ipAddress = request.getHeader("WL-Proxy-Client-IP");  
+        }  
+        if(ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {  
+            ipAddress = request.getRemoteAddr();  
+            if(ipAddress.equals("127.0.0.1") || ipAddress.equals("0:0:0:0:0:0:0:1")){  
+                //根据网卡取本机配置的IP  
+                InetAddress inet=null;  
+                try {  
+                    inet = InetAddress.getLocalHost();  
+                } catch (UnknownHostException e) {  
+                    e.printStackTrace();  
+                }  
+                ipAddress= inet.getHostAddress();  
+            }  
+        }  
+        //对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割  
+        if(ipAddress!=null && ipAddress.length()>15){ //"***.***.***.***".length() = 15  
+            if(ipAddress.indexOf(",")>0){  
+                ipAddress = ipAddress.substring(0,ipAddress.indexOf(","));  
+            }  
+        }  
+        return ipAddress; 	
 	}
 	
-	public static Map getParamsMap(String queryString, String enc) {     
+	public static Map getParamsMap(String queryString, String encode) {     
         Map paramsMap = new HashMap();     
         if (queryString != null && queryString.length() > 0) {     
           int ampersandIndex, lastAmpersandIndex = 0;     
@@ -113,7 +134,7 @@ public class BaseUtil {
             param = paramPair[0];     
             value = paramPair.length == 1 ? "" : paramPair[1];     
             try {     
-              value = URLDecoder.decode(value, enc);     
+              value = URLDecoder.decode(value, encode);     
             } catch (UnsupportedEncodingException ignored) {     
             }     
             if (paramsMap.containsKey(param)) {     

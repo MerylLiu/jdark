@@ -8,7 +8,6 @@ public class Configuration {
 	public static final Properties webCfg = new Properties();
 	
 	private static String webserviceUrl;
-	private static String ftpUrl;
 
 	static{
 		InputStream inWebCfg = Configuration.class.getResourceAsStream("/webconfig.properties");
@@ -17,7 +16,6 @@ public class Configuration {
 			webCfg.load(inWebCfg);
 			
 			webserviceUrl = webCfg.getProperty("cfg.webservice.url");
-			ftpUrl = webCfg.getProperty("cfg.ftp.url");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -26,9 +24,5 @@ public class Configuration {
 	
 	public static String getWebserviceUrl(){
 		return webserviceUrl;
-	}
-
-	public static String getFtpUrl(){
-		return ftpUrl;
 	}
 }
