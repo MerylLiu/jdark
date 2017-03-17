@@ -1,5 +1,6 @@
 package com.iptv.app.controller.tv;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,11 +30,14 @@ public class HomeController extends BaseController {
 
 	@RequestMapping(value = { "/", "", "/index" })
 	public ModelAndView index() {
-		List categories = categoryService.getAllCategories();
+		Map data = new HashMap();
+
+		List categories = categoryService.getTopCategories();
+		data.put("categories", categories);
 
 		log.info("访问首页");
 		BaseUtil.saveLog(4, "访问首页", "");
-		return view("/tv/home/index");
+		return view("/tv/home/index",data);
 	}
 
 	@RequestMapping(value = "/videoList", method = RequestMethod.GET)
@@ -46,6 +50,12 @@ public class HomeController extends BaseController {
 	public @ResponseBody List previewList(@RequestParam Map map) {
 		Integer categoryId = Integer.valueOf(map.get("cid").toString());
 		List data = videoService.getHomeVideoForPreview(categoryId);
+		return data;
+	}
+
+	@RequestMapping(value = "/categoryList", method = RequestMethod.GET)
+	public @ResponseBody List categoryList() {
+		List data = categoryService.getTopCategories();
 		return data;
 	}
 }

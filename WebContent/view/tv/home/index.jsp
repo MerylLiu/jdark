@@ -211,46 +211,13 @@
 						<a href="#"></a> <span>全部</span>
 					</div>
 				</li>
-				<li>
-					<div class="link">
-						<a href="#"></a> <span>食鉴</span>
-					</div>
-				</li>
-				<li>
-					<div class="link">
-						<a href="#"></a> <span>造物记</span>
-					</div>
-				</li>
-				<li>
-					<div class="link">
-						<a href="#"></a> <span>休闲娱乐</span>
-					</div>
-				</li>
-				<li>
-					<div class="link">
-						<a href="#"></a> <span>运动</span>
-					</div>
-				</li>
-				<li>
-					<div class="link">
-						<a href="#"></a> <span>秀场</span>
-					</div>
-				</li>
-				<li>
-					<div class="link">
-						<a href="#"></a> <span>其他分类</span>
-					</div>
-				</li>
-				<li>
-					<div class="link">
-						<a href="#"></a> <span>其他分类</span>
-					</div>
-				</li>
-				<li>
-					<div class="link">
-						<a href="#"></a> <span>其他分类</span>
-					</div>
-				</li>
+				<c:forEach items="${categories}" var="cat">
+					<li>
+						<div class="link">
+							<a href="#"><input type="hidden" value="${cat.Id}"></a> <span>${cat.Name}</span>
+						</div>
+					</li>
+				</c:forEach>
 				<li>
 					<div class="link">
 						<a href="#"></a> <span>其他分类</span>
@@ -290,8 +257,6 @@
 				<!-- 信息展示，没有a标签-->
 				<div class="list clf">
 					<ul id="preview-list">
-						<c:forEach items="${nextVideos}" var="vi">
-						</c:forEach>
 					</ul>
 				</div>
 			</div>
@@ -304,18 +269,18 @@
 			<img src="${basePath}assets/Images/point_down.png" alt="">
 		</div>
 		<div class="page">
-			<span>共500+</span>1/30
+			<span id="p-total"></span><span id="page"></span>
 		</div>
 	</div>
 </body>
 <script type="text/javascript">
 	tv = {
 		init:function(){
-			this.loadVideo();
+			this.loadVideo(1);
 			this.loadPreviewList(1);
 		},
-		loadVideo:function(){
-			var data = {page:1,pageSize:15};
+		loadVideo:function(p){
+			var data = {page:p,pageSize:15};
 			$.get(basePath + 'home/videoList',data,function(res){
 				$('#video-list').html("");
 
@@ -327,12 +292,12 @@
 							 + '<div class="info">'
 							 + '<p>'+v.Name+'</p>'
 							 + '<span><img src="${basePath}assets/Images/play.png" alt=""></span>'
-							 + '</div>'
-							 + '</div>'
-							 + '</div></li>';
+							 + '</div></div></div></li>';
 							 
 					$('#video-list').append(html);
 				})
+				$('#p-total').html('共' + res.total + '+');
+				$('#page').html(res.page + '/' + res.pageNum);
 			});
 		},
 		loadPreviewList:function(cid){

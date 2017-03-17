@@ -51,4 +51,13 @@
 		WHERE a.IsDel IS NULL OR a.IsDel = 0
 	    ORDER BY a.OrderNum
 	</select>
+	
+	<select id="getTopCategories" resultType="java.util.HashMap">
+		SELECT a.Id,a.Name
+	    FROM biz_category a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 2
+	    ORDER BY a.OrderNum
+		LIMIT 0,7
+	</select>
+	
 </mapper>

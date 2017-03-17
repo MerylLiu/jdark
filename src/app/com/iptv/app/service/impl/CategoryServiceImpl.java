@@ -94,6 +94,11 @@ public class CategoryServiceImpl extends BaseServiceImpl implements CategoryServ
 	public void sync(Map map) throws BizException {
 		getDao().delete("category.syncCategory", map);
 	}
-	
+
+	@Override
+	public List getTopCategories() {
+		List data = getDao().selectList("category.getTopCategories");
+		return data;
+	}
 	
 }
