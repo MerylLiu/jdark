@@ -165,7 +165,7 @@ $(function() {
 	});
 
     // 初始焦点
-    $('.video li:first-child a')[0].focus();
+    $($('.video li:first-child a')[0]).focus();
 
     // 顶部菜单
     $('.menu a').on('keydown', function(e) {

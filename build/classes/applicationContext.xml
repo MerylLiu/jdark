@@ -71,4 +71,16 @@
 			</list>
 		</property>
 	</bean>
+
+	<!-- Spring cache -->
+	<bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+		<property name="caches">
+			<set>
+				<bean
+					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
+					<property name="name" value="default" />
+				</bean>
+			</set>
+		</property>
+	</bean>
 </beans>

@@ -7,6 +7,9 @@ public class KendoResult {
 
 	private List data;
 	private Integer total;
+	private int page;
+	private int pageSize;
+	private int pageNum;
 
 	public KendoResult(){
 	}
@@ -35,4 +38,30 @@ public class KendoResult {
 	public void setTotal(Integer total) {
 		this.total = total;
 	}
+
+	public int getPage() {
+		return page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public int getPageNum() {
+		return pageNum;
+	}
+
+	public void setPageNum(int pageNum) {
+		this.pageNum = pageNum;
+	}
+	
 }
+

@@ -12,4 +12,10 @@
 <script type='text/javascript' src='${basePath}assets/Scripts/jquery-1.8.3.min.js'></script>
 <script type="text/javascript">
 	var basePath = '${basePath}';
+
+	$(function(){
+		if(typeof tv !="undefined" && typeof tv.init !== "undefined"){
+			tv.init();
+		}
+	})
 </script>

@@ -100,7 +100,28 @@
 		SELECT a.* FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 		ORDER BY a.OrderNum AND a.CommitDate DESC
-		LIMIT #{offset},#{rows}
+		LIMIT ${offset},${rows}
 	</select>
 
+	<select id="getHomeVideoPagedCount" resultType="java.lang.Integer">
+		SELECT count(1) as Count FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+	</select>
+
+	<select id="getHomeVideoPageNum" resultType="java.lang.Integer">
+		SELECT (CEIL((COUNT(1)-9)/${pageSize}) +1) as Num FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+	</select>
+
+	<select id="getHomeVideoForPreview" resultType="java.util.HashMap">
+		SELECT * FROM (
+			SELECT @rownum:=@rownum+1 AS RowNum,x.* FROM (
+				SELECT a.Id,a.Code,a.Name,a.ImageUrl,a.GifUrl,a.VideoUrl,b.Name AS CategoryName 
+				FROM biz_video a
+				LEFT JOIN biz_category b ON a.CategoryId = b.Id
+				WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3 AND a.CategoryId = #{categoryId}
+				ORDER BY a.OrderNum AND a.CommitDate DESC
+			) x,(SELECT @rownum:=0) t
+		) y WHERE y.RowNum IN (1,6,11)
+	</select>
 </mapper>

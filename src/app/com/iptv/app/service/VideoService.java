@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
+import org.springframework.cache.annotation.Cacheable;
 
 import com.iptv.core.common.BizException;
 import com.iptv.core.common.KendoResult;
@@ -27,7 +28,11 @@ public interface VideoService extends BaseService {
 
 	public void doSubmit(Map map) throws BizException; 
 	
-	public List getHomeVideo();
+	public KendoResult getHomeVideoPaged(Map map);
 
-	public List getHomeNextVideo();
+	@Cacheable
+	public List getHomeVideoByCategory(Integer categoryId);
+
+	@Cacheable
+	public List getHomeVideoForPreview(Integer categoryId);
 }

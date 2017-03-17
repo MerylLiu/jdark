@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.iptv.app.Utils.LocXmlUtil;
@@ -293,17 +294,49 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 
 		return res;
 	}
-	
 
 	@Override
-	public List getHomeVideo() {
-		List data = getDao().selectList("video.getHomeVideo");
+	public KendoResult getHomeVideoPaged(Map map) {
+		int page = Integer.valueOf(map.get("page").toString());
+		int pageSize = Integer.valueOf(map.get("pageSize").toString());
+
+		Map param = new HashMap();
+		if (page == 1) {
+			param.put("offset", 0);
+			param.put("rows", 9);
+		} else {
+			param.put("offset", (page - 1) * pageSize - 6);
+			param.put("rows", pageSize);
+		}
+
+		KendoResult res = new KendoResult();
+		res.setPage(page);
+		res.setPageSize(pageSize);
+
+		List data = getDao().selectList("video.getHomeVideoPaged", param);
+		res.setData(data);
+
+		Integer count = getDao().selectOne("video.getHomeVideoPagedCount");
+		res.setTotal(count);
+
+		Integer pageNum = getDao().selectOne("video.getHomeVideoPageNum",map);
+		res.setPageNum(pageNum);
+
+		return res;
+	}
+
+	@Override
+	@Cacheable
+	public List getHomeVideoByCategory(Integer categoryId) {
+		List data = getDao().selectList("video.getVideoByCategory");
 		return data;
 	}
-	
+
+
 	@Override
-	public List getHomeNextVideo() {
-		List data = getDao().selectList("video.getNextVideo");
+	@Cacheable
+	public List getHomeVideoForPreview(Integer categoryId) {
+		List data = getDao().selectList("video.getHomeVideoForPreview",categoryId);
 		return data;
 	}
 }
