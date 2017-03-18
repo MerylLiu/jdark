@@ -90,15 +90,20 @@
 	</update>
 
 	<select id="getHomeVideo" resultType="java.util.HashMap">
-		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl FROM biz_video a
+		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime
+		FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 		ORDER BY a.OrderNum AND a.CommitDate DESC
 		limit 0,9
 	</select>
 
 	<select id="getHomeVideoPaged" resultType="java.util.HashMap">
-		SELECT a.* FROM biz_video a
+		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime
+		FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		<if test="categoryId != null and categoryId != 0">
+			AND a.CategoryId = #{categoryId}
+		</if>
 		ORDER BY a.OrderNum AND a.CommitDate DESC
 		LIMIT ${offset},${rows}
 	</select>
@@ -106,11 +111,24 @@
 	<select id="getHomeVideoPagedCount" resultType="java.lang.Integer">
 		SELECT count(1) as Count FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		<if test="categoryId != null and categoryId != 0">
+			AND a.CategoryId = #{categoryId}
+		</if>
 	</select>
 
 	<select id="getHomeVideoPageNum" resultType="java.lang.Integer">
 		SELECT (CEIL((COUNT(1)-9)/${pageSize}) +1) as Num FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		<if test="categoryId != null and categoryId != 0">
+			AND a.CategoryId = #{categoryId}
+		</if>
+	</select>
+	<select id="getVideoPageNum" resultType="java.lang.Integer">
+		SELECT CEIL(COUNT(1)/${pageSize}) as Num FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		<if test="categoryId != null and categoryId != 0">
+			AND a.CategoryId = #{categoryId}
+		</if>
 	</select>
 
 	<select id="getHomeVideoForPreview" resultType="java.util.HashMap">

@@ -42,6 +42,11 @@ public class HomeController extends BaseController {
 
 	@RequestMapping(value = "/videoList", method = RequestMethod.GET)
 	public @ResponseBody KendoResult videoList(@RequestParam Map map) {
+		if(map.get("categoryId") == null){
+			map.put("categoryId", 0);
+		}
+		log.info("获取首页视频"+map);
+		BaseUtil.saveLog(4, "获取首页视频", map.toString());
 		KendoResult data = videoService.getHomeVideoPaged(map);
 		return data;
 	}
@@ -50,6 +55,9 @@ public class HomeController extends BaseController {
 	public @ResponseBody List previewList(@RequestParam Map map) {
 		Integer categoryId = Integer.valueOf(map.get("cid").toString());
 		List data = videoService.getHomeVideoForPreview(categoryId);
+
+		log.info("获取首页右侧视频"+map);
+		BaseUtil.saveLog(4, "获取首页右侧视频", map.toString());
 		return data;
 	}
 

@@ -301,13 +301,20 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		int pageSize = Integer.valueOf(map.get("pageSize").toString());
 
 		Map param = new HashMap();
-		if (page == 1) {
-			param.put("offset", 0);
-			param.put("rows", 9);
-		} else {
-			param.put("offset", (page - 1) * pageSize - 6);
+		
+		if(Integer.valueOf(map.get("categoryId").toString()) == 0){
+			if (page == 1) {
+				param.put("offset", 0);
+				param.put("rows", 9);
+			} else {
+				param.put("offset", (page - 1) * pageSize - 6);
+				param.put("rows", pageSize);
+			}
+		}else{
+			param.put("offset", (page - 1) * pageSize);
 			param.put("rows", pageSize);
 		}
+		param.putAll(map);
 
 		KendoResult res = new KendoResult();
 		res.setPage(page);
@@ -316,11 +323,16 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		List data = getDao().selectList("video.getHomeVideoPaged", param);
 		res.setData(data);
 
-		Integer count = getDao().selectOne("video.getHomeVideoPagedCount");
-		res.setTotal(count);
+		if(Integer.valueOf(map.get("categoryId").toString()) == 0){
+			Integer pageNum = getDao().selectOne("video.getHomeVideoPageNum",param);
+			res.setPageNum(pageNum);
+		}else{
+			Integer pageNum = getDao().selectOne("video.getVideoPageNum",param);
+			res.setPageNum(pageNum);
+		}
 
-		Integer pageNum = getDao().selectOne("video.getHomeVideoPageNum",map);
-		res.setPageNum(pageNum);
+		Integer count = getDao().selectOne("video.getHomeVideoPagedCount",param);
+		res.setTotal(count);
 
 		return res;
 	}
@@ -336,7 +348,10 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 	@Override
 	@Cacheable
 	public List getHomeVideoForPreview(Integer categoryId) {
-		List data = getDao().selectList("video.getHomeVideoForPreview",categoryId);
+		Map map = new HashMap();
+		map.put("categoryId", categoryId);
+
+		List data = getDao().selectList("video.getHomeVideoForPreview",map);
 		return data;
 	}
 }
