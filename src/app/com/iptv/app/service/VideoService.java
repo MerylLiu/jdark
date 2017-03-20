@@ -35,4 +35,11 @@ public interface VideoService extends BaseService {
 
 	@Cacheable
 	public List getHomeVideoForPreview(Integer categoryId);
+
+	@Cacheable
+	public Map getDetail(Integer videoId);
+
+	public KendoResult getSearched(String name);
+
+	public KendoResult getMoreVideoPaged(Map map);
 }

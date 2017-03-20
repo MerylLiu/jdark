@@ -2,6 +2,7 @@ package com.iptv.app.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -243,28 +244,30 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 			String xmlFileName = code + ".xml";
 			res = FtpUtil.upload(is, xmlFileName, xmlDir);
 
-			// Invoke WebService
-			try {
-				SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
-				String correlateID = format.format(new Date());
-				CSPResult cspResult = commitVideo(correlateID, xmlDir + "/" + xmlFileName);
+			if (res) {
+				// Invoke WebService
+				try {
+					SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
+					String correlateID = format.format(new Date());
+					CSPResult cspResult = commitVideo(correlateID, xmlDir + "/" + xmlFileName);
 
-				if (cspResult.getResult() == 0) {
-					Map videoMap = new HashMap();
-					videoMap.put("Id", id);
-					videoMap.put("DxCode", data.get("Code"));
-					videoMap.put("CorrelateID", correlateID);
+					if (cspResult.getResult() == 0) {
+						Map videoMap = new HashMap();
+						videoMap.put("Id", id);
+						videoMap.put("DxCode", data.get("Code"));
+						videoMap.put("CorrelateID", correlateID);
 
-					BaseUtil.saveLog(8, "提交工单到电信审核视频", "CorrelateID:" + correlateID);
-					getDao().update("video.videoSubmit", videoMap);
-				} else {
-					BaseUtil.saveLog(0, "提交工单到电信审核视频",
-							"CorrelateID:" + correlateID + "|" + cspResult.getErrorDescription());
-					throw new BizException(cspResult.getErrorDescription());
+						BaseUtil.saveLog(8, "提交工单到电信审核视频", "CorrelateID:" + correlateID);
+						getDao().update("video.videoSubmit", videoMap);
+					} else {
+						BaseUtil.saveLog(0, "提交工单到电信审核视频",
+								"CorrelateID:" + correlateID + "|" + cspResult.getErrorDescription());
+						throw new BizException(cspResult.getErrorDescription());
+					}
+				} catch (AxisFault e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (AxisFault e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
@@ -301,8 +304,8 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		int pageSize = Integer.valueOf(map.get("pageSize").toString());
 
 		Map param = new HashMap();
-		
-		if(Integer.valueOf(map.get("categoryId").toString()) == 0){
+
+		if (Integer.valueOf(map.get("categoryId").toString()) == 0) {
 			if (page == 1) {
 				param.put("offset", 0);
 				param.put("rows", 9);
@@ -310,7 +313,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 				param.put("offset", (page - 1) * pageSize - 6);
 				param.put("rows", pageSize);
 			}
-		}else{
+		} else {
 			param.put("offset", (page - 1) * pageSize);
 			param.put("rows", pageSize);
 		}
@@ -323,15 +326,15 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		List data = getDao().selectList("video.getHomeVideoPaged", param);
 		res.setData(data);
 
-		if(Integer.valueOf(map.get("categoryId").toString()) == 0){
-			Integer pageNum = getDao().selectOne("video.getHomeVideoPageNum",param);
+		if (Integer.valueOf(map.get("categoryId").toString()) == 0) {
+			Integer pageNum = getDao().selectOne("video.getHomeVideoPageNum", param);
 			res.setPageNum(pageNum);
-		}else{
-			Integer pageNum = getDao().selectOne("video.getVideoPageNum",param);
+		} else {
+			Integer pageNum = getDao().selectOne("video.getVideoPageNum", param);
 			res.setPageNum(pageNum);
 		}
 
-		Integer count = getDao().selectOne("video.getHomeVideoPagedCount",param);
+		Integer count = getDao().selectOne("video.getHomeVideoPagedCount", param);
 		res.setTotal(count);
 
 		return res;
@@ -344,14 +347,73 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		return data;
 	}
 
-
 	@Override
 	@Cacheable
 	public List getHomeVideoForPreview(Integer categoryId) {
 		Map map = new HashMap();
 		map.put("categoryId", categoryId);
 
-		List data = getDao().selectList("video.getHomeVideoForPreview",map);
+		List data = getDao().selectList("video.getHomeVideoForPreview", map);
 		return data;
+	}
+
+	@Override
+	public Map getDetail(Integer videoId) {
+		Map map = new HashMap();
+		map.put("id", videoId);
+
+		Map data = getDao().selectOne("video.getVideoDetail", map);
+		return data;
+	}
+
+	@Override
+	public KendoResult getSearched(String name) {
+		KendoResult res = new KendoResult();
+
+		Map map = new HashMap();
+		map.put("name", name);
+
+		if (name.length() > 0) {
+			List data = getDao().selectList("video.getSearched", map);
+			Integer count = getDao().selectOne("video.getSearchedCount", map);
+
+			res.setData(data);
+			res.setTotal(count);
+		}
+
+		return res;
+	}
+
+	@Override
+	public KendoResult getMoreVideoPaged(Map map) {
+		int page = Integer.valueOf(map.get("page").toString());
+		int pageSize = Integer.valueOf(map.get("pageSize").toString());
+
+		Map param = new HashMap();
+		param.put("offset", (page - 1) * pageSize);
+		param.put("rows", pageSize);
+		param.putAll(map);
+
+		if (map.get("cid") != null) {
+			param.put("categoryId", map.get("cid").toString());
+		}
+		if (map.get("key") != null) {
+			param.put("name", map.get("key").toString());
+		}
+
+		KendoResult res = new KendoResult();
+		res.setPage(page);
+		res.setPageSize(pageSize);
+
+		List data = getDao().selectList("video.getSearchPaged", param);
+		res.setData(data);
+
+		Integer pageNum = getDao().selectOne("video.getSearchPageNum", param);
+		res.setPageNum(pageNum);
+
+		Integer count = getDao().selectOne("video.getSearchPagedCount", param);
+		res.setTotal(count);
+
+		return res;
 	}
 }

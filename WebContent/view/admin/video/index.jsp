@@ -248,8 +248,15 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label class="col-sm-2 control-label">播放时长</label>
+					<div class="col-sm-4">
+						<div class="col-sm-10">
+							<input type="text" class="form-control" name="PlayTime" placeholder="播放时长" maxlength="10" id="txt-playTime">&nbsp;秒
+						</div>
+						<span class="cols-sm-1 required">*</span>
+					</div>
 					<label class="col-sm-2 control-label">排序号</label>
-					<div class="col-sm-9">
+					<div class="col-sm-4">
 						<input type="text" class="form-control" id="txt-order" name="OrderNum" placeholder="排序号" maxlength="8">
 					</div>
 				</div>

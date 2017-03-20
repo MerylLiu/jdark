@@ -10,247 +10,154 @@
 	<link rel="stylesheet" href="${basePath}assets/Content/sharedWithIndex.css" type="text/css" />
     <link rel="stylesheet" href="${basePath}assets/Content/index.css" type="text/css" />
     <script type='text/javascript' src='${basePath}assets/Scripts/tv.function.js'></script>
+    <script type='text/javascript' src='${basePath}assets/Scripts/epg.util.js'></script>
     <script type='text/javascript'>
-        $(function() {
-            // 排序
-            var $sortItem = $('.top .sort-items a');
-            $sortItem.on('keydown', function(e) {
-                if (e.keyCode == 0x000d) { // 确定
-                    var $parent = $(this).parents('dd');
-                    if ($parent[0] != $('.top .sort-items dd.curr')[0]) {
-                        $parent.addClass('curr').siblings().removeClass('curr');
-                        // code
+    $(function(){
+		var currentPage = 1, totalPage = 0, totalVideo = 0; 	//当前页数，总页数，总视频数
+		var tipsTimer; 	//回到第一页定时器
+		var tipsPage = 1; 	//超过页数提示返回
+        var catgoryId = 0;//当前分类
+        var playIndex = 1;
+		var time = 0;
+        var timer = new Array();
+		
+		$(document).on('keydown', function(e) {
+			var keycode = e.keyCode, target = $('a:focus');
+			if($('.menu li > .link a').index(target) != -1) {  // 顶部菜单
+				if(keycode == 0x0028) {
+					IPTV.Focus.menu(target, 3);
+				} else if(keycode == 0x0025) {
+					IPTV.Focus.menu(target, 0);
+				} else if(keycode == 0x0026) {
+					IPTV.Focus.menu(target, 2);
+				} else if(keycode == 0x0027) {
+					IPTV.Focus.menu(target, 1);
+				} else if(keycode == 0x000d) {  // 确定
+					// code
+				}
+			} else if($('.sort-items a').index(target) != -1) { // 排序
+				if(keycode == 0x0028) {
+					IPTV.Focus.sort(target, 3);
+				} else if(keycode == 0x0025) {
+					IPTV.Focus.sort(target, 0);
+				} else if(keycode == 0x0026) {
+					IPTV.Focus.sort(target, 2);
+				} else if(keycode == 0x0027) {
+					IPTV.Focus.sort(target, 1);
+				} else if(keycode == 0x000d) {	// 确定
+					var $parent =target.parents('dd');
+					if($parent[0] != $('.top .sort-items dd.curr')[0]) {
+						$parent.addClass('curr').siblings().removeClass('curr');
+						// code
 
-                        // 设置页数
-                        $('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage);
-                    }
-                }
-            });
-
-            // 分类导航
-            $('.nav a').on( 'keydown', function(e) {
-				switch (e.keyCode) {
-					case 0x0025: // 左
+						// 设置页数
+						$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
+					}
+				}
+			} else if($('.nav a').index(target) != -1) { // 分类列表
+				switch(keycode) {
+					case 0x0025: 	// 左
 						IPTV.Focus.nav(0, function() {
 							// 设置页数
 							currentPage = 1;
 							totalPage = 0;
 							totalVideo = 0;
-							categoryId = $('.nav a:focus').find('input[type="hidden"]').val();
-							
-							loadVideo(currentPage,categoryId)
 
-							ncid = $('.nav a:focus').parent().parent().next().find('input[type="hidden"]').val();
+							categoryId = $('.nav li.on a').find('.js-cat').val();
+							var ncid = $('.nav li.on a').parent().parent().next().find('.js-cat').val();
+							loadVideo(currentPage,categoryId)
 							loadPreviewList(ncid);
 
-							$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage);
+							$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 						});
 						// code
 						break;
-					case 0x0026: // 上
+					case 0x0026: 	// 上
 						IPTV.Focus.nav(2);
 						break;
-					case 0x0027: // 右
+					case 0x0027:	// 右
 						IPTV.Focus.nav(1, function() {
 							// 设置页数
 							currentPage = 1;
 							totalPage = 0;
 							totalVideo = 0;
-							categoryId = $('.nav a:focus').find('input[type="hidden"]').val();
-							
-							loadVideo(currentPage,categoryId)
 
-							ncid = $('.nav a:focus').parent().parent().next().find('input[type="hidden"]').val();
+							categoryId = $('.nav li.on a').find('.js-cat').val();
+							var ncid = $('.nav li.on a').parent().parent().next().find('.js-cat').val();
+							loadVideo(currentPage,categoryId)
 							loadPreviewList(ncid);
 
-							$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage);
+							$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 						});
 						break;
-					case 0x0028: // 下
+					case 0x0028: 	// 下
 						IPTV.Focus.nav(3);
 						break;
 				}
-			});
-
-            // 视频列表
-            var currentPage = 1,
-                totalPage = 0,
-                totalVideo = 0; //当前页数，总页数，总视频数
-            var tipsTimer; //回到第一页定时器
-            var tipsPage = 1; //超过页数提示返回
-            var catgoryId = 0;//当前分类
-            var playIndex = 1;
-			var time = 0;
-            var timer = new Array();
-            var epgdomain = Authentication.CTCGetConfig("EPGDomain");
-            //var epgdomain = "";
-            var host = epgdomain.replace(/(http:\/\/(\w|\.|:)*\/)(.*)/g, '$1');
-            
-    		var loadVideo = function(p,cid){
-    			cid = isNaN(parseInt(cid)) ? 0 : parseInt(cid);
-    			var data = {page:p,categoryId:cid,pageSize:15};
-    			$.get(basePath + 'home/videoList',data,function(res){
-					if(0 == cid){
-						p > 1 ? $('.play').hide() : $('.play').show();
-					}else{
-						$('.play').hide();
-					}
-    				$('#video-list').html("");
-
-    				$.each(res.data,function(i,v){
-    					var html = '<li><input type="hidden" value="'+v.PlayTime+'" class="js-time">'
-    							 + '<input type="hidden" value="'+v.DxCode+'" class="js-code"><div class="link">'
-    							 + '<a href="#"></a>'
-    							 + '<div class="vid">'
-    							 + '<div class="thumbnail"><img src="${basePath}'+('image/index?p='+encodeURI(v.ImageUrl))+'" alt=""></div>'
-    							 + '<div class="info">'
-    							 + '<p>'+v.Name+'</p>'
-    							 + '<span><img src="${basePath}assets/Images/play.png" alt=""></span>'
-    							 + '</div></div></div></li>';
-    							 
-    					$('#video-list').append(html);
-    				})
-    				
-    				totalPage = res.pageNum;
-    				totalVideo = res.total;
-
-					$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage);
-					
-					//auto play video
-					var timeList = $('#video-list .js-time');
-					var codeList = $('#video-list .js-code');
-
-					if(0 == cid && p==1){
-						if(length >0) {
-							$(timeList[0]).parent().addClass('on')
-							play($(codeList[0]).val());
-						}
-						interval(timeList,codeList)
-					}else{
-						for(var i=0;i<timer.length;i++){
-							clearTimeout(timer[i]);
-						}
-					}
-    			});
-    		};
-    		
-    		var interval = function(timeList,codeList){
-    			var t = setTimeout(function(){
-					time++;
-					var length = timeList.length;
-					if(time == $(timeList[playIndex]).val()){
-						play($(codeList[playIndex]).val());
-						time = 0;
-
-						$('#video-list li').removeClass('on')
-						$(timeList[playIndex]).parent().addClass('on')
-
-						playIndex++;
-						if(playIndex >= length){
-							playIndex = 0;
-							time = 0;
-						}
-					}
-					clearTimeout(timer);
-					interval(timeList,codeList);
-    			},1000)
-    			
-    			timer.push(t);
-    		}
-    		
-    		var play = function(code){
-				var type = 'hw';
-				$('.play .vid').find('img').hide();
-
-    			if(type == 'hw'){
-					var urlhw = host + "EPG/jsp/tools/playControl/playUrlInVas.jsp?CODE="+code+"&PLAYTYPE=1&CONTENTTYPE=0&BUSINESSTYPE=1&SPID=20001041&USERID=&USERTOKEN=";
-
-					$.get(urlhw, {}, function(data) {
-						data = jQuery.parseJSON(data);
-						var playurl = data.retDesc.replace(/.*http/, "http");
-						var left = $('#win-player').offset().left;
-						var top = $('#win-player').offset().top;
-
-						var nurl = basePath + "video/player?mediatype=1&playurl=" + escape(playurl) + "&left=" + left + "&top=" + top + "&width=620&height=313";
-						$("#win-player").attr("src", nurl);
-					})
-    			}
-    		}
-
-    		var loadPreviewList = function(cid){
-    			var data = {cid:cid};
-    			$.get(basePath + 'home/previewList',data,function(res){
-    				$('#preview-list').html('');
-
-    				$.each(res,function(i,v){
-    					var html = '<li><div class="vid"><div class="thumbnail">'
-    							 + '<img src="${basePath}'+('image/index?p='+encodeURI(v.ImageUrl))+'" alt="">'			
-    							 + '</div>'
-    							 + '<div class="info">'	
-    							 + '<p>'+v.Name+'</p>'
-    							 + '<span><img src="${basePath}assets/Images/play.png" alt=""></span>'
-    							 + '</div></div></li>'	
-
-    					$('#preview-list').append(html);
-    				})
-    			})
-    		}
-
-			loadVideo(currentPage,catgoryId);
-			loadPreviewList($($('.nav input:hidden')[1]).val());
-            
-            $('.video a').live( 'keydown', function(e) {
-				var $currLink = $(this).parents('.link');
-				switch (e.keyCode) {
-					case 0x000d: // 确定
-						$(this).parents('li').addClass('on').siblings()
-							.removeClass('on');
+			} else if($('.video a').index(target) != -1) { // 视频列表
+				switch(keycode) {
+					case 0x000d: 	// 确定
+						target.parents('li').addClass('on').siblings().removeClass('on');
 						// code
+						//window.location.href = '${basePath}/video/detail?id='+ $(self).find("input:hidden").val();
 
 						break;
-					case 0x0025: // 左
+					case 0x0025: 	// 左
 						// 向左加载分类数据
-						IPTV.Focus.video($(this), 0, function() {
+						IPTV.Focus.video(target, 0, function() {
 							// code
 
 							// 设置页数
 							currentPage = 1;
-							totalPage = 0;
-							totalVideo = 0;
-							$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage);
+							totalPage = 30;
+							totalVideo = 500;
+
+							categoryId = $('.nav li.on a').find('.js-cat').val();
+							var ncid = $('.nav li.on a').parent().parent().next().find('.js-cat').val();
+							loadVideo(currentPage,categoryId)
+							loadPreviewList(ncid);
+
+							$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 						});
 						break;
-					case 0x0026: //上
+					case 0x0026://上
 						// 向上加载内容数据
-						IPTV.Focus.video($(this), 2, function() {
+						IPTV.Focus.video(target, 2, function() {
+							// code
 							// 设置页数
-							currentPage = currentPage <= 1 ? 1 : --currentPage;
-							$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage);
-							
-							loadVideo(currentPage,categoryId);
+							$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 						}, [currentPage, totalPage]);
 						break;
-					case 0x0027: // 右
+					case 0x0027: 	// 右
 						// 向右加载分类数据
-						IPTV.Focus.video($(this), 1, function() {
+						IPTV.Focus.video(target, 1, function() {
+							// code
+
 							// 设置页数
 							currentPage = 1;
-							totalPage = 0;
-							totalVideo = 0;
-							$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage);
+							totalPage = 20;
+							totalVideo = 200;
+
+							categoryId = $('.nav li.on a').find('.js-cat').val();
+							var ncid = $('.nav li.on a').parent().parent().next().find('.js-cat').val();
+							loadVideo(currentPage,categoryId)
+							loadPreviewList(ncid);
+
+							$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 						});
 						break;
-					case 0x0028: //下
+					case 0x0028://下
 						// 向下加载内容数据
-						IPTV.Focus.video($(this), 3, function() {
+						IPTV.Focus.video(target, 3, function() {
+							// code
+							
 							// 设置页数
 							currentPage = currentPage >= totalPage ? totalPage : ++currentPage;
-							$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage); 
+							//$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 
 							loadVideo(currentPage,categoryId);
 							// 到N页显示提示
-							if (!$('.tips').is(':visible') &&
-								currentPage > tipsPage) {
+							if(!$('.tips').is(':visible') && currentPage > tipsPage) {
 								$('.tips').fadeIn();
 								tipsTimer = setTimeout(function() {
 									$('.tips').fadeOut();
@@ -258,24 +165,148 @@
 							}
 						}, [currentPage, totalPage]);
 						break;
-					case 0x0008:
-						// 设置页数
-						currentPage = 1;
-						$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage); 
+					case 0x0008://返回
+						IPTV.Focus.video(target, 4, function() {
+							// code
+							// 设置页数
+							if(currentPage >= tipsPage) {
+								currentPage = 1;
+								$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 
-						loadVideo(currentPage,categoryId);
+								loadVideo(currentPage,categoryId);
+							}
+						}, [currentPage, totalPage]);
 						break;
 				}
-			});
-            
-        	// 按8键
-        	$(document).on('keydown', function(e) {
-        		if(e.keyCode == 0x0038) {	// 返回
-        			window.location.href = "http://115.28.77.76:9600/iptv-web/home";
-        		}
-        	});
+			}
+			
+			//返回键
+			if(keycode == 0x0038){
+    			window.location.href = "http://115.28.77.76:9600/iptv-web/home";
+			}
+		});
 
-        });    
+		$('a').on('focus', function(e) {
+			var $target = $(this);
+
+			if(!$target.parents('.sort')[0]) {
+				$('.top .sort-items').hide();
+			}
+
+			if($target[0] == $('.nav li:first-child a')[0]) {
+				$('.nav li:first-child').css({'padding-left': 20});
+			} else {
+				$('.nav li:first-child').removeAttr('style');
+			}
+		});
+
+		$('.top .sort a').on('focus', function() {
+			$('.top .sort-items').show();
+		});
+
+		if($('.nav .list ul').width() > $('.nav .list').width()) $('.nav .point').show();
+		if($('.nav li.on').index() == 0) $('.video .point').hide();
+		$($('.video li:first-child a')[0]).focus();
+		$('.video li:first-child a').parents('.link').addClass('on');
+		
+	
+		var loadVideo = function(p,cid){
+			cid = isNaN(parseInt(cid)) ? 0 : parseInt(cid);
+			var data = {page:p,categoryId:cid,pageSize:15};
+			$.get(basePath + 'home/videoList',data,function(res){
+				if(0 == cid){
+					p > 1 ? $('.play').hide() : $('.play').show();
+				}else{
+					$('.play').hide();
+				}
+				$('#video-list').html("");
+
+				$.each(res.data,function(i,v){
+					var html = '<li><input type="hidden" value="'+v.PlayTime+'" class="js-time">'
+							 + '<input type="hidden" value="'+v.DxCode+'" class="js-code"><div class="link">'
+							 + '<a href="${basePath}/video/detail?id='+v.Id+'"><input type="hidden" value="'+v.Id+'"></a>'
+							 + '<div class="vid">'
+							 + '<div class="thumbnail"><img src="${basePath}'+('image/index?p='+encodeURI(v.ImageUrl))+'" alt="" width="200" height="150"></div>'
+							 + '<div class="info">'
+							 + '<p>'+v.Name+'</p>'
+							 + '<span><img src="${basePath}assets/Images/play.png" alt=""></span>'
+							 + '</div></div></div></li>';
+							 
+					$('#video-list').append(html);
+				})
+				
+				totalPage = res.pageNum;
+				totalVideo = res.total;
+
+				$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage);
+				
+				//auto play video
+				var timeList = $('#video-list .js-time');
+				var codeList = $('#video-list .js-code');
+
+				if(0 == cid && p==1){
+					if(length >0) {
+						$(timeList[0]).parent().addClass('on')
+
+						$('#video-bg').hide();
+						small_play($(codeList[0]).val());
+					}
+					interval(timeList,codeList)
+				}else{
+					for(var i=0;i<timer.length;i++){
+						clearTimeout(timer[i]);
+					}
+				}
+			});
+		};
+		
+		var interval = function(timeList,codeList){
+			var t = setTimeout(function(){
+				time++;
+				var length = timeList.length;
+				if(time == $(timeList[playIndex]).val()){
+					$('#video-bg').hide();
+					small_play($(codeList[playIndex]).val());
+					time = 0;
+
+					$('#video-list li').removeClass('on')
+					$(timeList[playIndex]).parent().addClass('on')
+
+					playIndex++;
+					if(playIndex >= length){
+						playIndex = 0;
+						time = 0;
+					}
+				}
+				clearTimeout(timer);
+				interval(timeList,codeList);
+			},1000)
+			
+			timer.push(t);
+		}
+		
+		var loadPreviewList = function(cid){
+			var data = {cid:cid};
+			$.get(basePath + 'home/previewList',data,function(res){
+				$('#preview-list').html('');
+
+				$.each(res,function(i,v){
+					var html = '<li><div class="vid"><div class="thumbnail">'
+							 + '<img src="${basePath}'+('image/index?p='+encodeURI(v.ImageUrl))+'" alt="" width="200" height="150">'			
+							 + '</div>'
+							 + '<div class="info">'	
+							 + '<p>'+v.Name+'</p>'
+							 + '<span><img src="${basePath}assets/Images/play.png" alt=""></span>'
+							 + '</div></div></li>'	
+
+					$('#preview-list').append(html);
+				})
+			})
+		}
+
+		loadVideo(currentPage,catgoryId);
+		loadPreviewList($($('.nav .js-cat')[1]).val());
+    })
     </script>
 </head>
 
@@ -287,31 +318,33 @@
 			<ul>
 				<li class="search">
 					<div class="link">
-						<a href="#"></a> <span></span>
+						<a href="${basePath}video/search"></a>
+						<span></span>
 					</div>
 				</li>
-				<li class="sort">
+				<%-- <li class="sort">
 					<div class="link">
-						<a href="#"></a> <span></span>
+						<a href="#"></a>
+						<span></span>
 					</div>
 					<div class="sort-items">
 						<dl>
-							<dt>
-								<img src="${basePath}assets/Images/point_up.png" alt="">
-							</dt>
+							<dt><img src="${basePath}assets/Images/point_up.png" alt=""></dt>
 							<dd class="curr">
 								<div class="link">
-									<a href="#"></a> <b>更新时间</b>
+									<a href="#"></a>
+									<b>更新时间</b>
 								</div>
 							</dd>
 							<dd>
 								<div class="link">
-									<a href="#"></a> <b>人气排序</b>
+									<a href="#"></a>
+									<b>人气排序</b>
 								</div>
 							</dd>
 						</dl>
 					</div>
-				</li>
+				</li> --%>
 			</ul>
 		</div>
 	</div>
@@ -321,42 +354,34 @@
 			<ul>
 				<li class="on">
 					<div class="link">
-						<a href="#"><input type="hidden" value="0"></a> <span id="test">全部</span>
+						<a href="#"><input type="hidden" value="0" class="js-cat"></a>
+						<span>全部</span>
 					</div>
 				</li>
 				<c:forEach items="${categories}" var="cat">
 					<li>
 						<div class="link">
-							<a href="#"><input type="hidden" value="${cat.Id}"></a> <span>${cat.Name}</span>
+							<a href="#"><input type="hidden" value="${cat.Id}" class="js-cat"></a> <span>${cat.Name}</span>
 						</div>
 					</li>
 				</c:forEach>
-				<li>
-					<div class="link">
-						<a href="#"></a> <span>其他分类</span>
-					</div>
-				</li>
 			</ul>
 		</div>
-		<div class="point">
-			<img src="${basePath}assets/Images/point_right.png" alt="">
-		</div>
+		<div class="point"><img src="${basePath}assets/Images/point_right.png" alt=""></div>
 	</div>
 	<!--视频-->
 	<div class="video">
-		<div class="point">
-			<img src="${basePath}assets/Images/point_left.png" alt="">
-		</div>
+		<div class="point"><img src="${basePath}assets/Images/point_left.png" alt=""></div>
 		<div class="items">
 			<!--加载-->
-			<!--		<div class="loading"><img src="${basePath}assets/Images/loading.gif" alt=""></div>-->
+	<!--		<div class="loading"><img src="${basePath}assets/Images/loading.gif" alt=""></div>-->
 			<div class="item clf">
 				<!--视频-->
 				<div class="play">
 					<div class="link">
 						<a href="#"></a>
 						<div class="vid">
-							<img src="${basePath}assets/Images/video.jpg" alt="">
+							<img src="${basePath}assets/Images/video.jpg" alt="" id="video-bg">
 							<iframe id="win-player" width="620" height="310" src="javascript:void(0);"  marginwidth="0" marginheight="0" scrolling="no"></iframe>
 						</div>
 					</div>
@@ -379,10 +404,8 @@
 	<!--底部-->
 	<div class="bottom">
 		<div class="tips">按“返回”按钮回到第1页</div>
-		<div class="more">
-			<img src="${basePath}assets/Images/point_down.png" alt="">
-		</div>
-		<div class="page"><span>共500+</span>1/30</div>
+		<div class="more"><img src="${basePath}assets/Images/point_down.png" alt=""></div>
+		<div class="page"><span>共0+</span>1/0</div>
 	</div>
 </body>
 </html>

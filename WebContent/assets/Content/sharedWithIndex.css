@@ -1,18 +1,29 @@
 /*通用*/
-img {
-	display: block;
-}
 .fl {
 	float: left;
 }
 .fr {
 	float: right;
 }
-.clf:after {
-	content: '';
-	width: 0;
-	display: table;
-	clear: both;
+a:focus {
+	background: none !important;
+	border: none !important;
+	outline: none !important;
+}
+.link {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	float: left;
+}
+.link a {
+	width: 1px;
+	height: 1px;
+	display: block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	opacity: 0;
 }
 
 /*页面背景*/
@@ -23,29 +34,9 @@ body {
 	overflow: hidden;
 }
 
-/*重置焦点链接*/
-.link {
-	width: inherit;
-	height: inherit;
-	position: relative;
-}
-.link a {
-	width: 1px;
-	height: 1px;
-	opacity: 0;
-	display: block;
-	position: absolute;
-	z-index: 1;
-}
-.link a + * {
-	width: inherit;
-	height: inherit;
-	position: relative;
-	z-index: 2;
-}
-
 /*顶部标题及菜单*/
 .top {
+	height: 45px;
 	padding: 30px 0 0 65px;
 	position: relative;
 	z-index: 10;
@@ -62,6 +53,7 @@ body {
 .top .menu ul {
 	font-size: 0;
 	white-space: nowrap;
+	position: relative;
 }
 .top .menu ul li {
 	margin: 0 20px;
@@ -86,7 +78,7 @@ body {
 .top .menu .sort span {
 	background: url(../Images/menu_ico_04.png) no-repeat;
 }
-.top .menu a:focus + span:after {
+.top .menu .link.on span:after {
 	content: '';
 	border: #fff solid 2px;
 	border-radius: 5px;
@@ -102,19 +94,16 @@ body {
 }
 .top .menu .sort-items {
 	width: 110px;
-	height: 35px;
 	color: #fff;
 	font-size: 16px;
-	text-align: center;
 	line-height: 35px;
 	position: absolute;
 	top: 40px;
 	right: -38px;
-	z-index: 5;
 	display: none;
 	z-index: 10;
 }
-.top .menu .sort-items a:focus + b:after {
+.top .menu .sort-items .link.on b:after {
 	content: '';
 	border: #fff solid 2px;
 	border-radius: 5px;
@@ -129,25 +118,30 @@ body {
 }
 .top .menu .sort-items dl dt img {
 	margin: 0 auto;
+	display: block;
 }
 .top .menu .sort-items dl dd {
+	height: 35px;
 	background-color: rgba(45, 60, 84, .5);
 }
 .top .menu .sort-items dl dd.curr {
 	background-color: #384862;
 }
 .top .menu .sort-items dl dd b {
+	width: 110px;
+	height: 35px;
+	color: #fff;
+	text-align: center;
 	display: block;
 	font-weight: normal;
+	position: relative;
 }
 
 /*分类导航*/
 .nav {
 	width: 760px;
-	height: 70px;
-	padding: 10px 30px 10px 60px;
+	padding: 0 30px 0 60px;
 	position: relative;
-	line-height: 70px;
 }
 .nav:before {
 	content: '';
@@ -173,12 +167,13 @@ body {
 }
 .nav .list {
 	width: 760px;
-	height: 60px;
+	height: 90px;
 	position: relative;
 	overflow: hidden;
 }
 .nav .list ul {
 	width: auto;
+	height: 90px;
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -189,14 +184,16 @@ body {
 .nav ul li {
 	margin-right: 25px;
 	display: inline-block;
-	color: rgba(255, 255, 255, .5);
-	font-size: 28px;
-	line-height: 60px;
+	line-height: 85px;
 }
-.nav ul li a + span {
+.nav ul li .link {
+	font-size: 28px;
+	color: rgba(255, 255, 255, .5);
+}
+.nav ul li .link span {
 	position: relative;
 }
-.nav ul li a:focus + span:after {
+.nav ul li .link.on span:after {
 	content: '';
 	border: #fff solid 2px;
 	border-radius: 5px;
@@ -213,7 +210,7 @@ body {
 .nav ul li:first-child {
 	padding-left: 5px;
 }
-.nav ul li.on {
+.nav ul li.on .link {
 	color: rgba(255, 255, 255, 1);
 	font-size: 32px;
 }
@@ -255,11 +252,11 @@ body {
 	white-space: nowrap;
 	font-size: 0;
 }
-.video ul li .thumbnail, .video ul li .thumbnail > * {
+.video ul li .thumbnail {
 	width: 200px;
 	height: 150px;
 }
-.video a:focus + .vid {
+.video .link.on .vid {
 	border: #fff solid 2px;
 	border-radius: 5px;
 	box-shadow: 0 0 10px 5px rgba(61, 146, 255, .8);
@@ -271,7 +268,7 @@ body {
 	top: -2px;
 	z-index: 5;
 }
-.video ul li a:focus + .vid {
+.video ul li .link.on .vid {
 	border-radius: 5px;
 	overflow: hidden;
 	transform: scale(1.05, 1.05);

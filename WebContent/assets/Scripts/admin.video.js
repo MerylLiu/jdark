@@ -248,7 +248,7 @@ iv = {
 					format:"yyyy-MM-dd HH:mm:ss"
 				});
 
-				$('#txt-order').kendoNumericTextBox({
+				$('#txt-order,#txt-playTime').kendoNumericTextBox({
 					 format: "#",
                      decimals: 0,
                      min: 1,

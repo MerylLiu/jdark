@@ -7,18 +7,24 @@ a{
     height:1px;
     z-index: 0;
 }
-body{
+html,body{
     background: url("../Images/bg.jpg") no-repeat;
     background-size: 100% 100%;
+    width:100%;
+    height:100%;
 }
 .header a{
     color: #ffffff;
+    display: block;
+    position: absolute;
+    left:0;
+    top:0;
 }
 .main{
     width:1152px;
     margin:0 auto;
 }
-a+.link ,a .link{
+.link.focus ,a .link{
     /*position: absolute;*/
     width:100%;
     height:100%;
@@ -242,7 +248,14 @@ a+.link ,a .link{
     color:#3785DC;
     border:1px solid #3785DC;
 }
+.keyboard ul li .link.focus,.enter .link.focus{
+    color:#3785DC;
+    border:1px solid #3785DC;
+}
 .keyboard ul li a:focus .link span{
+    color:#3785DC;
+}
+.keyboard ul li .link.focus span{
     color:#3785DC;
 }
 .items .item a{
@@ -253,7 +266,10 @@ a+.link ,a .link{
     left:0;
     top:0;
     z-index: 5;
+    width:100%;
+    height:100%;
 }
+.items .item .link.focus,.more .link.focus,
 .items .item a:focus .link,.more a:focus .link{
     width: 210px;
     height:160px;
@@ -266,6 +282,9 @@ a+.link ,a .link{
     top:-5px;
 }
 .items .item a:focus .link img{
+    border-radius: 8px;
+}
+.items .item .link.focus img{
     border-radius: 8px;
 }
 .enter a{
@@ -287,6 +306,8 @@ a+.link ,a .link{
     position: absolute;
     left:0;
     top:0;
+    width: 100%;
+    height: 100%;
 }
 .keyboard a{
     display: block;
@@ -295,9 +316,32 @@ a+.link ,a .link{
     width:26px;
     height:39px;
 }
-.more a .link{
-    position: absolute;
+.arrow a:focus .link{
+    width:26px;
+    height:39px;
 }
+.arrow .link.focus{
+    width:26px;
+    height:39px;
+}
+/*.more a .link{*/
+/*position: absolute;*/
+/*}*/
+/*.more .link.focus{*/
+/*position: absolute;*/
+/*}*/
 .more a{
     display: block;
+}
+.items .item a:focus .img, .more a:focus .img{
+    width:100%;
+    height:100%;
+}
+a{
+    opacity: 0;
+}
+.nav .img{
+    display: block;
+    width:100%;
+    height:100%;
 }
