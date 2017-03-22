@@ -129,7 +129,7 @@
 					<label class="col-sm-2 control-label">视频编号</label>
 					<div class="col-sm-4">
 						<div class="col-sm-11">
-							<input type="text" class="form-control" name="Code" placeholder="视频编号" maxlength="10">
+							<input type="text" class="form-control" name="Code" placeholder="视频编号" maxlength="20">
 						</div>
 						<span class="cols-sm-1 required">*</span>
 					</div>
@@ -145,7 +145,7 @@
 					<label class="col-sm-2 control-label">简拼</label>
 					<div class="col-sm-4">
 						<div class="col-sm-11">
-							<input type="text" class="form-control" name="Jianpin" placeholder="视频名称简拼" maxlength="10">
+							<input type="text" class="form-control" name="Jianpin" placeholder="视频名称简拼" maxlength="20">
 						</div>
 						<span class="cols-sm-1 required">*</span>
 					</div>
@@ -286,7 +286,7 @@
 				</div>
 			</fieldset>
 			<fieldset>
-				<legend><h5>视频来源及制作商</h5></legend>
+				<legend><h5>视频来源</h5></legend>
 				<div class="form-group">
 					<label class="col-sm-2 control-label">提供商家</label>
 					<div class="col-sm-4">

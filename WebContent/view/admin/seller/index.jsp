@@ -46,7 +46,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">商家编号</label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control"name="Code" placeholder="商家编号" maxlength="10">
+					<input type="text" class="form-control"name="Code" placeholder="商家编号" maxlength="20">
 				</div>
 				<span class="cols-sm-1 required">*</span>
 			</div>
@@ -60,7 +60,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">商家电话</label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control" name="Tel" placeholder="商家电话" maxlength="10">
+					<input type="text" class="form-control" name="Tel" placeholder="商家电话" maxlength="25">
 				</div>
 				<span class="cols-sm-1 required">*</span>
 			</div>
@@ -94,7 +94,7 @@
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">商家开店时间</label>
-				<div class="col-sm-8">
+				<div class="col-sm-3">
 					<input type="text" class="form-control" id="txt-set-date" name="SetUpDate" placeholder="商家开店时间" maxlength="20">
 				</div>
 				<span class="cols-sm-1 required">*</span>

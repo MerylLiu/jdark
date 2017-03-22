@@ -101,7 +101,7 @@ iv = {
 	            field: "SetUpDate",
 	            encoded: false,
 				attributes:{ 'class':'center'},
-				format:'{0:yyyy-MM-dd HH:mm:ss}'
+				format:'{0:yyyy-MM-dd}'
 	        }],
 			page:1,
 	        filterable: true,
@@ -201,6 +201,11 @@ iv = {
 						city.trigger("change");
 
 						$('#txt-area').data("kendoDropDownList").value(data.Area);
+
+						$('#txt-set-date').kendoDatePicker({
+							format:"yyyy-MM-dd",
+							value:new Date(data.SetUpDate)
+						});
 					});
 				}
 			},

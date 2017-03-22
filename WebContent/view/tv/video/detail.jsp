@@ -69,9 +69,9 @@
 				<div class="intro-text">${Description}</div>
 			</div>
 			<div class="position">
-				<h3>故事通讯：</h3>
+				<h3>联系电话：</h3>
 				<div class="intro-text">${Tel}</div>
-				<h3>故事发生地址：</h3>
+				<h3>联系地址：</h3>
 				<div class="intro-text">${Address}</div>
 			</div>
 			<div class="btn">

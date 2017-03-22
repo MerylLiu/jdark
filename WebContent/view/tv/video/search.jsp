@@ -56,7 +56,7 @@
 			lastPage=-1;
 		})
 		$('.clear a').on('click',function(){
-			$('.input input').val('');
+			$('.input span').html('');
 			$('.items .overflow').html("");
 			$('.overflow').css('margin-left',0);
 		})
@@ -79,14 +79,14 @@
 
 	function keyboard(obj){
 		var key=$(obj).attr('data-key');
-		var val=$('.input input').val()
-		if(key==='del'){
-			$('.input input').val(val.substring(0,val.length-1))
-		}else{
-			$('.input input').val(val+key)
-		}
+        var val=$('.input span').html();
+        if(key==='del'){
+            $('.input span').html(val.substring(0,val.length-1))
+        }else{
+            $('.input span').html(val+key)
+        }
 		
-		var param = {name:$('.input input').val()};
+		var param = {name:$('.input span').html()};
 		$.get('${basePath}video/searchList',param,function(data){
 			$('.items .overflow').html("");
 
@@ -94,7 +94,7 @@
 			jmz.GetLength = function(str) {
 			  return str.replace(/[\u0391-\uFFE5]/g,"aa").length;  //先把中文替换成两个字节的英文，在计算长度
 			};  
-			var len = jmz.GetLength($('.input input').val());
+			var len = jmz.GetLength($('.input span').html());
 
 			$.each(data.data,function(i,v){
 				var html = '<div class="item">'
@@ -114,7 +114,7 @@
 
 			if(data.total>19){
 				var more = '<div class="more">'
-						 +  '<a href="${basePath}video/more?key='+encodeURI($('.input input').val())+'">kengdie </a>'
+						 +  '<a href="${basePath}video/more?key='+encodeURI($('.input span').html())+'">kengdie </a>'
 						 +  '<div class="link">'
 						 +  '<span>更多视频</span>'
 						 +  '</div></div>';
@@ -153,7 +153,7 @@
 		<div class="session">
 			<div class="enter">
 				<div class="input">
-					<input type="text" readonly="">
+					<span></span>
 				</div>
 				<div class="clear">
 					<a href="#">kengdie</a>

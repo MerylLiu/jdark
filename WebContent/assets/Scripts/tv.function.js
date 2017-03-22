@@ -19,7 +19,7 @@ Private.prototype.getFocusInfo = function(sets, target, direction) {
     var up, right, down, left;
     var i = 0, index = sets.index(target);
     do {
-        if(i != index) {
+        if(i != index && sets.eq(i).is(':visible')) {
             var nextPos = sets.eq(i).offset();
             var x = Math.abs(currPos.left)-Math.abs(nextPos.left);
             var y = Math.abs(currPos.top)-Math.abs(nextPos.top);
@@ -40,40 +40,41 @@ Private.prototype.getFocusInfo = function(sets, target, direction) {
     }
 };
 
-Private.prototype.setFocus = function(target, skip, callback) {
+Private.prototype.setFocus = function(target, skip, callback, tag) {
     if(target) {
         target[0].focus();
         $('.link').removeClass('on');
         target.parents('.link').addClass('on');
     } else if(skip) {
         if(callback) callback();
-        skip[0].focus();
-        $('.link').removeClass('on');
-        skip.parents('.link').addClass('on');
+        if(tag == undefined) {
+            skip[0].focus();
+            $('.link').removeClass('on');
+            skip.parents('.link').addClass('on');
+        }
     }
 }
 
 Private.prototype.linkage = function(direction) {
-    var contain = $('.nav ul'), containLeft = parseFloat(contain.css('left'));
-    var navList = $('.nav li'), currLi = $('.nav ul li.on'), idx = currLi.index();
+    var  idx = $('.nav ul li.on').index();
     var visibleView = parseFloat($('.nav .list').width());
-    var scrollWide = parseFloat(contain.width()) - visibleView + 30;
     if(direction == 0) {
         if(idx > 0) {
-            var move = containLeft + navList.eq(idx).outerWidth(true);
+            var move = parseFloat($('.nav ul').css('left')) + $('.nav li').eq(idx).outerWidth(true);
             if(move > 0) move = 0;
-            contain.css({left: move});
-            navList.eq(--idx).addClass('on').siblings().removeClass('on');
-            if(scrollWide > 0) $('.nav .point').show();
+            $('.nav ul').css({left: move});
+            $('.nav li').eq(--idx).addClass('on').siblings().removeClass('on');
+            if(parseFloat($('.nav ul').width()) - visibleView > 0) $('.nav .point').show();
             if(idx == 0) $('.video .point').hide();
         }
     } else if(direction == 1) {
-        var maxIdx = navList.length-1;
+        var maxIdx = $('.nav li').length-1;
         if(idx < maxIdx) {
-            var move = containLeft - navList.eq(idx).outerWidth(true);
-            if(Math.abs(move) > scrollWide) move = -scrollWide;
-            if(currLi.position().left > parseInt(visibleView/2)) contain.css({left: move});
-            navList.eq(++idx).addClass('on').siblings().removeClass('on');
+            var scrollWide = parseFloat($('.nav ul').width()) - visibleView;
+            var move = parseFloat($('.nav ul').css('left')) - $('.nav li').eq(idx).outerWidth(true);
+            if(Math.abs(move) > scrollWide) move = -scrollWide-30;
+            if($('.nav ul li.on').position().left > parseInt(visibleView/2)) $('.nav ul').css({left: move});
+            $('.nav li').eq(++idx).addClass('on').siblings().removeClass('on');
             if(idx == maxIdx) $('.nav .point').hide();
             if(maxIdx > 0) $('.video .point').show();
         }
@@ -93,16 +94,16 @@ $(function() {
                     private.setFocus(next, $('.video li:first-child a'), function() {
                         private.linkage(direction);
                         if(callback) callback();
-                    });
+                    }, direction);
                 } else {
                     private.setFocus(next, target);
                 }
             } else if(direction == 1) {
                 if($('.nav li.on').index() < $('.nav li').length-1) {
                     private.setFocus(next, $('.video li:first-child a'), function() {
-                        private.linkage(direction);
-                        if(callback) callback();
-                    });
+                        /*private.linkage(direction);
+                        if(callback) callback();*/
+                    }, direction);
                 } else {
                     private.setFocus(next, target);
                 }
@@ -122,7 +123,7 @@ $(function() {
                 }
             } else if(direction == 3) {
                 if(page[0] < page[1]) {
-                    private.setFocus(next, $('.video li:first-child a'), callback);
+                    private.setFocus(next, $('.video li:first-child a'), callback, direction);
                 } else {
                     private.setFocus(next, target);
                 }

@@ -3,6 +3,8 @@ package com.iptv.app.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.cache.annotation.Cacheable;
+
 import com.iptv.core.common.BizException;
 import com.iptv.core.service.BaseService;
 
@@ -14,6 +16,7 @@ public interface CategoryService extends BaseService {
 
 	public void delete(Map map) throws BizException;
 	
+	@Cacheable
 	public List getAllCategories();
 
 	public void sync(Map map) throws BizException;

@@ -34,6 +34,9 @@
 					IPTV.Focus.menu(target, 1);
 				} else if(keycode == 0x000d) {  // 确定
 					// code
+					if(target.parents('.search').length) {
+						window.location.href = "${basePath}video/search";
+					}
 				}
 			} else if($('.sort-items a').index(target) != -1) { // 排序
 				if(keycode == 0x0028) {
@@ -63,10 +66,13 @@
 							totalPage = 0;
 							totalVideo = 0;
 
+
 							categoryId = $('.nav li.on a').find('.js-cat').val();
 							var ncid = $('.nav li.on a').parent().parent().next().find('.js-cat').val();
 							loadVideo(currentPage,categoryId)
 							loadPreviewList(ncid);
+							
+							$('#win-player').remove();
 
 							$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 						});
@@ -81,6 +87,8 @@
 							currentPage = 1;
 							totalPage = 0;
 							totalVideo = 0;
+
+							$('#win-player').remove();
 
 							categoryId = $('.nav li.on a').find('.js-cat').val();
 							var ncid = $('.nav li.on a').parent().parent().next().find('.js-cat').val();
@@ -105,16 +113,20 @@
 					case 0x0025: 	// 左
 						// 向左加载分类数据
 						IPTV.Focus.video(target, 0, function() {
-							// code
-
 							// 设置页数
 							currentPage = 1;
 							totalPage = 30;
 							totalVideo = 500;
 
+							$('#win-player').remove();
+
 							categoryId = $('.nav li.on a').find('.js-cat').val();
 							var ncid = $('.nav li.on a').parent().parent().next().find('.js-cat').val();
-							loadVideo(currentPage,categoryId)
+							loadVideo(currentPage,categoryId,function(){
+								$('.video li:first-child a')[0].focus();
+								$('.link').removeClass('on');
+								$('.video li:first-child a').parents('.link').addClass('on');
+							})
 							loadPreviewList(ncid);
 
 							$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
@@ -134,16 +146,22 @@
 							// code
 
 							// 设置页数
-							currentPage = 1;
+							/*currentPage = 1;
 							totalPage = 20;
 							totalVideo = 200;
 
+							$('#win-player').remove();
+
 							categoryId = $('.nav li.on a').find('.js-cat').val();
 							var ncid = $('.nav li.on a').parent().parent().next().find('.js-cat').val();
-							loadVideo(currentPage,categoryId)
+							loadVideo(currentPage,categoryId,function(){
+								$('.video li:first-child a')[0].focus();
+								$('.link').removeClass('on');
+								$('.video li:first-child a').parents('.link').addClass('on');
+							});
 							loadPreviewList(ncid);
 
-							$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
+							$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);*/
 						});
 						break;
 					case 0x0028://下
@@ -155,7 +173,13 @@
 							currentPage = currentPage >= totalPage ? totalPage : ++currentPage;
 							//$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 
-							loadVideo(currentPage,categoryId);
+							$('#win-player').remove();
+
+							loadVideo(currentPage,categoryId,function(){
+								$('.video li:first-child a')[0].focus();
+								$('.link').removeClass('on');
+								$('.video li:first-child a').parents('.link').addClass('on');
+							});
 							// 到N页显示提示
 							if(!$('.tips').is(':visible') && currentPage > tipsPage) {
 								$('.tips').fadeIn();
@@ -173,6 +197,7 @@
 								currentPage = 1;
 								$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 
+								$('#win-player').remove();
 								loadVideo(currentPage,categoryId);
 							}
 						}, [currentPage, totalPage]);
@@ -206,11 +231,9 @@
 
 		if($('.nav .list ul').width() > $('.nav .list').width()) $('.nav .point').show();
 		if($('.nav li.on').index() == 0) $('.video .point').hide();
-		$($('.video li:first-child a')[0]).focus();
-		$('.video li:first-child a').parents('.link').addClass('on');
 		
 	
-		var loadVideo = function(p,cid){
+		var loadVideo = function(p,cid,callback){
 			cid = isNaN(parseInt(cid)) ? 0 : parseInt(cid);
 			var data = {page:p,categoryId:cid,pageSize:15};
 			$.get(basePath + 'home/videoList',data,function(res){
@@ -243,11 +266,12 @@
 				//auto play video
 				var timeList = $('#video-list .js-time');
 				var codeList = $('#video-list .js-code');
+				var length = $('#video-list .js-code').length;
 
 				if(0 == cid && p==1){
 					if(length >0) {
 						$(timeList[0]).parent().addClass('on')
-
+						$('#win-p-cont').append('<iframe id="win-player" width="620" height="310" src="javascript:void(0);"  marginwidth="0" marginheight="0" scrolling="no"></iframe>');
 						$('#video-bg').hide();
 						small_play($(codeList[0]).val());
 					}
@@ -256,6 +280,10 @@
 					for(var i=0;i<timer.length;i++){
 						clearTimeout(timer[i]);
 					}
+				}
+	
+				if(typeof callback != "undefined"){
+					callback();
 				}
 			});
 		};
@@ -304,7 +332,10 @@
 			})
 		}
 
-		loadVideo(currentPage,catgoryId);
+		loadVideo(currentPage,catgoryId,function(){
+			$('.video li:first-child a')[0].focus();
+			$('.video li:first-child a').parents('.link').addClass('on');
+		});
 		loadPreviewList($($('.nav .js-cat')[1]).val());
     })
     </script>
@@ -318,11 +349,11 @@
 			<ul>
 				<li class="search">
 					<div class="link">
-						<a href="${basePath}video/search"></a>
+						<a href="#"></a>
 						<span></span>
 					</div>
 				</li>
-				<%-- <li class="sort">
+				<li class="sort" style="display:none;">
 					<div class="link">
 						<a href="#"></a>
 						<span></span>
@@ -344,7 +375,7 @@
 							</dd>
 						</dl>
 					</div>
-				</li> --%>
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -380,9 +411,8 @@
 				<div class="play">
 					<div class="link">
 						<a href="#"></a>
-						<div class="vid">
+						<div class="vid" id="win-p-cont">
 							<img src="${basePath}assets/Images/video.jpg" alt="" id="video-bg">
-							<iframe id="win-player" width="620" height="310" src="javascript:void(0);"  marginwidth="0" marginheight="0" scrolling="no"></iframe>
 						</div>
 					</div>
 				</div>

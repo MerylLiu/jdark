@@ -162,7 +162,7 @@ iv = {
 			$('#txt-sel-tel').val(data.Tel);
 			$('#txt-sel-sid').val(data.SellerId);
 			$('#txt-sel-addr').val(data.Address);
-			$('#txt-sel-sdate').val(data.SetUpDate);
+			$('#txt-sel-sdate').val(new Date(data.SetUpDate).Format('yyyy-MM-dd'));
 
 			$('input[name="IsInstall"]').prop('checked','false');
 			$('input[value="'+data.IsInstall+'"][name="IsInstall"]').prop('checked','true');
@@ -173,6 +173,7 @@ iv = {
 			dataTextField: "Name",
 			dataValueField: "Id",
 			optionLabel:'==请选择商家==',
+			//filter: "contains",
 			dataSource: createDataSource(basePath+'admin/video/sellerList'),
 			change:function(){
 				var id = $('#txt-sel-name').data('kendoDropDownList').value();

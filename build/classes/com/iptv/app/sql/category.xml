@@ -42,13 +42,13 @@
 	</update>
 
 	<update id="syncCategory" parameterType="java.util.HashMap">
-		UPDATE biz_category SET Status=2
+		UPDATE biz_category SET Status=2 WHERE Status = 1
 	</update>
 
 	<select id="getAllCategory" resultType="java.util.HashMap">
 		SELECT a.Name,a.Id,a.Name as text,a.Id as value
 	    FROM biz_category a
-		WHERE a.IsDel IS NULL OR a.IsDel = 0
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 2
 	    ORDER BY a.OrderNum
 	</select>
 	

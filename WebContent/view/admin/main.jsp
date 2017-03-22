@@ -41,7 +41,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					<small><img src="<%=basePath %>assets/Images/admin/logo-18.png">后台管理中心</small>
 				</a>
                 <div class="pull-left nav_shortcuts">
-                    <a class="btn btn-xs btn-warning" href="/" title="网站首页" target="_blank"> <i class="fa fa-home"></i> </a>
+                    <a class="btn btn-xs btn-warning" href="<%=basePath %>" title="网站首页" target="_blank"> <i class="fa fa-home"></i> </a>
                     <a class="btn btn-xs btn-success" href="javascript:openapp('/index.php?g=portal&m=admin_term&a=index','index_termlist','分类管理');" title="分类管理"> <i class="fa fa-th"></i> </a>
                     <a class="btn btn-xs btn-info" href="javascript:openapp('/index.php?g=portal&m=admin_post&a=index','index_postlist','文章管理');" title="文章管理"> <i class="fa fa-pencil"></i> </a>
                     <a class="btn btn-xs btn-danger" href="javascript:openapp('/index.php?g=admin&m=setting&a=clearcache','index_clearcache','清除缓存');" title="清除缓存"> <i class="fa fa-trash-o"></i> </a>

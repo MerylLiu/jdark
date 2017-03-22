@@ -163,7 +163,8 @@ html,body{
     margin:0 18px;
     height: 40px;
 }
-.enter .input input{
+.enter .input span{
+    display: block;
     width:534px;
     height:40px;
     color: #ffffff;

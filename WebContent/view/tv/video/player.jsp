@@ -69,10 +69,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
       }
       
       function stop(){
-    	  mp.doStop();
+          mp.stop();
+          mp.releaseMediaPlayer(instanceId);
       }
     </script>
-<body bgcolor="transparent" onUnload="mp.doStop()">
+<body bgcolor="transparent" onunload="stop()">
 </body>
 </html>
 

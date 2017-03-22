@@ -27,6 +27,7 @@ import com.iptv.core.service.impl.BaseServiceImpl;
 import com.iptv.core.utils.BaseUtil;
 import com.iptv.core.utils.DateUtil;
 import com.iptv.core.utils.FtpUtil;
+import com.iptv.core.utils.JsonUtil;
 import com.iptv.core.utils.QueryUtil;
 
 @Service
@@ -254,9 +255,11 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 					if (cspResult.getResult() == 0) {
 						Map videoMap = new HashMap();
 						videoMap.put("Id", id);
-						videoMap.put("DxCode", data.get("Code"));
+						videoMap.put("DxCode", "P"+data.get("Code"));
 						videoMap.put("CorrelateID", correlateID);
+						videoMap.put("CommitDate", DateUtil.getNow());
 
+						log.info("提交工单到电信审核视频 CorrelateID:" + correlateID);
 						BaseUtil.saveLog(8, "提交工单到电信审核视频", "CorrelateID:" + correlateID);
 						getDao().update("video.videoSubmit", videoMap);
 					} else {
@@ -280,7 +283,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		String lspid = Configuration.webCfg.getProperty("cfg.LSPID");
 		String ftpUrl = "ftp://" + Configuration.webCfg.getProperty("ftp.user") + ":"
 				+ Configuration.webCfg.getProperty("ftp.pwd") + "@" + Configuration.webCfg.getProperty("ftp.ip") + ":"
-				+ Configuration.webCfg.getProperty("ftp.port") + "/";
+				+ Configuration.webCfg.getProperty("ftp.port");
 
 		try {
 			ExecCmd cmd = new ExecCmd();
@@ -291,6 +294,9 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 
 			ExecCmdResponse resp = stub.execCmd(cmd);
 			res = resp.getExecCmdReturn();
+
+			log.info("工单详情：" + JsonUtil.getJson(cmd)+",返回结果：" + JsonUtil.getJson(res));
+			BaseUtil.saveLog(8, "工单详情", "工单详情：" + JsonUtil.getJson(cmd)+",返回结果：" + JsonUtil.getJson(res));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

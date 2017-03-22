@@ -225,13 +225,13 @@ public class FtpUtil {
 	public static String readFile(String ip, int port, String uName, String uPwd, String fileName, String remotePath) {
 		InputStream ins = null;
 		StringBuilder builder = null;
+
+		setParam(ip, port, uName, uPwd);
 		FTPClient ftpClient = getFTPClient();
 
 		try {
 			ftpClient.changeWorkingDirectory(remotePath);
 			ins = ftpClient.retrieveFileStream(fileName);
-
-			setParam(ip, port, uName, uPwd);
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
 			String line;

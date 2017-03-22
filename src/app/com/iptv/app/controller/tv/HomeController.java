@@ -53,6 +53,10 @@ public class HomeController extends BaseController {
 
 	@RequestMapping(value = "/previewList", method = RequestMethod.GET)
 	public @ResponseBody List previewList(@RequestParam Map map) {
+		if(map.get("cid") == null){
+			map.put("cid", 0);
+		}
+
 		Integer categoryId = Integer.valueOf(map.get("cid").toString());
 		List data = videoService.getHomeVideoForPreview(categoryId);
 

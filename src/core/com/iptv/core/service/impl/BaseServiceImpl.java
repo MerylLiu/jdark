@@ -1,5 +1,6 @@
 package com.iptv.core.service.impl;
 
+import org.apache.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Service;
 
@@ -18,4 +19,6 @@ public class BaseServiceImpl implements BaseService {
 
 		return sqlSession;
 	}
+
+	public Logger log = Logger.getLogger(this.getClass());
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.iptv.app.service.CategoryService;
@@ -85,6 +86,7 @@ public class CategoryServiceImpl extends BaseServiceImpl implements CategoryServ
 	}
 
 	@Override
+	@Cacheable
 	public List getAllCategories() {
 		List data = getDao().selectList("category.getAllCategory");
 		return data;

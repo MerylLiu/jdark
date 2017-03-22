@@ -5,21 +5,21 @@
 	<select id="getAllVideo" resultType="java.util.HashMap">
 		SELECT a.* FROM biz_video a
 		WHERE a.IsDel IS NULL OR a.IsDel = 0
-		ORDER BY a.OrderNum 
+		ORDER BY a.OrderNum AND a.CreateDate DESC
+
 	</select>
 
 	<select id="getVideoPaged" resultType="java.util.HashMap">
 		SELECT a.*,b.SellerId FROM biz_video a
 		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
-		ORDER BY a.OrderNum DESC
+		ORDER BY a.OrderNum AND a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
 
 	<select id="getVideoCount" resultType="java.lang.Integer">
 		SELECT count(*) as Count FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
-		ORDER BY a.OrderNum  DESC
 	</select>
 
 	<select id="getVideoById" resultType="java.util.HashMap">
@@ -77,6 +77,7 @@
 
 	<update id="videoSubmit" parameterType="java.util.HashMap">
 		UPDATE biz_video SET Status = 2,DxCode = #{DxCode},CorrelateID = #{CorrelateID}
+			CommitDate = #{CommitDate}
 		WHERE Id = #{Id}
 	</update>
 
@@ -86,7 +87,7 @@
 	</update>
 
 	<update id="autitFail" parameterType="java.util.HashMap">
-		UPDATE biz_video SET Status = 4 AND Remark = #{Remark}
+		UPDATE biz_video SET Status = 4,Remark = #{Remark}
 		WHERE CorrelateID = #{CorrelateID}
 	</update>
 
@@ -94,7 +95,7 @@
 		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime
 		FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
-		ORDER BY a.OrderNum AND a.CommitDate DESC
+		ORDER BY a.OrderNum AND a.CreateDate DESC
 		limit 0,9
 	</select>
 
@@ -105,7 +106,7 @@
 		<if test="categoryId != null and categoryId != 0">
 			AND a.CategoryId = #{categoryId}
 		</if>
-		ORDER BY a.OrderNum AND a.CommitDate DESC
+		ORDER BY a.OrderNum AND a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
 	<select id="getHomeVideoPagedCount" resultType="java.lang.Integer">
@@ -137,7 +138,7 @@
 				FROM biz_video a
 				LEFT JOIN biz_category b ON a.CategoryId = b.Id
 				WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3 AND a.CategoryId = #{categoryId}
-				ORDER BY a.OrderNum AND a.CommitDate DESC
+				ORDER BY a.OrderNum AND a.CreateDate DESC
 			) x,(SELECT @rownum:=0) t
 		) y WHERE y.RowNum IN (1,6,11)
 	</select>
@@ -152,14 +153,14 @@
 	<select id="getSearched" resultType="java.util.HashMap">
 		SELECT a.Id,a.Name,a.ImageUrl,a.GifUrl,a.DxCode
 		FROM biz_video a
-		WHERE (a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%'))
+		WHERE ((a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%')))
 			AND (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 		LIMIT 0,19
 	</select>
 	<select id="getSearchedCount" resultType="java.lang.Integer">
-		SELECT count(1) as Count
+		 SELECT count(1) as Count
 		FROM biz_video a
-		WHERE (a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%'))
+		WHERE ((a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%')))
 			AND (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 	</select>
 
@@ -167,17 +168,17 @@
 		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime
 		FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
-			AND (a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%'))
+			AND ((a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%')))
 		<if test="categoryId != null and categoryId != 0">
 			AND a.CategoryId = #{categoryId}
 		</if>
-		ORDER BY a.OrderNum AND a.CommitDate DESC
+		ORDER BY a.OrderNum AND a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
 	<select id="getSearchPagedCount" resultType="java.lang.Integer">
 		SELECT count(1) as Count FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
-			AND (a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%'))
+			AND ((a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%')))
 		<if test="categoryId != null and categoryId != 0">
 			AND a.CategoryId = #{categoryId}
 		</if>
@@ -185,7 +186,7 @@
 	<select id="getSearchPageNum" resultType="java.lang.Integer">
 		SELECT CEIL(COUNT(1)/${pageSize}) as Num FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
-			AND (a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%'))
+			AND ((a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%')))
 		<if test="categoryId != null and categoryId != 0">
 			AND a.CategoryId = #{categoryId}
 		</if>

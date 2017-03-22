@@ -3,8 +3,14 @@ $(document).ready( function() {
 		callback : {
 			onClick : function(event, treeId, treeNode) {
 				$('#form-data').formData(treeNode);
-				$('#sts-status').radioButtonList(status,'Status','Text','Value',treeNode.Status,2);
-				$('input[name="Name"]').val(treeNode.Name.substr(6));
+				var s = typeof treeNode.Status == 'undefined' ? 1 : treeNode.Status;
+				$('#sts-status').radioButtonList(status,'Status','Text','Value',s,2);
+				
+				if(treeNode.id == 0){
+					$('input[name="Name"]').val(treeNode.name);
+				}else{
+					$('input[name="Name"]').val(treeNode.Name.substr(6));
+				}
 			}
 		}
 	};

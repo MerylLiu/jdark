@@ -33,24 +33,30 @@ public class ResultNotifyServiceImpl implements ResultNotifyService {
 		res.setResult(0);
 		res.setErrorDescription("调用成功。");
 
-		String info = "IPTV回调：CSPID:" + CSPID + ",LSPID:" + LSPID + ",CorrelateID:" + CorrelateID + ",CmdResult:"
-				+ CmdResult + ",ResultFileURL:" + ResultFileURL;
-
 		Map map = new HashMap();
 		map.put("CorrelateID", CorrelateID);
+
+		String info = "CSPID:" + CSPID + ",LSPID:" + LSPID + ",CorrelateID:" + CorrelateID + ",CmdResult:"
+				+ CmdResult + ",ResultFileURL:" + ResultFileURL;
+		log.info("IPTV工单处理结果回调："+info);
+		BaseUtil.saveLog(8, "IPTV工单处理结果回调", info);
 
 		if (CmdResult == 0) {
 			map.put("Status", 3);
 			BaseUtil.getDao().update("video.autitSuccess", map);
 		} else {
 			Map ftpInfo = getFtpInfo(ResultFileURL);
+
 			String fileData = FtpUtil.readFile(ftpInfo.get("ip").toString(),
 					Integer.valueOf(ftpInfo.get("port").toString()).intValue(), ftpInfo.get("user").toString(),
 					ftpInfo.get("pwd").toString(), ftpInfo.get("fileName").toString(), ftpInfo.get("dir").toString());
 
 			try {
 				Map reply = XmlUtil.xml2map(fileData, false);
-				String remark = ((Map)reply.get("Reply")).get("Property").toString();
+				String remark = ((Map) reply.get("Reply")).get("Property").toString();
+
+				log.info("IPTV工单处理失败回调:" + remark);
+				BaseUtil.saveLog(8, "IPTV工单处理失败回调", remark);
 
 				map.put("Status", 4);
 				map.put("Remark", remark);
@@ -61,34 +67,42 @@ public class ResultNotifyServiceImpl implements ResultNotifyService {
 			}
 		}
 
-		log.info(info);
-		BaseUtil.saveLog(8, "电信审核视频结果", info);
-
 		return res;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Map getFtpInfo(String resultFileUrl) {
+	private static Map getFtpInfo(String resultFileUrl) {
 		Map map = new HashMap();
 
-		String user = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+).*", "$1");
+		String user = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+)(.*/)(.*)", "$1");
 		map.put("user", user);
 
-		String pwd = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+).*", "$2");
+		String pwd = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+)(.*/)(.*)", "$2");
 		map.put("pwd", pwd);
 
-		String ip = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+).*", "$3");
+		String ip = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+)(.*/)(.*)", "$3");
 		map.put("ip", ip);
 
-		String port = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+).*", "$4");
+		String port = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+)(.*/)(.*)", "$4");
 		map.put("port", port);
 
-		String dir = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+).*", "$5");
+		String dir = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+)(.*/)(.*)", "$5");
 		map.put("dir", dir);
 
-		String fileName = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+).*", "$7");
+		String fileName = resultFileUrl.replaceAll("ftp://(\\w+):(\\w+)@(.+):(\\d+)(.*/)(.*)", "$6");
 		map.put("fileName", fileName);
 
 		return map;
+	}
+
+	public static void main(String[] args) throws Exception {
+		String ftp = "ftp://ftper:ftper@182.138.30.138:21/uploap/notify/002.xml_reply_20170322141821.xml";
+		Map ftpInfo = getFtpInfo(ftp);
+
+		String fileData = FtpUtil.readFile(ftpInfo.get("ip").toString(),
+				Integer.valueOf(ftpInfo.get("port").toString()).intValue(), ftpInfo.get("user").toString(),
+				ftpInfo.get("pwd").toString(), ftpInfo.get("fileName").toString(), ftpInfo.get("dir").toString());
+		
+		System.out.println(fileData);
 	}
 }

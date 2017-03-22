@@ -32,7 +32,9 @@
     	        } else if(keycode == 0x0027) {
     	            IPTV.Focus.menu(target, 1);
     	        } else if(keycode == 0x000d) {  // 确定
-    	        	// code
+					if(target.parents('.search').length) {
+						window.location.href = "${basePath}video/search";
+					}
     	        }
     	    } else if($('.sort-items a').index(target) != -1) { // 排序
     	        if(keycode == 0x0028) {
@@ -128,7 +130,11 @@
     						$('.page').html('<span>共'+totalVideo+'</span>'+currentPage+'/'+totalPage);
 
     						// code
-							loadVideo(currentPage,categoryId);
+							loadVideo(currentPage,categoryId,function(){
+								$('.video li:first-child a')[0].focus();
+								$('.link').removeClass('on');
+								$('.video li:first-child a').parents('.link').addClass('on');
+							});
 
     						// 到N页显示提示
     						if(!$('.tips').is(':visible') && currentPage > tipsPage) {
@@ -183,7 +189,7 @@
         $('.video li:first-child a').parents('.link').addClass('on');
 
 
-		var loadVideo = function(p,cid){
+		var loadVideo = function(p,cid,callback){
 			cid = isNaN(parseInt(cid)) ? 0 : parseInt(cid);
 			var data = {
 				page:p,
@@ -212,10 +218,17 @@
 				totalVideo = res.total;
 
 				$('.page').html( '<span>共' + totalVideo + '</span>' + currentPage + '/' + totalPage);
+
+				if(typeof callback != "undefined"){
+					callback();
+				}
 			});
 		};
 
-		loadVideo(currentPage,catgoryId);
+		loadVideo(currentPage,catgoryId,function(){
+			$('.video li:first-child a')[0].focus();
+			$('.video li:first-child a').parents('.link').addClass('on');
+		});
     })
     </script>
 </head>
