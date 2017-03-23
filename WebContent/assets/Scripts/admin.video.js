@@ -173,7 +173,7 @@ iv = {
 			dataTextField: "Name",
 			dataValueField: "Id",
 			optionLabel:'==请选择商家==',
-			//filter: "contains",
+			filter: "contains",
 			dataSource: createDataSource(basePath+'admin/video/sellerList'),
 			change:function(){
 				var id = $('#txt-sel-name').data('kendoDropDownList').value();

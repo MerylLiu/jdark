@@ -11,14 +11,14 @@
 	<select id="getSellers" resultType="java.util.HashMap">
 		SELECT a.* FROM biz_seller a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
-		ORDER BY a.OrderNum AND a.CreateDate DESC
+		ORDER BY a.OrderNum,a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
 
 	<select id="getSellersCount" resultType="java.lang.Integer">
 		SELECT count(*) as Count FROM biz_seller a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
-		ORDER BY a.OrderNum AND a.CreateDate DESC
+		ORDER BY a.OrderNum,a.CreateDate DESC
 	</select>
 
 	<select id="getSellerById" resultType="java.util.HashMap">

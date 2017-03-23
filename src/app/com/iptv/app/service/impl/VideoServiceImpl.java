@@ -269,6 +269,8 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 					}
 				} catch (AxisFault e) {
 					// TODO Auto-generated catch block
+					log.info("提交工单到电信审核视频发生错误 :" + e.getMessage());
+					BaseUtil.saveLog(0, "提交工单到电信审核视频", e.getMessage());
 					e.printStackTrace();
 				}
 			}

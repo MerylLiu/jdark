@@ -42,7 +42,7 @@
 						<i class='fa fa-plus text-success'></i>新增
 					</button>
 					<button id='btn-save' class='btn btn-default' style='' type='Button'>
-						<i class='fa fa-save text-success'></i>保存
+						<i class='fa fa-save text-success'></i>修改
 					</button>
 					<button id='btn-sync' class='btn btn-default' style='' type='Button'>
 						<i class='fa fa-refresh text-primary'></i>提交同步

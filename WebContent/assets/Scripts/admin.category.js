@@ -40,9 +40,22 @@ $(document).ready( function() {
 			return;
 		}
 		
-		$('#form-data').resetForm();
-		$('#parentId').val(nodes[0].Id);
-		$('#stsNormal').prop('checked',true)
+//		$('#form-data').resetForm();
+//		$('#id').val("");
+//		$('#parentId').val(nodes[0].Id);
+//		$('#stsNormal').prop('checked',true)
+		
+		var params = $("#form-data").serializeJson();
+		delete params.Id;
+		$.post(basePath + 'admin/category/save', JSON.stringify(params), function(data) {
+			if(data.result == true){
+				$.mdlg.alert('提示',data.message);
+				$('#form-data').resetForm();
+				bindData();
+			}else{
+				$.mdlg.error('错误',data.message);
+			}
+		})
 	});
 
 	$('#btn-sync').click( function() {
@@ -59,7 +72,7 @@ $(document).ready( function() {
 			})
 
 			$('#form-data').resetForm();
-			//$('#parentId').val(nodes[0].Id);
+			$('#parentId').val(nodes[0].Id);
 			$('#stsNormal').prop('checked',true)
 		})
 	});

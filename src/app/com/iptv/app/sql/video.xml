@@ -5,15 +5,14 @@
 	<select id="getAllVideo" resultType="java.util.HashMap">
 		SELECT a.* FROM biz_video a
 		WHERE a.IsDel IS NULL OR a.IsDel = 0
-		ORDER BY a.OrderNum AND a.CreateDate DESC
-
+		ORDER BY a.OrderNum, a.CreateDate DESC
 	</select>
 
 	<select id="getVideoPaged" resultType="java.util.HashMap">
 		SELECT a.*,b.SellerId FROM biz_video a
 		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
-		ORDER BY a.OrderNum AND a.CreateDate DESC
+		ORDER BY a.OrderNum, a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
 
@@ -76,7 +75,7 @@
 	</update>
 
 	<update id="videoSubmit" parameterType="java.util.HashMap">
-		UPDATE biz_video SET Status = 2,DxCode = #{DxCode},CorrelateID = #{CorrelateID}
+		UPDATE biz_video SET Status = 2,DxCode = #{DxCode},CorrelateID = #{CorrelateID},
 			CommitDate = #{CommitDate}
 		WHERE Id = #{Id}
 	</update>
@@ -95,7 +94,7 @@
 		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime
 		FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
-		ORDER BY a.OrderNum AND a.CreateDate DESC
+		ORDER BY a.OrderNum, a.CreateDate DESC
 		limit 0,9
 	</select>
 
@@ -106,7 +105,7 @@
 		<if test="categoryId != null and categoryId != 0">
 			AND a.CategoryId = #{categoryId}
 		</if>
-		ORDER BY a.OrderNum AND a.CreateDate DESC
+		ORDER BY a.OrderNum, a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
 	<select id="getHomeVideoPagedCount" resultType="java.lang.Integer">
@@ -138,7 +137,7 @@
 				FROM biz_video a
 				LEFT JOIN biz_category b ON a.CategoryId = b.Id
 				WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3 AND a.CategoryId = #{categoryId}
-				ORDER BY a.OrderNum AND a.CreateDate DESC
+				ORDER BY a.OrderNum, a.CreateDate DESC
 			) x,(SELECT @rownum:=0) t
 		) y WHERE y.RowNum IN (1,6,11)
 	</select>
@@ -172,7 +171,7 @@
 		<if test="categoryId != null and categoryId != 0">
 			AND a.CategoryId = #{categoryId}
 		</if>
-		ORDER BY a.OrderNum AND a.CreateDate DESC
+		ORDER BY a.OrderNum, a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
 	<select id="getSearchPagedCount" resultType="java.lang.Integer">

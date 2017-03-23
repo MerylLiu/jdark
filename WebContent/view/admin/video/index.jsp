@@ -168,7 +168,7 @@
 					<label class="col-sm-2 control-label">视频放置费</label>
 					<div class="col-sm-4">
 						<div class="col-sm-11">
-							<input type="text" class="form-control" name="CostFZ" placeholder="视频放置费" maxlength="20" id="txt-costfz">
+							<input type="text" class="form-control" name="CostFZ" placeholder="视频宣传费" maxlength="20" id="txt-costfz">
 						</div>
 						<span class="cols-sm-1 required">*</span>
 					</div>
@@ -286,12 +286,12 @@
 				</div>
 			</fieldset>
 			<fieldset>
-				<legend><h5>视频来源</h5></legend>
+				<legend><h5>视频来源及制作商</h5></legend>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">提供商家</label>
+					<label class="col-sm-2 control-label">视频来源</label>
 					<div class="col-sm-4">
 						<div class="col-sm-11">
-							<input type="text" class="form-control" name="Provider" placeholder="提供商家" maxlength="50">
+							<input type="text" class="form-control" name="Provider" placeholder="视频来源" maxlength="50">
 						</div>
 						<span class="cols-sm-1 required">*</span>
 					</div>

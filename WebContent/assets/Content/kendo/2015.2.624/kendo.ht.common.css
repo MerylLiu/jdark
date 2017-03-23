@@ -2779,6 +2779,7 @@ div.k-treeview {
 }
 
 input.k-textbox {
+	width:90%;
     height: 2.12em;
     line-height: 1.6em;
     padding: 2px .3em;

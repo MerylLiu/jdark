@@ -61,6 +61,36 @@ public class FtpUtil {
 		}
 	}
 
+	private static FTPClient getFTPClient(String ip,int port,String uName,String pwd) {
+		FTPClient fc = new FTPClient();
+		boolean result = true;
+
+		try {
+			fc.connect(ip, port);
+			if (fc.isConnected()) {
+				boolean flag = fc.login(uName, pwd);
+				if (flag) {
+					fc.setControlEncoding("UTF-8");
+					// binary file
+					fc.setFileType(FTPClient.BINARY_FILE_TYPE);
+					fc.enterLocalPassiveMode();
+				} else {
+					result = false;
+				}
+			} else {
+				result = false;
+			}
+			if (result) {
+				return fc;
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	private static void close(InputStream in, OutputStream out, FTPClient ftpClient) {
 		if (null != in) {
 			try {
@@ -156,9 +186,7 @@ public class FtpUtil {
 		boolean result = true;
 		FileOutputStream out = null;
 
-		setParam(ip, port, uName, uPwd);
-
-		FTPClient ftpClient = getFTPClient();
+		FTPClient ftpClient = getFTPClient(ip, port, uName, uPwd);
 
 		try {
 			File file = new File(localPath + fileName);
@@ -226,8 +254,7 @@ public class FtpUtil {
 		InputStream ins = null;
 		StringBuilder builder = null;
 
-		setParam(ip, port, uName, uPwd);
-		FTPClient ftpClient = getFTPClient();
+		FTPClient ftpClient = getFTPClient(ip, port, uName, uPwd);
 
 		try {
 			ftpClient.changeWorkingDirectory(remotePath);
@@ -240,7 +267,7 @@ public class FtpUtil {
 				builder.append(line);
 			}
 			reader.close();
-			// 主动调用一次getReply()把接下来的226消费掉. 这样做是可以解决这个返回null问题
+			// 主动调用一次getReply()把接下来的226销毁掉. 这样做是可以解决这个返回null问题
 			ftpClient.getReply();
 		} catch (IOException e) {
 			e.printStackTrace();
