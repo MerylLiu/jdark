@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="category">
+	<select id="getRootNodes" resultType="java.util.HashMap">
+		SELECT a.Id as id,concat('[',b.Text,']  ',a.Name) as name,'' as url,true as open,a.*
+		FROM biz_category a
+		LEFT JOIN (SELECT x.Text,x.Value FROM sys_dictionary x WHERE x.Key = 'CategoryStatus') b ON a.Status = b.Value 
+		WHERE (a.ParentId IS NULL OR a.ParentId = 0) AND (a.IsDel IS NULL OR a.IsDel = 0)
+		ORDER BY a.OrderNum
+	</select>
+
+	<select id="getNodesByParentID" resultType="java.util.HashMap">
+		SELECT a.Id as id,concat('[',b.Text,']  ',a.Name) as name,'' as url,true as open,a.*
+		FROM biz_category a 
+		LEFT JOIN (SELECT x.Text,x.Value FROM sys_dictionary x WHERE x.Key = 'CategoryStatus') b ON a.Status = b.Value 
+		WHERE (a.ParentId = #{ParentId}) AND (a.IsDel IS NULL OR a.IsDel = 0)
+		ORDER BY a.OrderNum
+	</select>
+
+	<select id="getCategoryById" resultType="java.util.HashMap">
+		SELECT * FROM biz_category a WHERE a.Id = #{Id}
+	</select>
+
+	<insert id="saveCategory" parameterType="java.util.HashMap">
+		INSERT INTO biz_category (Name, ParentId, Remark, Status, OrderNum)
+		VALUES (#{Name}, #{ParentId}, #{Remark}, #{Status}, #{OrderNum})
+	</insert>
+
+	<update id="updateCategory" parameterType="java.util.HashMap">
+		UPDATE biz_category SET Name = #{Name}, ParentId = #{ParentId},
+			Remark = #{Remark}, Status = #{Status}, OrderNum = #{OrderNum}
+		WHERE Id = #{Id}
+	</update>
+
+	<delete id="deleteCategory" parameterType="java.util.HashMap">
+		UPDATE biz_category SET IsDel=1 WHERE Id = #{Id}
+	</delete>
+
+	<update id="hideCategory" parameterType="java.util.HashMap">
+		UPDATE biz_category SET Status=0 WHERE Id = #{Id}
+	</update>
+
+	<update id="syncCategory" parameterType="java.util.HashMap">
+		UPDATE biz_category SET Status=2 WHERE Status = 1
+	</update>
+
+	<select id="getAllCategory" resultType="java.util.HashMap">
+		SELECT a.Name,a.Id,a.Name as text,a.Id as value
+	    FROM biz_category a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 2
+	    ORDER BY a.OrderNum
+	</select>
+	
+	<select id="getTopCategories" resultType="java.util.HashMap">
+		SELECT a.Id,a.Name
+	    FROM biz_category a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 2
+	    ORDER BY a.OrderNum
+		LIMIT 0,7
+	</select>
+	
+</mapper>

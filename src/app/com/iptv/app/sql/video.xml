@@ -11,7 +11,7 @@
 	<select id="getVideoPaged" resultType="java.util.HashMap">
 		SELECT a.*,b.SellerId FROM biz_video a
 		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
-		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) ${condition}
 		ORDER BY a.OrderNum, a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>

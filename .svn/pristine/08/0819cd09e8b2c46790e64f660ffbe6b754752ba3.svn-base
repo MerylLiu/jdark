@@ -1,0 +1,67 @@
+
+/* CSS Document */
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, form, fieldset, legend, button, input, textarea, th, td ,span,p {
+	margin: 0;
+	padding: 0;
+}
+h1, h2, h3, h4, h5 { font-weight:normal;}
+body, button, input, select, textarea {
+	font:14px/1.5 tahoma,arial,'Microsoft YaHei','\5b8b\4f53',sans-serif;
+}
+address, cite, dfn, em, var {
+	font-style: normal;
+}
+code, kbd, pre, samp {
+	font-family: courier new, courier, monospace;
+}
+small {
+	font-size: 12px;
+}
+ul, ol, li {
+	list-style: none;
+}
+a {
+	cursor: pointer;
+}
+a:link, a:visited {
+	color: #666;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration:none;
+}
+sup {
+	vertical-align: text-top;
+}
+sub {
+	vertical-align: text-bottom;
+}
+fieldset, img {
+	border: 0;
+}
+button, input, select, textarea {
+	font-size: 100%;
+}
+button { border:0; cursor:pointer;}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+:focus {
+	outline: 0;
+}
+a img {
+	border: 0;
+}
+img {
+	vertical-align: middle;
+}
+ins {
+	text-decoration: none;
+}
+del {
+	text-decoration: line-through;
+}
+em {
+	font-style: normal;
+}
