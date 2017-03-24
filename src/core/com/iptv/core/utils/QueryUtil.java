@@ -102,8 +102,6 @@ public class QueryUtil {
 	}
 
 	private static Map createSimpleCondition(Map filterDesc) {
-		// String logic = filter.get("logic").toString();
-		// ArrayList filters = (ArrayList) filter.get("filters");
 		Map data = new HashMap();
 		String key = String.format("%s_%s", filterDesc.get("field"), UUID.randomUUID());
 		String value = filterDesc.get("value").toString();
@@ -158,11 +156,5 @@ public class QueryUtil {
 
 		Integer count = BaseUtil.getDao().selectOne(statement, param);
 		return count;
-	}
-
-	public static String buildFilterCondition(Map map) {
-		ArrayList filter = (ArrayList) map.get("filter");
-
-		return null;
 	}
 }
