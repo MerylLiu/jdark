@@ -11,15 +11,14 @@
 	<select id="getVideoPaged" resultType="java.util.HashMap">
 		SELECT a.*,b.SellerId FROM biz_video a
 		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
-		WHERE (a.IsDel IS NULL OR a.IsDel = 0) ${condition}
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
 		ORDER BY a.OrderNum, a.CreateDate DESC
-		LIMIT ${offset},${rows}
 	</select>
 
-	<select id="getVideoCount" resultType="java.lang.Integer">
+	<!-- <select id="getVideoCount" resultType="java.lang.Integer">
 		SELECT count(*) as Count FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
-	</select>
+	</select> -->
 
 	<select id="getVideoById" resultType="java.util.HashMap">
 		SELECT a.* FROM biz_video a

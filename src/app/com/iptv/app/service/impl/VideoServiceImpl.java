@@ -61,7 +61,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 
 	@Override
 	public KendoResult getVideosPaged(Map map) {
-		KendoResult data = QueryUtil.getRecordsPaged("video.getVideoPaged", "video.getVideoCount", "condition", map);
+		KendoResult data = QueryUtil.getRecordsPaged("video.getVideoPaged", map);
 		return data;
 	}
 

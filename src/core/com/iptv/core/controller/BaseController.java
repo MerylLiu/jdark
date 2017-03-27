@@ -27,4 +27,9 @@ public class BaseController {
 
 		return mv;
 	}
+
+	public ModelAndView redirect(String url) {
+		String redirectUrl = String.format("redirect:%s", url);
+		return new ModelAndView(redirectUrl);
+	}
 }

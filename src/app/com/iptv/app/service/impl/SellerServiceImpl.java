@@ -19,7 +19,7 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 
 	@Override
 	public KendoResult getSellersPaged(Map map) {
-		KendoResult data = QueryUtil.getRecordsPaged("seller.getSellers", "seller.getSellersCount", null, map);
+		KendoResult data = QueryUtil.getRecordsPaged("seller.getSellersPaged", map);
 		return data;
 	}
 

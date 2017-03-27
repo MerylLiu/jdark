@@ -42,8 +42,8 @@ public class AdminSellerController extends AdminBaseController{
 		return view("/admin/seller/index",res);
 	}
 	
-	@RequestMapping(value="/sellerList",method = RequestMethod.GET)
-	public @ResponseBody KendoResult sellerList(@RequestParam Map<String,Object> param){
+	@RequestMapping(value="/sellerList",method = RequestMethod.POST)
+	public @ResponseBody KendoResult sellerList(@RequestBody Map param){
 		KendoResult data = sellerService.getSellersPaged(param);
 
 		return data;
