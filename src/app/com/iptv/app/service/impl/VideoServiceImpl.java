@@ -331,7 +331,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		res.setPage(page);
 		res.setPageSize(pageSize);
 
-		List data = getDao().selectList("video.getHomeVideoPaged", param);
+		List data = getDao().selectList("video.getHomeVideoPage", param);
 		res.setData(data);
 
 		if (Integer.valueOf(map.get("categoryId").toString()) == 0) {
@@ -342,7 +342,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 			res.setPageNum(pageNum);
 		}
 
-		Integer count = getDao().selectOne("video.getHomeVideoPagedCount", param);
+		Integer count = getDao().selectOne("video.getHomeVideoPageCount", param);
 		res.setTotal(count);
 
 		return res;
@@ -413,13 +413,13 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		res.setPage(page);
 		res.setPageSize(pageSize);
 
-		List data = getDao().selectList("video.getSearchPaged", param);
+		List data = getDao().selectList("video.getSearchPage", param);
 		res.setData(data);
 
 		Integer pageNum = getDao().selectOne("video.getSearchPageNum", param);
 		res.setPageNum(pageNum);
 
-		Integer count = getDao().selectOne("video.getSearchPagedCount", param);
+		Integer count = getDao().selectOne("video.getSearchPageCount", param);
 		res.setTotal(count);
 
 		return res;

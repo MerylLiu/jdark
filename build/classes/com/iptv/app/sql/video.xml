@@ -97,7 +97,7 @@
 		limit 0,9
 	</select>
 
-	<select id="getHomeVideoPaged" resultType="java.util.HashMap">
+	<select id="getHomeVideoPage" resultType="java.util.HashMap">
 		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime
 		FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
@@ -107,7 +107,7 @@
 		ORDER BY a.OrderNum, a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
-	<select id="getHomeVideoPagedCount" resultType="java.lang.Integer">
+	<select id="getHomeVideoPageCount" resultType="java.lang.Integer">
 		SELECT count(1) as Count FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 		<if test="categoryId != null and categoryId != 0">
@@ -162,7 +162,7 @@
 			AND (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 	</select>
 
-	<select id="getSearchPaged" resultType="java.util.HashMap">
+	<select id="getSearchPage" resultType="java.util.HashMap">
 		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime
 		FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
@@ -173,7 +173,7 @@
 		ORDER BY a.OrderNum, a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
-	<select id="getSearchPagedCount" resultType="java.lang.Integer">
+	<select id="getSearchPageCount" resultType="java.lang.Integer">
 		SELECT count(1) as Count FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 			AND ((a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%')))
