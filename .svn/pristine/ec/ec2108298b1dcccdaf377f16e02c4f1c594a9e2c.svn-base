@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user">
+	<select id="findAllGenderCount" resultType="java.util.HashMap">
+		SELECT (SELECT count(*) FROM sys_user WHERE Gender = 1) as 'male',  (SELECT count(*) FROM sys_user WHERE Gender = 2) as 'female'
+	</select>
+	
+	<select id="getIdPaged" resultType="java.util.HashMap">
+		SELECT * FROM sys_user ORDER BY CreateTime DESC
+	</select>
+	
+	<select id="findOrganizationIdCount" resultType="java.util.HashMap">
+		SELECT OrganizationId,count(*) as sum  FROM sys_user GROUP BY OrganizationId
+	</select>
+	
+	<select id="getIdCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM sys_user
+	</select>
+	<select id="findUserById" resultType="java.util.HashMap">
+		SELECT * FROM sys_user WHERE id=#{id}
+	</select>
+	<select id="findUserByLoginName" resultType="java.util.HashMap">
+		SELECT * FROM sys_user WHERE loginName=#{LoginName}
+	</select>
+	<select id="findUserByUserName" resultType="java.util.HashMap">
+		SELECT * FROM sys_user WHERE UserName=#{UserName}
+	</select>
+	<insert id="save"  parameterType="java.util.HashMap">
+		INSERT INTO sys_user (LoginName,UserName,OrganizationId,Password,Gender,Tel,Email,CreateTime,UpdateTime,RoleId,Code) VALUES ( #{LoginName},#{UserName},#{OrganizationId},#{Password},#{Gender},#{Tel},#{Email},#{CreateTime},#{UpdateTime},#{RoleId},#{Code})
+	</insert>
+	<update id="update" parameterType="java.util.HashMap">
+		UPDATE sys_user SET LoginName=#{LoginName},UserName=#{UserName},Password = #{Password},OrganizationId=#{OrganizationId},Gender=#{Gender},Tel=#{Tel},Email=#{Email},UpdateTime=#{UpdateTime},RoleId=#{RoleId},Code=#{Code} WHERE id = #{Id}
+	</update>
+	<update id="updateNoPasswordModify" parameterType="java.util.HashMap">
+		UPDATE sys_user SET LoginName=#{LoginName},UserName=#{UserName},OrganizationId=#{OrganizationId},Gender=#{Gender},Tel=#{Tel},Email=#{Email},UpdateTime=#{UpdateTime},RoleId=#{RoleId},Code=#{Code} WHERE id = #{Id}
+	</update>
+	<delete id="delete" parameterType="java.util.HashMap">
+		DELETE FROM sys_user WHERE ID IN
+		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		 </foreach>
+	</delete>
+</mapper>
