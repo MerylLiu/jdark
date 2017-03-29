@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="seller">
+	<select id="getAllSellers" resultType="java.util.HashMap">
+		SELECT a.*,a.Name as text,a.Id as value FROM biz_seller a
+		WHERE a.IsDel IS NULL OR a.IsDel = 0
+		ORDER BY a.OrderNum AND a.CreateDate DESC
+	</select>
+
+	<select id="getSellersPaged" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_seller a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
+		ORDER BY a.OrderNum,a.CreateDate DESC
+	</select>
+
+	<!-- <select id="getSellersCount" resultType="java.lang.Integer">
+		SELECT count(*) as Count FROM biz_seller a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
+		ORDER BY a.OrderNum,a.CreateDate DESC
+	</select> -->
+
+	<select id="getSellerById" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_seller a Where a.Id = #{Id}
+	</select>
+
+	<select id="getExistCount" resultType="java.lang.Integer">
+		SELECT count(*) as Count FROM biz_seller a
+		WHERE a.Code = #{Code} AND (a.IsDel IS NULL OR a.IsDel = 0)
+	</select>	
+
+	<insert id="saveSeller" parameterType="java.util.HashMap">
+		INSERT INTO biz_seller
+			(Code, Name, SellerId, Tel, Address, Province, City, Area, IsInstall, SetUpDate, CreateDate, OrderNum)
+		VALUES
+			(#{Code}, #{Name}, #{SellerId}, #{Tel}, #{Address}, #{Province}, #{City}, #{Area}, 
+			 #{IsInstall}, #{SetUpDate}, #{CreateDate}, #{OrderNum})
+	</insert>
+
+	<update id="updateSeller" parameterType="java.util.HashMap">
+		UPDATE biz_seller SET Code = #{Code}, Name = #{Name}, SellerId = #{SellerId},
+			Tel = #{Tel}, Address = #{Address}, Province = #{Province}, City = #{City}, Area = #{Area},
+			IsInstall = #{IsInstall}, SetUpDate = #{SetUpDate}, OrderNum = #{OrderNum}
+		WHERE Id = #{Id}
+	</update>
+
+	<delete id="deleteSeller" parameterType="java.util.HashMap">
+		UPDATE biz_seller SET IsDel = 1 
+		WHERE Id IN
+		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		</foreach>
+	</delete>
+</mapper>

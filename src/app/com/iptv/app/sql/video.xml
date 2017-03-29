@@ -142,7 +142,7 @@
 	</select>
 
 	<select id="getVideoDetail" resultType="java.util.HashMap">
-		SELECT a.Id,a.Name,a.ImageUrl,a.GifUrl,a.VideoUrl,a.QrCode,a.Description,a.DxCode,b.Tel,b.Address
+		SELECT a.Id,a.Name,a.ImageUrl,a.GifUrl,a.VideoUrl,a.QrCode,a.Description,a.DxCode,b.Tel,b.Address,b.Name as SellerName
 		FROM biz_video a
 		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
 		WHERE a.Id = #{id}
