@@ -16,7 +16,10 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 
 import com.iptv.core.common.KendoResult;
+import com.iptv.core.utils.JsonUtil;
 import com.iptv.core.utils.StringUtil;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
 import java.sql.*;
 
@@ -48,7 +51,7 @@ public class PageInterceptor implements Interceptor {
 				// rewrite sql
 				String countSql = concatCountSql(sql, param);
 				String pageSql = getPageSql(connection, sql, param);
-
+				
 				PreparedStatement statement = null;
 				ResultSet rs = null;
 				int totalCount = 0;
@@ -96,9 +99,12 @@ public class PageInterceptor implements Interceptor {
 	private String getPageSql(Connection conn, String sql, Map param) throws SQLException {
 		StringBuffer sqlBuffer = new StringBuffer(sql);
 
-		if (conn.toString().toLowerCase().contains("mysql")) {
+		DatabaseMetaData dbmd = conn.getMetaData();
+		String dataBaseType = dbmd.getDatabaseProductName().toLowerCase();
+
+		if (dataBaseType.contains("mysql")) {
 			return concatMysqlPageSql(sql, param);
-		} else if (conn.toString().toLowerCase().contains("oracle")) {
+		} else if (dataBaseType.contains("oracle")) {
 			return concatOraclePageSql(sql, param);
 		}
 		return sqlBuffer.toString();
