@@ -30,13 +30,6 @@
 	<!-- 启动AOP支持 -->
 	<aop:aspectj-autoproxy />
 
-	<aop:config>
-		<!-- 配置一个切入点 -->
-		<aop:pointcut id="serviceMethods"
-			expression="execution(* com.iptv.*.service.impl.*ServiceImpl.*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods" />
-	</aop:config>
-
 	<bean id="serviceLocator" class="com.iptv.core.common.ServiceLocator"
 		scope="singleton" />
 	<bean id="sysParamService" class="com.iptv.core.service.impl.SysParamServiceImpl" />

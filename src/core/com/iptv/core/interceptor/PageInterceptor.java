@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import java.sql.*;
 
-@Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class }) })
+@Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
 @SuppressWarnings({ "unused", "rawtypes", "unchecked" })
 public class PageInterceptor implements Interceptor {
 	private static final String pageFlag = "paged";
@@ -51,7 +51,7 @@ public class PageInterceptor implements Interceptor {
 				// rewrite sql
 				String countSql = concatCountSql(sql, param);
 				String pageSql = getPageSql(connection, sql, param);
-				
+
 				PreparedStatement statement = null;
 				ResultSet rs = null;
 				int totalCount = 0;
@@ -112,7 +112,7 @@ public class PageInterceptor implements Interceptor {
 
 	private String concatMysqlPageSql(String sql, Map param) {
 		StringBuffer buffer = new StringBuffer();
-		sql = sql.toLowerCase();
+		//sql = sql.toLowerCase();
 
 		Map filter = (Map) param.get("filter");
 		Map condition = buildCondition(filter);
@@ -287,7 +287,7 @@ public class PageInterceptor implements Interceptor {
 		} else if (op.equals("contains")) {
 			data.put("clause", filterDesc.get("field") + " LIKE " + "'%" + val + "%'");
 		} else if (op.equals("doesnotcontain")) {
-			data.put("clause", filterDesc.get("field") + " NOT LIKE " + "'%" + val + "'");
+			data.put("clause", filterDesc.get("field") + " NOT LIKE " + "'%" + val + "%'");
 		} else if (op.equals("startswith")) {
 			data.put("clause", filterDesc.get("field") + " LIKE " + "'" + val + "%'");
 		} else if (op.equals("endswith")) {

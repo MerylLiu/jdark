@@ -42,6 +42,7 @@
 	</bean>
 	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg index="0" ref="sqlSessionFactory" />
+		<constructor-arg index="1" value="BATCH" />
 	</bean>
 	<bean id="basicDao" class="com.iptv.core.dao.BasicDaoImpl">
 		<!--注入SqlSessionTemplate实例 -->
@@ -73,4 +74,10 @@
 			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />
 		</tx:attributes>
 	</tx:advice>
+	<aop:config>
+		<!-- 配置一个切入点 -->
+		<aop:pointcut id="serviceMethods"
+			expression="execution(* com.iptv.*.service.impl.*ServiceImpl.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods" />
+	</aop:config>
 </beans>
