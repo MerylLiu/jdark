@@ -1,6 +1,7 @@
 package com.iptv.core.filter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -23,33 +24,37 @@ public class LoginFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) arg0;
 		HttpServletResponse res = (HttpServletResponse) arg1;
 
-		// 从SESSION获取对象
-		Object obj = req.getSession().getAttribute("AdminUser");
+		String path = req.getContextPath();
 		String servletPath = req.getServletPath();
 
-		if (obj != null) {
-			arg2.doFilter(arg0, arg1);// 请求：我自己定义请求，例外就是页面JS,JSP,HTML
-		} else {
-			String path = req.getContextPath();
-			String basePath = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + path + "/";
+		if (servletPath.contains("/admin")) {
+			// 从SESSION获取对象
+			Object obj = req.getSession().getAttribute("userId");
 
-			if (servletPath.contains(".")) {
-				int index = servletPath.lastIndexOf(".");
-				String suffix = servletPath.substring(index);
-				if (".js.html.css.jpg.png.jsp".contains(suffix)) {
+			String requestType = req.getHeader("X-Requested-With");
+
+			if (obj != null) {
+				arg2.doFilter(arg0, arg1);
+			} else {
+				if (servletPath.contains("/login") || servletPath.contains("/doLogin") || servletPath.contains("/regist")) {
 					arg2.doFilter(arg0, arg1);
+				} else if (servletPath.contains("/main") || servletPath.contains("/services")) {
+					arg2.doFilter(arg0, arg1);
+				} else if (requestType != null && "XMLHttpRequest".equalsIgnoreCase(requestType)) {// 重定向ajax
+					res.setHeader("sessionstatus", "timeout");
+					res.sendError(518, "session timeout.");
 				} else {// 重定向
-					res.sendRedirect(basePath);
-				}
-			} else {// 这里是处理我们自己定义请求
-				if (servletPath.contains("login") || servletPath.contains("regist")) {
-					arg2.doFilter(arg0, arg1);
-				}else if (servletPath.contains("main")||servletPath.contains("services")) {
-					arg2.doFilter(arg0, arg1);
-				}else {// 重定向
-					res.sendRedirect(basePath+"admin/main");
+					String basePath = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + path + "/";
+
+					PrintWriter out = res.getWriter();
+					out.println("<script>");  
+					out.println("top.location.href='" + basePath + "admin/login'");
+				    out.println("</script>"); 
+					//res.sendRedirect(contextPath + "/admin/login");
 				}
 			}
+		} else {
+			arg2.doFilter(arg0, arg1);
 		}
 	}
 

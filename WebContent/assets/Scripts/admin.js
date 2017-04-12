@@ -787,6 +787,11 @@
 $.ajaxSetup({
     cache: false,
     contentType: 'application/json;charset=utf-8',
+    error:function(xhr,status,error){
+    	if(xhr.status ==518){
+    		window.location.href = "login";
+    	}
+    }
 });
 //$.ajaxSettings.traditional = true;
 
