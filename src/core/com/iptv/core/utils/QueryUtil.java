@@ -9,6 +9,14 @@ import com.iptv.core.common.KendoResult;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class QueryUtil {
+	/**
+	 * 查询记录（分页）
+	 * 
+	 * @param statement
+	 *            sql
+	 * @param param
+	 * @return
+	 */
 	public static KendoResult getRecordsPaged(String statement, Map param) {
 		String page = param.get("page").toString();
 		String pageSize = param.get("pageSize").toString();
@@ -21,6 +29,14 @@ public class QueryUtil {
 		return new KendoResult(data, Integer.valueOf(param.get("total").toString()));
 	}
 
+	/**
+	 * 获取下拉列表选项
+	 * 
+	 * @param statement
+	 *            sql
+	 * @param param
+	 * @return
+	 */
 	public static KendoResult getSelectOptions(String statement, Map param) {
 		Map map = new HashMap();
 		if (param.get("filter") != null) {

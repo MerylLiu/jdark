@@ -12,8 +12,8 @@
 	</select> -->
 
 	<select id="getSysDic" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-		SELECT a.Text as text,a.Value as value,a.* FROM sys_dictionary a
-		WHERE a.Key = #{Key} AND a.isVisible = 1
+		SELECT a.Text as text,a.KeyValue as value,a.* FROM sys_dictionary a
+		WHERE a.KeyCode = #{Key} AND a.isVisible = 1
 		ORDER BY OrderNum
 	</select>
 </mapper>

@@ -14,43 +14,44 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.deser.Deserializers.Base;
 import com.iptv.core.service.SysParamService;
 import com.iptv.core.utils.BaseUtil;
+import com.iptv.core.utils.DateUtil;
 
 @Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SysParamServiceImpl extends BaseServiceImpl implements SysParamService {
-	@Resource  
-	private HttpSession session;  
-	@Resource  
-	private HttpServletRequest request; 
+	@Resource
+	private HttpSession session;
+	@Resource
+	private HttpServletRequest request;
 
 	@Override
 	public void saveLog(String logInfo) {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 		Map map = new HashMap();
 		map.put("UserCode", "test");
 		map.put("UserName", "test");
 		map.put("IPAddress", "127.0.0.1");
 		map.put("OperationType", "8");
 		map.put("Operation", "test");
-		map.put("CreateDate", format.format(new Date()));
+		map.put("CreateDate", DateUtil.getNow());
 		map.put("Remark", logInfo);
 
 		getDao().insert("sysParams.saveLog", map);
 	}
 
-	/*
+	/**
 	 * 保存错误日志到数据库
+	 * 
 	 * @param opreationType
-	 * 		0.错误日志,1.插入数据，2.修改数据，3，删除数据，8，其他
+	 *            0.错误日志,1.插入数据，2.修改数据，3，删除数据，8，其他
 	 * @param operation
-	 * 		错误信息标题
+	 *            错误信息标题
 	 * @param remark
-	 * 		错误信息
+	 *            错误信息
 	 */
-	public void saveLog(int opreationType,String operation,String remark) {
+	public void saveLog(int opreationType, String operation, String remark) {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		HttpSession session = request.getSession();
 

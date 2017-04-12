@@ -60,6 +60,12 @@ public class BaseUtil {
 		sysParamService.saveLog(opreationType, operation, remark);
 	}
 
+	/**
+	 * 获取系统参数
+	 * @param key
+	 * 		参数名称
+	 * @return
+	 */
 	@Cacheable
 	public static List getSysParam(String key) {
 		SysParamService sysParamService = (SysParamService) getService("sysParamService");
@@ -91,6 +97,11 @@ public class BaseUtil {
 		return html;
 	}
 
+	/**
+	 * 获取IP地址
+	 * @param request
+	 * @return
+	 */
 	public static String getIpAddress(HttpServletRequest request) {
 		String ipAddress = request.getHeader("x-forwarded-for");
 		if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
@@ -122,6 +133,12 @@ public class BaseUtil {
 		return ipAddress;
 	}
 
+	/**
+	 * 将QueryString参数转化为Map
+	 * @param queryString
+	 * @param encode
+	 * @return
+	 */
 	public static Map getRequestParamsMap(String queryString, String encode) {
 		Map paramsMap = new HashMap();
 		if (queryString != null && queryString.length() > 0) {
