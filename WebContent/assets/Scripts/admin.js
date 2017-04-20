@@ -560,6 +560,12 @@
             //绑定本身的事件
             modalObj.on('show.bs.modal', function() {
                 options.onShow();
+
+                var height = $('iframe:visible',window.top.document).height();
+                //var headerHeight = modalObj.find('.modal-header').outerHeight();
+                //var footerHeight = modalObj.find('.modal-footer').outerHeight();
+
+				modalObj.find('.modal-body').css("max-height",(height - 170)+'px');
             });
             modalObj.on('shown.bs.modal', function() {
                 options.onShown();
@@ -668,7 +674,7 @@
     				url: url,
     				dataType: 'json',
     				contentType: 'application/json; charset=utf-8',
-    				type: "POST"
+    				type: "POST",
     			},
 				parameterMap: function (options) {
 					return JSON.stringify(options);
@@ -685,8 +691,9 @@
     			model: {
     				fields: fields
     			}
-    		}
-    	});
+    		},
+			error: kendoErrors
+		});
     	
     	var gdata = new kendo.data.DataSource ({
     		transport: {
@@ -707,7 +714,8 @@
     			model: {
     				fields: fields
     			}
-    		}
+    		},
+			error: kendoErrors
     	});
 
       return (typeof fields == "undefined") ? gdata : pdata;
@@ -789,9 +797,8 @@ $.ajaxSetup({
     contentType: 'application/json;charset=utf-8',
     error:function(xhr,status,error){
     	if(xhr.status ==518){
-    		window.location.href = "login";
+    		top.location.href = basePath + "admin/login";
     	}
     }
 });
-//$.ajaxSettings.traditional = true;
 

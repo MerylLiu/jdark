@@ -14,19 +14,25 @@ import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
+import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.iptv.core.common.KendoResult;
+import com.iptv.core.utils.BaseUtil;
 import com.iptv.core.utils.JsonUtil;
 import com.iptv.core.utils.StringUtil;
+import com.mysql.jdbc.log.LogUtils;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
 import java.sql.*;
 
-@Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
+@Intercepts({
+		@Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class, Integer.class }) })
 @SuppressWarnings({ "unused", "rawtypes", "unchecked" })
 public class PageInterceptor implements Interceptor {
 	private static final String pageFlag = "paged";
+	private Logger log = Logger.getLogger(this.getClass());
 
 	@Override
 	public Object intercept(Invocation arg0) throws Throwable {
@@ -63,13 +69,20 @@ public class PageInterceptor implements Interceptor {
 						totalCount = rs.getInt(1);
 					}
 				} catch (SQLException e) {
-					System.out.println("Ignore this exception" + e);
+					log.error("执行sql时发生错误:" + e.getMessage());
+					BaseUtil.saveLog(0, "执行sql时发生错误", e.getMessage());
 				} finally {
 					try {
-						rs.close();
-						statement.close();
+						if (rs != null) {
+							rs.close();
+						}
+
+						if (statement != null) {
+							statement.close();
+						}
 					} catch (SQLException e) {
-						System.out.println("Ignore this exception" + e);
+						log.error("执行sql时发生错误:" + e.getMessage());
+						BaseUtil.saveLog(0, "执行sql时发生错误", e.getMessage());
 					}
 				}
 
@@ -112,7 +125,7 @@ public class PageInterceptor implements Interceptor {
 
 	private String concatMysqlPageSql(String sql, Map param) {
 		StringBuffer buffer = new StringBuffer();
-		//sql = sql.toLowerCase();
+		// sql = sql.toLowerCase();
 
 		Map filter = (Map) param.get("filter");
 		Map condition = buildCondition(filter);
@@ -188,8 +201,12 @@ public class PageInterceptor implements Interceptor {
 			buffer.append(") v where 1 = 1 and ");
 			buffer.append(clauseSql);
 		} else {
-			buffer.append("select count(1) ");
-			buffer.append(sql.substring(sql.indexOf("from")));
+			// buffer.append("select count(1) ");
+			// buffer.append(sql.substring(sql.indexOf("from")));
+
+			buffer.append("select count(1) from (");
+			buffer.append(sql);
+			buffer.append(") v");
 		}
 
 		return buffer.toString();
@@ -304,6 +321,23 @@ public class PageInterceptor implements Interceptor {
 			data.put("clause", filterDesc.get("field") + " <= " + value);
 		} else if (op.equals("neq")) {
 			data.put("clause", filterDesc.get("field") + " != " + value);
+		} else if (op.equals("in")) {
+			if (filterDesc.get("value").getClass().getName() == "java.util.ArrayList") {
+				ArrayList array = (ArrayList) filterDesc.get("value");
+				String str = "";
+
+				for (int i = 0; i < array.size(); i++) {
+					if (i == array.size() - 1) {
+						str += "'" + array.get(i).toString() + "'";
+					} else {
+						str += "'" + array.get(i).toString() + "',";
+					}
+				}
+
+				data.put("clause", filterDesc.get("field") + " in (" + str + ")");
+			} else if (filterDesc.get("value").getClass().getName() == "java.lang.String") {
+				data.put("clause", filterDesc.get("field") + " in (" + value + ")");
+			}
 		} else {
 			data.put("clause", filterDesc.get("field") + " = " + value);
 		}

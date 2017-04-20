@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.iptv.app.service.LoginService;
 import com.iptv.app.service.SysMenuService;
+import com.sun.tools.doclets.formats.html.HelpWriter;
 
 @Controller
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -48,7 +49,9 @@ public class AdminLoginController extends AdminBaseController {
 		List data = sysMenuService.getAllMenus();
 
 		log.info("访问Controller:admin/main,加载系统菜单");
-		return view("admin/main", "menus", data);
+		Map map = new HashMap();
+		map.put("menus", data);
+		return view(map);
 	}
 
 	@RequestMapping("/home")

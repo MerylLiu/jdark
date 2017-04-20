@@ -10,13 +10,15 @@ import org.springframework.stereotype.Service;
 import com.iptv.app.service.SysMenuService;
 import com.iptv.core.common.BizException;
 import com.iptv.core.service.impl.BaseServiceImpl;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 @Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SysMenuServiceImpl extends BaseServiceImpl implements SysMenuService {
 	@Override
 	public List<Map> getAllMenus() {
-		List res = getDao().selectList("sysMenu.getAllMenus");
+		//List res = getDao().selectList("sysMenu.getAllMenus");
+		List res = getDao().selectList("statistics.sellerTotalPaged",new HashMap());
 		return res;
 	}
 
