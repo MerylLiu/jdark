@@ -30,7 +30,7 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 	}
 
 	@Override
-	public void save(Map map) throws BizException {
+	public String save(Map map) throws BizException {
 		List errMsg = new ArrayList();
 
 		if (map.get("Code") == null) {
@@ -70,6 +70,8 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 
 			map.put("CreateDate", DateUtil.getNow());
 			getDao().insert("seller.saveSeller", map);
+
+			return "add";
 		} else {
 			Map curr = getDao().selectOne("seller.getSellerById", map.get("Id"));
 
@@ -82,6 +84,8 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 			}
 
 			getDao().update("seller.updateSeller", map);
+
+			return "update";
 		}
 	}
 
@@ -107,4 +111,9 @@ public class SellerServiceImpl extends BaseServiceImpl implements SellerService 
 		return new KendoResult(data);
 	}
 
+	@Override
+	public KendoResult getSellersOptions(Map map) {
+		KendoResult data = QueryUtil.getSelectOptions("seller.getSellersOptions", map);
+		return data;
+	}
 }

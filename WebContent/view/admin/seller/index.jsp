@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 <%@include file="/assets/inc.jsp"%>
-<script type="text/javascript" src="${basePath}assets/Scripts/admin.seller.js"></script>
+<script type="text/javascript" src="${basePath}assets/scripts/admin.seller.js"></script>
 <script type="text/javascript">
 	var provinces = ${province};
 </script>

@@ -441,7 +441,7 @@ if (Date) {
 
 function handleAuth(e) {
     if (typeof e.unAuth != 'undefined') {
-        window.location.href = '/AdminUser/Login';
+        login.location.href = 'login';
     }
 }
 
@@ -478,8 +478,8 @@ function errors(e) {
         alert(message);
     } else if (typeof e.statusText != 'undefined') {
         alert(e.statusText);
-    } else if (typeof e.unAuth != 'undefined') {
-        window.location.href = '/AdminUser/Login';
+    } else if (typeof e.xhr != 'undefined' && e.xhr.status == 518) {
+		top.location.href = basePath + "/admin/login";
     } else if (typeof e.message != 'undefined') {
         alert(e.message);
     } else {
@@ -490,18 +490,16 @@ function errors(e) {
 function kendoErrors(e) {
     var errors = null;
 
-    try {
-        errors = JSON.parse(e.xhr.responseText);
-    } catch (error) {
-        alert("异常错误。");
-        return;
-    }
-
-    if (typeof errors.unAuth != 'undefined') {
-        window.location.href = '/Admin/AdminUser/Login';
-    } else if (typeof e.message != 'undefined') {
-        alert(errors.message);
+    if (e.xhr.status == 518) {
+		top.location.href = basePath + "/admin/login";
     } else {
-        alert(errors);
+		try {
+			errors = JSON.parse(e.xhr.responseText);
+		} catch (error) {
+			$.mdlg.error("错误","异常错误。");
+			return;
+		}
+
+		$.mdlg.error("错误",errors.message);
     }
 }

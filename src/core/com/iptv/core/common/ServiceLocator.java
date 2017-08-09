@@ -1,35 +1,39 @@
 package com.iptv.core.common;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-public class ServiceLocator implements BeanFactoryAware{
-	private static BeanFactory beanFactory = null;
-	private static ServiceLocator servlocator = null;
+public class ServiceLocator implements ApplicationContextAware {
+	private static ApplicationContext applicationContext;
 
-	@SuppressWarnings("static-access")
-	@Override
-	public void setBeanFactory(BeanFactory factory) throws BeansException {
-		this.beanFactory = factory;
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		ServiceLocator.applicationContext = applicationContext;
 	}
 
-	public BeanFactory getBeanFactory() {
-		return beanFactory;
+	public static ApplicationContext getApplicationContext() {
+		return applicationContext;
 	}
-	
-	public static ServiceLocator getInstance() {
-        if (servlocator == null)
-              servlocator = (ServiceLocator) beanFactory.getBean("serviceLocator");
-        return servlocator;
-    }
-	
+
 	public static Object getService(String servName) {
-        return beanFactory.getBean(servName);
-    }
-	
+		servName = String.format("%s%s", servName.substring(0,1).toLowerCase(),servName.substring(1));
+		
+		try {
+			Object bean = applicationContext.getBean(servName);
+			return bean;
+		} catch (Exception e) {
+			return applicationContext.getBean(servName + "Impl");
+		}
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Object getService(String servName, Class clazz) {
-        return beanFactory.getBean(servName, clazz);
-    }
+		servName = String.format("%s%s", servName.substring(0,1).toLowerCase(),servName.substring(1));
+
+		try {
+			Object bean = applicationContext.getBean(servName, clazz);
+			return bean;
+		} catch (Exception e) {
+			return applicationContext.getBean(servName + "Impl", clazz);
+		}
+	}
 }

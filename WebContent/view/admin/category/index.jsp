@@ -4,9 +4,9 @@
 <html lang="en">
 <head>
 <%@include file="/assets/inc.jsp"%>
-<link href="${basePath}assets/Content/zTreeStyle/zTreeStyle.css" rel="stylesheet">
-<script src="${basePath}assets/Scripts/jquery.ztree.all.js"></script>
-<script src="${basePath}assets/Scripts/admin.category.js"></script>
+<link href="${basePath}assets/content/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+<script src="${basePath}assets/scripts/jquery.ztree.all.js"></script>
+<script src="${basePath}assets/scripts/admin.category.js"></script>
 </head>
 <body>
 	<div class="container-fluid page-container">
@@ -42,7 +42,7 @@
 						<i class='fa fa-plus text-success'></i>新增
 					</button>
 					<button id='btn-save' class='btn btn-default' style='' type='Button'>
-						<i class='fa fa-save text-success'></i>修改
+						<i class='fa fa-save text-success'></i>保存
 					</button>
 					<button id='btn-sync' class='btn btn-default' style='' type='Button'>
 						<i class='fa fa-refresh text-primary'></i>提交同步

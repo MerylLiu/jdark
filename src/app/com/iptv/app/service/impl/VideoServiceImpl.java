@@ -1,20 +1,24 @@
 package com.iptv.app.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URLDecoder;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.axis2.AxisFault;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.iptv.app.Utils.LocXmlUtil;
+import com.iptv.app.Utils.ExcelUtil;
 import com.iptv.app.service.CSPRequestServiceStub;
 import com.iptv.app.service.CSPRequestServiceStub.CSPResult;
 import com.iptv.app.service.CSPRequestServiceStub.ExecCmd;
@@ -26,7 +30,6 @@ import com.iptv.core.common.KendoResult;
 import com.iptv.core.service.impl.BaseServiceImpl;
 import com.iptv.core.utils.BaseUtil;
 import com.iptv.core.utils.DateUtil;
-import com.iptv.core.utils.FtpUtil;
 import com.iptv.core.utils.JsonUtil;
 import com.iptv.core.utils.QueryUtil;
 
@@ -72,7 +75,7 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 	}
 
 	@Override
-	public void save(Map map) throws BizException {
+	public String save(Map map) throws BizException {
 		List errMsg = new ArrayList();
 
 		if (map.get("SellerKeyId") == null) {
@@ -83,6 +86,9 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		}
 		if (map.get("Name") == null) {
 			errMsg.add("请输入视频名称。");
+		}
+		if (map.get("Subhead") == null) {
+			errMsg.add("请输入视频副标题。");
 		}
 		if (map.get("Jianpin") == null) {
 			errMsg.add("请输入视频名称简拼。");
@@ -105,17 +111,37 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		if (map.get("VideoUrl") == null) {
 			errMsg.add("请输入视频链接。");
 		}
+		if (map.get("AppVideoUrl") == null) {
+			errMsg.add("请输入视频app链接。");
+		}
 		if (map.get("StartDate") == null) {
 			errMsg.add("请选择开始时间。");
 		}
 		if (map.get("EndDate") == null) {
 			errMsg.add("请选择结束时间。");
 		}
+		if(map.get("StartDate") != null && map.get("EndDate") != null ){
+			try {
+				Date startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(map.get("StartDate").toString());
+				Date endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(map.get("EndDate").toString());
+				if(startDate.compareTo(endDate)>0||startDate.compareTo(endDate)==0){
+					errMsg.add("开始时间必须在结束时间之前");
+				}
+			} catch (ParseException e) {
+				log.error("添加或者修改视频管理-开始时间和结束时间的转换错误：" + e.getMessage());
+				BaseUtil.saveLog(0, "添加或者修改视频管理-开始时间和结束时间的转换错误", e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		
 		if (map.get("Description") == null) {
 			errMsg.add("请输入视频介绍。");
 		}
 		if (map.get("ImageUrl") == null) {
 			errMsg.add("请输入静态图地址。");
+		}
+		if (map.get("AppImageUrl") == null) {
+			errMsg.add("请输入app静态图地址。");
 		}
 		if (map.get("GifUrl") == null) {
 			errMsg.add("请输入动态图地址。");
@@ -152,6 +178,8 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 			map.put("CreateDate", DateUtil.getNow());
 			map.put("Status", 1);
 			getDao().insert("video.saveVideo", map);
+
+			return "add";
 		} else {
 			Map curr = getDao().selectOne("video.getVideoById", map.get("Id"));
 
@@ -164,6 +192,8 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 			}
 
 			getDao().update("video.updateVideo", map);
+
+			return "update";
 		}
 	}
 
@@ -209,72 +239,9 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 			throw new BizException(errMsg);
 		}
 
-		getDao().update("video.videoOffline", map);
-	}
-
-	@Override
-	public void doSubmit(Map map) throws BizException {
-		List errMsg = new ArrayList();
-
 		ArrayList ids = ((ArrayList) map.get("Id"));
-		if (map.get("Id") == null || ids.size() <= 0) {
-			errMsg.add("请选择要提交到电信进行审核的视频。");
-		}
 
-		ArrayList status = (ArrayList) map.get("Status");
-		if (status.contains(0) || status.contains(2) || status.contains(2)) {
-			errMsg.add("您选择的视频包含“已下线”、“已提交” 或 “已发布” 的视频，请重新选择。");
-		}
-
-		if (errMsg.size() > 0) {
-			throw new BizException(errMsg);
-		}
-
-		// 生成XML
-		boolean res = false;
-		for (Object item : ids) {
-			Integer id = Integer.valueOf(item.toString());
-			Map data = this.getVideo(id);
-
-			String xml = LocXmlUtil.BuildXml(data);
-			// System.out.println(xml);
-
-			InputStream is = new ByteArrayInputStream(xml.getBytes());
-			String xmlDir = Configuration.webCfg.getProperty("cfg.ftp.xmlPath");
-			String code = data.get("Code").toString();
-			String xmlFileName = code + ".xml";
-			res = FtpUtil.upload(is, xmlFileName, xmlDir);
-
-			if (res) {
-				// Invoke WebService
-				try {
-					SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSS");
-					String correlateID = format.format(new Date());
-					CSPResult cspResult = commitVideo(correlateID, xmlDir + "/" + xmlFileName);
-
-					if (cspResult.getResult() == 0) {
-						Map videoMap = new HashMap();
-						videoMap.put("Id", id);
-						videoMap.put("DxCode", "P"+data.get("Code"));
-						videoMap.put("CorrelateID", correlateID);
-						videoMap.put("CommitDate", DateUtil.getNow());
-
-						log.info("提交工单到电信审核视频 CorrelateID:" + correlateID);
-						BaseUtil.saveLog(8, "提交工单到电信审核视频", "CorrelateID:" + correlateID);
-						getDao().update("video.videoSubmit", videoMap);
-					} else {
-						BaseUtil.saveLog(0, "提交工单到电信审核视频",
-								"CorrelateID:" + correlateID + "|" + cspResult.getErrorDescription());
-						throw new BizException(cspResult.getErrorDescription());
-					}
-				} catch (AxisFault e) {
-					// TODO Auto-generated catch block
-					log.info("提交工单到电信审核视频发生错误 :" + e.getMessage());
-					BaseUtil.saveLog(0, "提交工单到电信审核视频", e.getMessage());
-					e.printStackTrace();
-				}
-			}
-		}
+		getDao().update("video.videoOffline", map);
 	}
 
 	private CSPResult commitVideo(String correlateID, String xmlPath) throws AxisFault {
@@ -284,8 +251,8 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		String cspid = Configuration.webCfg.getProperty("cfg.CSPID");
 		String lspid = Configuration.webCfg.getProperty("cfg.LSPID");
 		String ftpUrl = "ftp://" + Configuration.webCfg.getProperty("ftp.user") + ":"
-				+ Configuration.webCfg.getProperty("ftp.pwd") + "@" + Configuration.webCfg.getProperty("ftp.ip") + ":"
-				+ Configuration.webCfg.getProperty("ftp.port");
+				+ Configuration.webCfg.getProperty("ftp.pwd") + "@" + Configuration.webCfg.getProperty("ftp.ip.net")
+				+ ":" + Configuration.webCfg.getProperty("ftp.port") + "/";
 
 		try {
 			ExecCmd cmd = new ExecCmd();
@@ -297,8 +264,8 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 			ExecCmdResponse resp = stub.execCmd(cmd);
 			res = resp.getExecCmdReturn();
 
-			log.info("工单详情：" + JsonUtil.getJson(cmd)+",返回结果：" + JsonUtil.getJson(res));
-			BaseUtil.saveLog(8, "工单详情", "工单详情：" + JsonUtil.getJson(cmd)+",返回结果：" + JsonUtil.getJson(res));
+			log.info("工单详情：" + JsonUtil.getJson(cmd) + ",返回结果：" + JsonUtil.getJson(res));
+			BaseUtil.saveLog(8, "工单详情", "工单详情：" + JsonUtil.getJson(cmd) + ",返回结果：" + JsonUtil.getJson(res));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -313,18 +280,14 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 
 		Map param = new HashMap();
 
-		if (Integer.valueOf(map.get("categoryId").toString()) == 0) {
-			if (page == 1) {
-				param.put("offset", 0);
-				param.put("rows", 9);
-			} else {
-				param.put("offset", (page - 1) * pageSize - 6);
-				param.put("rows", pageSize);
-			}
+		if (page == 1) {
+			param.put("offset", 0);
+			param.put("rows", 9);
 		} else {
-			param.put("offset", (page - 1) * pageSize);
+			param.put("offset", (page - 1) * pageSize - 6);
 			param.put("rows", pageSize);
 		}
+
 		param.putAll(map);
 
 		KendoResult res = new KendoResult();
@@ -334,13 +297,14 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 		List data = getDao().selectList("video.getHomeVideoPage", param);
 		res.setData(data);
 
-		if (Integer.valueOf(map.get("categoryId").toString()) == 0) {
-			Integer pageNum = getDao().selectOne("video.getHomeVideoPageNum", param);
-			res.setPageNum(pageNum);
-		} else {
-			Integer pageNum = getDao().selectOne("video.getVideoPageNum", param);
-			res.setPageNum(pageNum);
-		}
+		// if (Integer.valueOf(map.get("categoryId").toString()) == 0) {
+		Integer pageNum = getDao().selectOne("video.getHomeVideoPageNum", param);
+		res.setPageNum(pageNum);
+		/*
+		 * } else { Integer pageNum =
+		 * getDao().selectOne("video.getVideoPageNum", param);
+		 * res.setPageNum(pageNum); }
+		 */
 
 		Integer count = getDao().selectOne("video.getHomeVideoPageCount", param);
 		res.setTotal(count);
@@ -357,11 +321,22 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 
 	@Override
 	@Cacheable
-	public List getHomeVideoForPreview(Integer categoryId) {
-		Map map = new HashMap();
-		map.put("categoryId", categoryId);
+	public List getHomeVideoForPreview(Integer categoryId, Integer page) {
+		int pageSize = 15;
 
-		List data = getDao().selectList("video.getHomeVideoForPreview", map);
+		Map param = new HashMap();
+
+		if (page == 1) {
+			param.put("offset", 0);
+			param.put("rows", 9);
+		} else {
+			param.put("offset", (page - 1) * pageSize - 6);
+			param.put("rows", pageSize);
+		}
+
+		param.put("categoryId", categoryId);
+
+		List data = getDao().selectList("video.getHomeVideoForPreview", param);
 		return data;
 	}
 
@@ -424,4 +399,121 @@ public class VideoServiceImpl extends BaseServiceImpl implements VideoService {
 
 		return res;
 	}
+
+	@Override
+	public KendoResult getWapHomeVideoPaged(Map map) {
+		int page = Integer.valueOf(map.get("page").toString());
+		int pageSize = Integer.valueOf(map.get("pageSize").toString());
+
+		Map param = new HashMap();
+
+		param.put("offset", (page - 1) * pageSize);
+		param.put("rows", pageSize);
+
+		param.putAll(map);
+
+		KendoResult res = new KendoResult();
+		res.setPage(page);
+		res.setPageSize(pageSize);
+
+		List data = getDao().selectList("video.getWapHomeVideoPage", param);
+		res.setData(data);
+
+		Integer pageNum = getDao().selectOne("video.getWapHomeVideoPageNum", param);
+		res.setPageNum(pageNum);
+
+		Integer count = getDao().selectOne("video.getHomeVideoPageCount", param);
+		res.setTotal(count);
+
+		return res;
+	}
+
+	@Override
+	public Map getVideoDetailById(Integer id) {
+		Map data = getDao().selectOne("video.getVideoDetailById", id);
+		return data;
+	}
+
+	@Override
+	public List getRecommendedVideo(Integer id) {
+		List data = getDao().selectList("video.getRecommendedVideo", id);
+		return data;
+	}
+
+	@Override
+	public List getRecentUpdatesVideo() {
+		List data = getDao().selectList("video.getRecentUpdatesVideo");
+		return data;
+	}
+
+	@Override
+	public Map getSearchAssociate(Map map) throws Exception {
+		int page = Integer.valueOf(map.get("page").toString());
+		int pageSize = Integer.valueOf(map.get("pageSize").toString());
+		map.put("txt", new String(((String) map.get("txt")).getBytes("iso8859-1"), "utf-8"));
+		map.put("offset", (page - 1) * pageSize);
+		map.put("rows", pageSize);
+
+		Map data = new HashMap();
+		data.put("data", getDao().selectList("video.getAssociateSearchPage", map));
+		data.put("count", getDao().selectOne("video.getAssociateSearchPageNum", map));
+		data.put("total", getDao().selectOne("video.getAssociateSearchCount", map));
+		return data;
+	}
+
+	@Override
+	public void videoExcel(HttpServletResponse res, HttpServletRequest req, String title) throws IOException {
+		List data = getDao().selectList("video.videoExcel");
+		Map map = new LinkedHashMap();
+		map.put("视频编号", "Code");
+		map.put("视频名称", "Name");
+		map.put("所属商家", "SellerName");
+		map.put("商家家服网ID", "SellerId");
+		map.put("省", "ProvinceName");
+		map.put("市", "CityName");
+		map.put("区域", "AreaName");
+		map.put("视频分类", "CategoryName");
+		map.put("视频状态", "StatusName");
+		map.put("视频收费", "CostName");
+		map.put("到期时间", "EndDate");
+		map.put("电信code", "DxCode");
+		map.put("工单ID", "CorrelateID");
+
+		ExcelUtil.main(data, map, res, (String) ((Map) data.get(0)).get("title"), req);
+	}
+
+	@Override
+	public void doAutoExpire() throws ParseException {
+		Date date = new Date();
+		Long now = date.getTime();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		List list = getDao().selectList("video.getAllVideo");
+
+		for (Object obj : list) {
+			Map map = (Map) obj;
+			String endDate = map.get("EndDate").toString();
+			Long endTime = df.parse(endDate).getTime();
+
+			if (now >= endTime) {
+				getDao().delete("video.expireById", Integer.parseInt(map.get("Id").toString()));
+			}
+		}
+	}
+
+	@Override
+	public KendoResult getPublishVideoPaged(Map map) {
+		KendoResult kendoResult = QueryUtil.getRecordsPaged("video.getPublishVideoPaged", map);
+		return kendoResult;
+	}
+	
+	//工单详细的查询
+	@Override
+	public Map getWorkOrderDetail(Integer videoId) {
+		Map map = new HashMap();
+		map.put("id", videoId);
+
+		Map data = getDao().selectOne("video.getWorkOrderDetail", map);
+		return data;
+	}
+
 }

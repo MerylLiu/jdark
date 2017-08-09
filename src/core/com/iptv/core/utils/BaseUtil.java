@@ -1,12 +1,12 @@
 package com.iptv.core.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,21 +15,20 @@ import javax.servlet.http.HttpServletRequest;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.cache.annotation.Cacheable;
 
+import com.iptv.core.common.BizException;
 import com.iptv.core.common.ServiceLocator;
 import com.iptv.core.dao.BasicDao;
 import com.iptv.core.service.SysParamService;
 
-@SuppressWarnings({ "static-access", "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class BaseUtil {
-	protected static ServiceLocator locator = ServiceLocator.getInstance();
-
 	public static Object getService(String serviceName) {
-		Object res = locator.getService(serviceName);
+		Object res = ServiceLocator.getService(serviceName);
 		return res;
 	}
 
 	public static Object getService(String serviceName, Class clazz) {
-		Object res = locator.getService(serviceName, clazz);
+		Object res = ServiceLocator.getService(serviceName, clazz);
 		return res;
 	}
 
@@ -62,14 +61,31 @@ public class BaseUtil {
 
 	/**
 	 * 获取系统参数
+	 * 
 	 * @param key
-	 * 		参数名称
+	 *            参数名称
 	 * @return
 	 */
 	@Cacheable
 	public static List getSysParam(String key) {
 		SysParamService sysParamService = (SysParamService) getService("sysParamService");
 		List data = sysParamService.getSysParam(key, false);
+		return data;
+	}
+
+	/**
+	 * 获取系统参数
+	 * 
+	 * @param key
+	 *            参数名称
+	 * @param value
+	 *            参数值
+	 * @return
+	 */
+	@Cacheable
+	public static Map getSysParam(String key, String value) {
+		SysParamService sysParamService = (SysParamService) getService("sysParamService");
+		Map data = sysParamService.getSysParam(key, value);
 		return data;
 	}
 
@@ -87,7 +103,7 @@ public class BaseUtil {
 		String html = "";
 
 		for (int i = 0; i < data.size(); i++) {
-			String item = (String) data.get(i);
+			String item = data.get(i);
 			if (i == data.size() - 1) {
 				html += item;
 			} else {
@@ -99,6 +115,7 @@ public class BaseUtil {
 
 	/**
 	 * 获取IP地址
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -135,6 +152,7 @@ public class BaseUtil {
 
 	/**
 	 * 将QueryString参数转化为Map
+	 * 
 	 * @param queryString
 	 * @param encode
 	 * @return
@@ -173,5 +191,50 @@ public class BaseUtil {
 			} while (ampersandIndex > 0);
 		}
 		return paramsMap;
+	}
+
+	/**
+	 * 动态调用方法
+	 * 
+	 * @param serviceName
+	 * @param methodName
+	 * @return
+	 * @throws BizException
+	 * @throws Exception
+	 */
+	public static Object invokeMethod(String serviceName, String methodName) throws BizException, Exception {
+		Object service = BaseUtil.getService(serviceName);
+		Class clazz = service.getClass();
+		Method method = clazz.getDeclaredMethod(methodName);
+		Object res = method.invoke(service);
+		return res;
+	}
+
+	/**
+	 * 动态调用方法
+	 * 
+	 * @param serviceName
+	 * @param methodName
+	 * @param params
+	 * @return
+	 * @throws BizException
+	 * @throws Exception
+	 */
+	public static Object invokeMethod(String serviceName, String methodName, Object params)
+			throws BizException, Exception {
+		Object service = BaseUtil.getService(serviceName);
+		Class clazz = service.getClass();
+		
+		try {
+			Method method = clazz.getDeclaredMethod(methodName,Map.class);
+			Object res = method.invoke(service, params);
+			return res;
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		Method method = clazz.getDeclaredMethod(methodName);
+		Object res = method.invoke(service);
+		return res;
 	}
 }

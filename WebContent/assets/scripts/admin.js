@@ -31,21 +31,21 @@
             $("#task-next,#task-pre,#btn-tabs-close").show();
 
             /*
-             * $("#task-content-inner li").each(function(i,e){ if(tabwidth *
-             * (i+1) > ($(document).width() - 268 - tabwidth - 30 * 2) &&
-             * tempTab == null){ tempTab = this; } })
-             * 
-             * if(tempTab !=null){ $('#task-extend ul').html('');
-             * 
-             * var tmpl = '<li role="presentation"><a role="menuitem"
-             * tabindex="-1" href="javascript:void(0);">${0}</a></li>'
-             * $('#task-extend
-             * ul').append(tmpl.render($(tempTab).find('span').html()));
-             * $(tempTab).nextUntil("ul").each(function(){ $('#task-extend
-             * ul').append(tmpl.render($(this).find('span').html())); })
-             * 
-             * tempTab=null; }
-             */
+			 * $("#task-content-inner li").each(function(i,e){ if(tabwidth *
+			 * (i+1) > ($(document).width() - 268 - tabwidth - 30 * 2) &&
+			 * tempTab == null){ tempTab = this; } })
+			 * 
+			 * if(tempTab !=null){ $('#task-extend ul').html('');
+			 * 
+			 * var tmpl = '<li role="presentation"><a role="menuitem"
+			 * tabindex="-1" href="javascript:void(0);">${0}</a></li>'
+			 * $('#task-extend
+			 * ul').append(tmpl.render($(tempTab).find('span').html()));
+			 * $(tempTab).nextUntil("ul").each(function(){ $('#task-extend
+			 * ul').append(tmpl.render($(this).find('span').html())); })
+			 * 
+			 * tempTab=null; }
+			 */
         } else {
             $("#task-next,#task-pre,#task-extend,#btn-tabs-close").hide();
             $("#task-content").width(width);
@@ -76,7 +76,7 @@
     var appiframe_tpl = '<iframe style="width:100%;height: 100%;" frameborder="0" class="appiframe"></iframe>';
 
     window.openapp = function(url, appid, appname, refresh) {
-    	url += '?_=' + Math.random();
+    	url += '?mid=' + appid.substr(2) + '&_r=' + Math.random();
         var $app = $("#task-content-inner li[app-id='" + appid + "']");
         $("#task-content-inner .current").removeClass("current");
 
@@ -86,7 +86,7 @@
             $task_content_inner.append(task);
             $(".appiframe").hide();
             $loading.show();
-            $appiframe = $(appiframe_tpl).attr("src", url).attr("id", "appiframe-" + appid);
+            $appiframe = $(appiframe_tpl).attr("src", basePath + url).attr("id", "appiframe-" + appid);
             $appiframe.appendTo("#content");
             $appiframe.load(function() {
                 $loading.hide();
@@ -101,7 +101,7 @@
 
             if (refresh === true) {
                 $loading.show();
-                $iframe.attr("src", url);
+                $iframe.attr("src", basePath + url);
                 $iframe.load(function() {
                     $loading.hide();
                 });
@@ -346,7 +346,7 @@
     }
 
     var createTree = function(obj, data) {
-        function getUrlAndArrow(v) {
+        function getUrlAndArrow(v,childCount) {
             var url = "<li>";
             if (typeof v.PageUrl == "undefined") {
                 url = 'javascript:void(0);';
@@ -356,9 +356,11 @@
 
             var arrow = '';
             if (v.Level == 1) {
-                arrow = '<b class="arrow fa fa-plus-circle normal"></b>'
-            } else if (v.Level == 2) {
-                arrow = '<b class="arrow fa fa-angle-right"></b>'
+                arrow = '<b class="arrow fa fa-plus-circle normal"></b>';
+            } else if (v.Level == 2 && childCount > 0) {
+                arrow = '<b class="arrow fa fa-angle-right"></b>';
+            } else{
+            	arrow = '';
             }
 
             return {
@@ -388,6 +390,12 @@
                     '<i class="fa ' + v.MenuIcon + ' normal"></i><span class="menu-text normal">' + v.Name + '</span>' +
                     u.arrow + '<i class="fa fa-reply back"></i><span class="menu-text back">返回</span></a>';
                 html += temp;
+                
+                if(v.IsShortcut){
+                	var h = '<a class="btn btn-xs '+(v.BtnStyle==null?'btn-info':v.BtnStyle)+'" href="javascript:openapp(\''+v.PageUrl+'\',\''
+                		+v.Id+'\',\''+v.Name+'\',true);" title="'+v.Name+'"> <i class="fa '+v.MenuIcon+'"></i> </a>';
+                	$('#shortcut-list').prepend(h);
+                }
 
                 var childHtml = "";
                 $.each(data, function(i2, v2) {
@@ -401,11 +409,16 @@
                         });
                         childCount > 0 ? dropDown = 'dropdown-toggle' : dropDown = '';
 
-                        var u2 = getUrlAndArrow(v2);
+                        var u2 = getUrlAndArrow(v2,childCount);
 
-                        childHtml += '<li><a href="' + u2.url + '" class="' + dropDown + '">' +
-                            '<i class="fa fa-caret-right"></i><span class="menu-text">' + v2.Name + '</span>' +
-                            u2.arrow + '</a>';
+						childHtml += '<li><a href="' + u2.url + '" class="' + dropDown + '">' +
+							'<i class="fa fa-caret-right"></i><span class="menu-text">' + v2.Name + '</span>' + u2.arrow + '</a>';
+
+						if(v2.IsShortcut){
+							var h = '<a class="btn btn-xs '+(v2.BtnStyle==null?'btn-info':v2.BtnStyle)+'" href="javascript:openapp(\''+v2.PageUrl+'\',\'m-'
+								+v2.Id+'\',\''+v2.Name+'\',true);" title="'+v2.Name+'"> <i class="fa '+v2.MenuIcon+'"></i> </a>';
+							$('#shortcut-list').prepend(h);
+						}
 
                         var childHtml2 = "";
                         $.each(data, function(i3, v3) {
@@ -415,9 +428,15 @@
                                 childHtml2 += '<li><a href="' + u3.url + '">' +
                                     '<i class="fa fa-angle-double-right"></i><span class="menu-text">&nbsp;' +
                                     v3.Name + '</span></a></li>';
+
+								if(v3.IsShortcut){
+									var h = '<a class="btn btn-xs '+(v3.BtnStyle==null?'btn-info':v3.BtnStyle)+'" href="javascript:openapp(\''+v3.PageUrl+'\',\'m-'
+										+v3.Id+'\',\''+v3.Name+'\',true);" title="'+v3.Name+'"> <i class="fa '+v3.MenuIcon+'"></i> </a>';
+									$('#shortcut-list').prepend(h);
+								}
                             }
                         });
-
+                        
                         if (childHtml2.length > 0) {
                             childHtml += "<ul class=\"submenu\">"
                             childHtml += childHtml2;
@@ -448,6 +467,28 @@
             })
         }
     }
+    
+    window.hideSubmenu = function(){
+    	if(window.innerWidth <= 970){
+			var obj = $('li.open > .dropdown-toggle');
+			$('.nav-list > li.open > .dropdown-toggle').css({'background-color':'#1dd2af','color':'#fff'});
+			obj.parent().find('.arrow').css('color','#fff');
+			obj.parent().addClass('js-selected').removeClass('open').find('.submenu').hide();
+    	}	
+    }
+    
+    window.hideTopMenu = function(){
+    	$('.navbar-inner li.open').removeClass('open').find('.submenu').hide();
+    }
+
+    window.showSubmenu = function(){
+    	if(window.innerWidth > 970){
+			var obj = $('li.js-selected > .submenu');
+			obj.show().parent().addClass('open');
+			obj.parent().children('.dropdown-toggle').eq(0).removeAttr('style');
+			obj.parent().find('.arrow').removeAttr('style');
+    	}
+    }
 
     jQuery.fn.menu = function(data) {
         var obj = this;
@@ -457,8 +498,22 @@
             $.get(data, null, function(res) {
                 createTree(obj, res);
             })
-        }
+        }    
     }
+
+    $(document).ready(function(){
+		$(document.body).not('.nav-list *').click(function(){
+			top.hideSubmenu();
+		})
+
+		$(document.body).not('.navbar-inner *').click(function(){
+			top.hideTopMenu();
+		})
+    })
+    
+    $(window).resize(function(){
+		top.showSubmenu();
+    })
 })(jQuery);
 
 
@@ -471,32 +526,67 @@
             $(this).find('i.fa').toggleClass('fa-chevron-circle-down');
         });
     };
+    
+    var toolbar = function(){
+    	if($('.toolbar button,.toolbar .btn').length ==0){
+    		$('.toolbar').remove();
+    	}
+    }
 
-	Date.prototype.Format = function (fmt) {
+	Date.prototype.format = function (fmt) {
 	    var o = {
-	        "M+": this.getMonth() + 1, //月份 
-	        "d+": this.getDate(), //日 
-	        "h+": this.getHours(), //小时 
-	        "m+": this.getMinutes(), //分 
-	        "s+": this.getSeconds(), //秒 
-	        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
-	        "S": this.getMilliseconds() //毫秒 
+	        "M+": this.getMonth() + 1, // 月份
+	        "d+": this.getDate(), // 日
+	        "h+": this.getHours(), // 小时
+	        "m+": this.getMinutes(), // 分
+	        "s+": this.getSeconds(), // 秒
+	        "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
+	        "S": this.getMilliseconds() // 毫秒
 	    };
 	    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
 	    for (var k in o)
 	    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
 	    return fmt;
 	}
+	
+	Date.prototype.addDays = function(number) {
+	    var adjustDate = new Date(this.getTime() + 24*60*60*1000*30*number)
+	    return adjustDate;
+	}
+	
+	var fit = function(){
+		var ht = $(window).height() - $('.panel .panel-heading').outerHeight();
+		$('.panel').height(ht)
+
+		var _grid = $('#grid');
+		if(_grid.length >0){
+			var height = $(document.body).height() - $('.panel .toolbar').innerHeight();
+			$('.panel').height(height)
+
+			var dataArea = _grid.find(".k-grid-content");
+			var bottomArea = _grid.find(".k-grid-pager");
+			var newHeight = height - $('.toolbar').outerHeight();
+			var diff = _grid.innerHeight() - dataArea.innerHeight();
+		    _grid.height(newHeight-1);
+			dataArea.height(newHeight - bottomArea.outerHeight());
+
+			console.log(height + "|" + ( bottomArea.height()))
+		}
+	}
 
     $(document).ready(function () {
         collapse();
-    });
+		toolbar();
+    });    
+
+	$(window).resize(function(){
+	})
 })(jQuery);
 
 
 /*
  * ----------------Modal box-------------
- * */
+ */
 (function($) {
     $.fn.mdlg = function(options) {
         var defaults = {
@@ -516,7 +606,7 @@
         options = $.extend(defaults, options);
         var modalID = '';
 
-        //生成一个惟一的ID
+        // 生成一个惟一的ID
         function random(a, b) {
             return Math.random() > 0.5 ? -1 : 1;
         }
@@ -542,28 +632,30 @@
             if (!options.showCloseButton && options.buttons.length > 0) {
                 buttonHtml = '';
             }
-            //生成按钮
+            // 生成按钮
             var btnClass = 'cls-' + modalID;
             for (var i = 0; i < options.buttons.length; i++) {
                 buttonHtml += '<button buttonIndex="' + i + '" class="' + btnClass + ' btn ' + options.buttonStyles[i] + '">' + options.buttons[i] + '</button>';
             }
-            //替换模板标记
+            // 替换模板标记
             tmpHtml = tmpHtml.replace(/{ID}/g, modalID).replace(/{width}/,options.width).replace(/{title}/g, options.title).replace(/{body}/g, options.content).replace(/{button}/g, buttonHtml);
             obj.append(tmpHtml);
 
             var modalObj = $('#' + modalID);
-            //绑定按钮事件,不包括关闭按钮
+            // 绑定按钮事件,不包括关闭按钮
             $('.' + btnClass).click(function() {
                 var index = $(this).attr('buttonIndex');
                 options.onButtonClick($(this), modalObj, index);
             });
-            //绑定本身的事件
+            // 绑定本身的事件
             modalObj.on('show.bs.modal', function() {
                 options.onShow();
 
                 var height = $('iframe:visible',window.top.document).height();
-                //var headerHeight = modalObj.find('.modal-header').outerHeight();
-                //var footerHeight = modalObj.find('.modal-footer').outerHeight();
+                // var headerHeight =
+				// modalObj.find('.modal-header').outerHeight();
+                // var footerHeight =
+				// modalObj.find('.modal-footer').outerHeight();
 
 				modalObj.find('.modal-body').css("max-height",(height - 170)+'px');
             });
@@ -622,14 +714,30 @@
 
 /*
  * -----------------JQuery plugin-------------
- * */
+ */
 (function($,w) {
-    $.fn.serializeJson = function() {
+	$.fn.serializeJson = function() {
         var serializeObj = {};
+        var temp = [];
+        
         $(this.serializeArray()).each(function() {
-            if (this.value.length > 0)
-                serializeObj[this.name] = this.value;
+            if (this.value.length > 0){
+            	if(typeof serializeObj[this.name] == 'undefined'){
+                    serializeObj[this.name] = this.value;
+                    temp = [];
+            	} else{
+            		if(typeof serializeObj[this.name] == 'object'){
+                		temp.concat(serializeObj[this.name]);
+            		} else {
+            			temp.push(serializeObj[this.name]);
+            		}
+            		temp.push(this.value);
+            		
+            		serializeObj[this.name] = temp;
+            	}
+            }
         });
+        
         return serializeObj;
     };
 
@@ -667,14 +775,14 @@
         }
     }
     
-    w.createDataSource = function(url,fields) {
+    w.createDataSource = function(url,fields,group,aggregate) {
     	var pdata = new kendo.data.DataSource ({
     		transport: {
     			read: {
     				url: url,
     				dataType: 'json',
     				contentType: 'application/json; charset=utf-8',
-    				type: "POST",
+    				type: "POST"
     			},
 				parameterMap: function (options) {
 					return JSON.stringify(options);
@@ -692,6 +800,8 @@
     				fields: fields
     			}
     		},
+    		group:group,
+    		aggregate:aggregate,
 			error: kendoErrors
 		});
     	
@@ -700,7 +810,7 @@
     			read: {
     				url: url,
     				dataType: 'json',
-    				contentType: 'application/json; charset=utf-8',
+    				contentType: 'application/json; charset=utf-8'
     			}
     		},
     		pageSize: 20,
@@ -715,6 +825,8 @@
     				fields: fields
     			}
     		},
+    		group:group,
+    		aggregate:aggregate,
 			error: kendoErrors
     	});
 
@@ -749,7 +861,7 @@
 		
 	}
 	
-	$.fn.radioButtonList = function(data,nameField,textField,valueField,defaultValue){
+	function radioList1(obj,data,nameField,textField,valueField,defaultValue){
 		if(typeof data == "string") data = $.parseJSON(data.toString());
 
 		var tmpl = '<div class="radio">';
@@ -767,10 +879,62 @@
 		})
 		tmpl+='</div>';
 		
-		$(this).html(tmpl);
+		$(obj).html(tmpl);
+	}
+
+	function radioList2(obj,data,options){
+		if(typeof data == "string") data = $.parseJSON(data.toString());
+		
+		var op = {
+			nameField:'',
+			textField:'text',
+			valueField:'value',
+			defaultValue:null
+		};
+		op = $.extend(op,options);
+
+		var tmpl = '<div class="radio">';
+		$.each(data,function(i,v){
+			tmpl += '<label class="radio-inline">';
+			if(typeof v['IsEnable'] == 'undefined'){
+				v['IsEnable'] = true;
+			}
+
+			var disabled = v['IsEnable'] == 0 ?'disabled="disabled"' : '';
+			
+			if(v[op.valueField] == op.defaultValue){
+				tmpl += '<input type="radio" name="'+op.nameField+'" value="'+v[op.valueField]+'" checked '+disabled+'> '+ v[op.textField];
+			}else{
+				tmpl += '<input type="radio" name="'+op.nameField+'" value="'+v[op.valueField]+'" '+disabled+'> '+ v[op.textField];
+			}
+
+			tmpl += '</label>';
+		})
+		tmpl+='</div>';
+		
+		$(obj).html(tmpl);
+	}
+
+	$.fn.radioButtonList = function(){
+		var len= arguments.length; 
+	    if(len == 5 || len == 6) 
+	    { 
+	        var a1 = arguments[0]; 
+	        var a2 = arguments[1]; 
+	        var a3 = arguments[2]; 
+	        var a4 = arguments[3]; 
+	        var a5 = arguments[4]; 
+	        radioList1(this,a1,a2,a3,a4,a5);
+	    } 
+	    else 
+	    { 
+	        var a1 = arguments[0]; 
+	        var a2 = arguments[1]; 
+	        radioList2(this,a1,a2);
+	    } 	
 	}
 	
-	$.fn.checkBoxList = function(data,nameField,textField,valueField,defaultValue){
+	function checkboxList1(obj,data,nameField,textField,valueField,defaultValue){
 		if(typeof data == "string") data = $.parseJSON(data.toString());
 
 		var tmpl = '<div class="checkbox">';
@@ -788,7 +952,78 @@
 		})
 		tmpl+='</div>';
 		
-		$(this).html(tmpl);
+		$(obj).html(tmpl);
+	}
+
+	function checkboxList2(obj,data,options){
+		if(typeof data == "string") data = $.parseJSON(data.toString());
+		
+		var op = {
+			nameField:'',
+			textField:'text',
+			valueField:'value',
+			isCheckAll:false,
+			isMultiple:true,
+			defaultValue:null
+		};
+		op = $.extend(op,options);
+
+		var tmpl = '<div class="checkbox">';
+		var num = Math.floor(Math.random()*100 + 1);
+		var rdiId = "rdi-"+num
+		
+		if(op.isCheckAll){
+			tmpl += '<label class="radio-inline"><input type="checkbox" value="" id="' + rdiId + '">全选</label>'
+		}
+
+		$.each(data,function(i,v){
+			if(typeof v['IsEnable'] == 'undefined'){
+				v['IsEnable'] = true;
+			}
+			var disabled = v['IsEnable'] == 0 ?'disabled="disabled"' : '';
+			tmpl += '<label class="radio-inline">';
+			
+			if(v[op.valueField] == op.defaultValue){
+				tmpl += '<input type="checkbox" name="'+op.nameField+'" value="'+v[op.valueField]+'" checked '+disabled+'> '+ v[op.textField];
+			}else{
+				tmpl += '<input type="checkbox" name="'+op.nameField+'" value="'+v[op.valueField]+'" '+disabled+'> '+ v[op.textField];
+			}
+
+			tmpl += '</label>';
+		})
+		tmpl+='</div>';
+		
+		var self = obj;
+		$(self).html(tmpl);
+		
+		$('#'+rdiId).on("click",function(){
+			$(this).parent().parent().find('input:checkbox').prop("checked",this.checked);
+		})
+		
+		if(!op.isMultiple){
+			$(self).find('input:checkbox').on("click",function(){
+				$(self).find('input:checkbox').not(this).prop("checked",false);
+			})
+		}
+	}
+
+	$.fn.checkBoxList = function(){
+		var len= arguments.length; 
+	    if(len == 5 || len == 6) 
+	    { 
+	        var a1 = arguments[0]; 
+	        var a2 = arguments[1]; 
+	        var a3 = arguments[2]; 
+	        var a4 = arguments[3]; 
+	        var a5 = arguments[4]; 
+	        checkboxList1(this,a1,a2,a3,a4,a5);
+	    } 
+	    else 
+	    { 
+	        var a1 = arguments[0]; 
+	        var a2 = arguments[1]; 
+	        checkboxList2(this,a1,a2);
+	    } 	
 	}
 })(jQuery,window);
 

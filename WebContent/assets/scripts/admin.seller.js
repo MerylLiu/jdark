@@ -30,28 +30,28 @@ iv = {
 	        },
 	        {
 	            title: "商家编号",
-	            width: "15%",
+	            width: "100px",
 	            field: "Code",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
 	            title: "商家名称",
-	            width: "20%",
+	            width: "120px",
 	            field: "Name",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
 	            title: "商家家服网ID",
-	            width: "15%",
+	            width: "100px",
 	            field: "SellerId",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
 	            title: "省",
-	            width: "10%",
+	            width: "100px",
 	            field: "Province",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -59,7 +59,7 @@ iv = {
 	        },
 	        {
 	            title: "城市",
-	            width: "10%",
+	            width: "100px",
 	            field: "City",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -67,7 +67,7 @@ iv = {
 	        },
 	        {
 	            title: "区域",
-	            width: "10%",
+	            width: "100px",
 	            field: "Area",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -83,30 +83,45 @@ iv = {
 	        },
 	        {
 	            title: "联系地址",
-	            width: "20%",
+	            width: "100px",
 	            field: "Address",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
 	            title: "视频数",
-	            width: "10%",
+	            width: "100px",
 	            field: "VedioCount",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
 	            title: "开店时间",
-	            width: "145px",
+	            width: "100px",
 	            field: "SetUpDate",
 	            encoded: false,
 				attributes:{ 'class':'center'},
 				format:'{0:yyyy-MM-dd}'
+	        },
+	        {
+	            title: "商家经度",
+	            width: "100px",
+	            field: "Longitude",
+	            encoded: false,
+				attributes:{ 'class':'center'}
+	        },
+	        {
+	            title: "商家纬度",
+	            width: "100px",
+	            field: "Latitude",
+	            encoded: false,
+				attributes:{ 'class':'center'}
 	        }],
 			page:1,
 	        filterable: true,
 	        selectable: "Multiple, Row",
-	        scrollable: false,
+	        scrollable: true,
+	        resizable:true,
 			pageable: {
 				"refresh": true,
 				"autoBind": false,
@@ -160,6 +175,7 @@ iv = {
 						});
 					}
 				});
+				$('#txt-area').data("kendoDropDownList").setDataSource(null);
 			}
 		});
 	},
@@ -171,7 +187,139 @@ iv = {
 			},
 			onShow:function(){
 				iv.bindDropDownList();
+				
+				$("#btn-search").click(function(){
+					$.mdlg({
+						title:'地图',
+						width:'800px',
+						content:function(){
+							return $('#map-tmpl').html();
+						},
+						onShow:function(){
+							var map = new BMap.Map("allmap",{
+				                enableHighResolution: true //是否开启高清
+				            });
+				            var geoc = new BMap.Geocoder(); //地址解析对象
+				            var pointArray = [];
+				            var markerArray = [];
+				            var pointx;
+				            var pointy;
 
+				            map.addControl(new BMap.NavigationControl());
+				            map.enableInertialDragging(); //开启关系拖拽
+				            map.enableScrollWheelZoom();  //开启鼠标滚动缩放
+				            
+				          //地图上标注
+				            function addMarker(point) {
+				                var marker=new BMap.Marker(point);
+				                pointArray.push(point);
+				                markerArray.push(marker);
+				                map.addOverlay(marker);
+				                marker.enableDragging();
+				                marker.addEventListener("dragend", function (e) {
+				                    $("#lng").val(e.point.lng);
+				                    $("#lat").val(e.point.lat);
+				                });
+				            }
+				            
+				            if($("input[name='Longitude']").val()!=''&&$("input[name='Latitude']").val()!=''){
+				            	var p = new BMap.Point($("input[name='Longitude']").val(),
+		            					$("input[name='Latitude']").val());
+				            	addMarker(p);
+				            	map.centerAndZoom(p,17);				
+				            	$("#lng").val($("input[name='Longitude']").val());
+			                    $("#lat").val($("input[name='Latitude']").val());
+							}else{
+								map.centerAndZoom("中国",4);
+							}
+				            
+				            function position(){
+				            	map.clearOverlays();
+				                markerArray = [];
+				                pointArray = [];
+				                var address = $("#address").val();
+				                var provinceIndex = (address).indexOf("省");
+				                var province;
+				                if(provinceIndex>0){
+				                    province = (address).substring(0,provinceIndex+1);
+				                }
+				                geoc.getPoint(address, function(point) {
+				                    if (point) {
+				                        //经度
+				                        pointx = point.lng;
+				                        $("#lng").val(pointx);
+				                        //纬度
+				                        pointy = point.lat;
+				                        $("#lat").val(pointy);
+				                        addMarker(point);
+				                        map.centerAndZoom(point,17);
+				                    }else{
+				                        map.centerAndZoom("中国",4);
+				                        $("#lng").val('');
+					                    $("#lat").val('');
+				                    }
+				                }, typeof(province)=="undefined"?"四川省":province);
+				            }
+				            
+				            $("#address").keyup(function(){
+				            	position();
+				            })
+				            $("#btn-search-address").click(function(){
+				            	position();
+				            })
+				            $("#lng").keyup(function(){
+				            	if($("#lat").val()!=''){
+				            		var point = new BMap.Point($("#lng").val(),$("#lat").val());
+				            		geoc.getLocation(point, function(rs){
+				            			   var addComp = rs.addressComponents;
+				            			   $("#address").val(addComp.province + addComp.city + 
+				            					   addComp.district + addComp.street
+				            					   + addComp.streetNumber);
+				            				});
+				            			   if($('#address').val()!=''){
+				            				   map.clearOverlays();
+								               markerArray = [];
+								               pointArray = [];
+				            				   addMarker(point);
+				            				   map.centerAndZoom(point,17);
+				            			   }
+				            	}
+				            })
+				            $("#lat").keyup(function(){
+				            	if($("#lng").val()!=''){
+				            		var point = new BMap.Point($("#lng").val(),$("#lat").val());
+				            		geoc.getLocation(point, function(rs){
+				            			   var addComp = rs.addressComponents;
+				            			   $("#address").val(addComp.province + addComp.city + 
+				            					   addComp.district + addComp.street
+				            					   + addComp.streetNumber);
+				            			   });
+				            			   if($('#address').val()!=''){
+				            				   map.clearOverlays();
+				            				   markerArray = [];
+				            				   pointArray = [];
+				            				   addMarker(point);
+				            				   map.centerAndZoom(point,17);
+				            			   }
+				            	}
+				            })
+						},
+						showCloseButton:false,
+						buttons:["确认","取消"],
+						buttonStyles:['btn-success','btn-default'],
+						onButtonClick:function(sender,modal,index){
+							var self = this;
+			                if (index == 0) {
+			                	$("input[name='Longitude']").val($("#lng").val());
+								$("input[name='Latitude']").val($("#lat").val());
+								$(this).closeDialog(modal);
+			                }else{
+			                	$(this).closeDialog(modal);
+			                }
+						}
+					})
+				})
+				
 				$('#txt-city').kendoDropDownList({});
 				$('#txt-area').kendoDropDownList({});
 

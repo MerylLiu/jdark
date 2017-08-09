@@ -12,9 +12,11 @@ public interface SellerService extends BaseService{
 	
 	public Map getSeller(Integer id);
 	
-	public void save(Map map) throws BizException;
+	public String save(Map map) throws BizException;
 	
 	public void delete(Map map) throws BizException; 
 	
 	public KendoResult getAllSellers();
+
+	public KendoResult getSellersOptions(Map map);
 }

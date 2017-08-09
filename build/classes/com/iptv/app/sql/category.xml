@@ -3,17 +3,21 @@
 
 <mapper namespace="category">
 	<select id="getRootNodes" resultType="java.util.HashMap">
-		SELECT a.Id as id,concat('[',b.Text,']  ',a.Name) as name,'' as url,true as open,a.*
+		<![CDATA[
+		SELECT a.Id as id,concat('<span class="pull-right text-primary">[',b.Text,']</span>  ',a.Name) as name,'' as url,true as open,a.Name as CName,a.*
+		]]>
 		FROM biz_category a
-		LEFT JOIN (SELECT x.Text,x.Value FROM sys_dictionary x WHERE x.Key = 'CategoryStatus') b ON a.Status = b.Value 
+		LEFT JOIN (SELECT x.Text,x.KeyValue FROM sys_dictionary x WHERE x.KeyCode = 'CategoryStatus') b ON a.Status = b.KeyValue 
 		WHERE (a.ParentId IS NULL OR a.ParentId = 0) AND (a.IsDel IS NULL OR a.IsDel = 0)
 		ORDER BY a.OrderNum
 	</select>
 
 	<select id="getNodesByParentID" resultType="java.util.HashMap">
-		SELECT a.Id as id,concat('[',b.Text,']  ',a.Name) as name,'' as url,true as open,a.*
+		<![CDATA[
+		SELECT a.Id as id,concat('<span class="pull-right text-primary">[',b.Text,']</span>  ',a.Name) as name,'' as url,true as open,a.Name as CName,a.*
+		]]>
 		FROM biz_category a 
-		LEFT JOIN (SELECT x.Text,x.Value FROM sys_dictionary x WHERE x.Key = 'CategoryStatus') b ON a.Status = b.Value 
+		LEFT JOIN (SELECT x.Text,x.KeyValue FROM sys_dictionary x WHERE x.KeyCode = 'CategoryStatus') b ON a.Status = b.KeyValue 
 		WHERE (a.ParentId = #{ParentId}) AND (a.IsDel IS NULL OR a.IsDel = 0)
 		ORDER BY a.OrderNum
 	</select>
@@ -23,13 +27,13 @@
 	</select>
 
 	<insert id="saveCategory" parameterType="java.util.HashMap">
-		INSERT INTO biz_category (Name, ParentId, Remark, Status, OrderNum)
-		VALUES (#{Name}, #{ParentId}, #{Remark}, #{Status}, #{OrderNum})
+		INSERT INTO biz_category (Code, Name, ParentId, Remark, Status, OrderNum, Level)
+		VALUES (#{Code},#{Name}, #{ParentId}, #{Remark}, #{Status}, #{OrderNum}, #{Level})
 	</insert>
 
 	<update id="updateCategory" parameterType="java.util.HashMap">
-		UPDATE biz_category SET Name = #{Name}, ParentId = #{ParentId},
-			Remark = #{Remark}, Status = #{Status}, OrderNum = #{OrderNum}
+		UPDATE biz_category SET Code = #{Code}, Name = #{Name}, ParentId = #{ParentId},
+			Remark = #{Remark}, Status = #{Status}, OrderNum = #{OrderNum}, Level = #{Level}
 		WHERE Id = #{Id}
 	</update>
 

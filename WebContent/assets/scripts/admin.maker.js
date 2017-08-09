@@ -30,28 +30,28 @@ iv = {
 	        },
 	        {
 	            title: "制作商编号",
-	            width: "15%",
+	            width: "150px",
 	            field: "Code",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
 	            title: "制作商名称",
-	            width: "20%",
+	            width: "200px",
 	            field: "Name",
 	            encoded: false,
-				attributes:{ 'class':'center'}
+				attributes:{ 'class':'left'}
 	        },
 	        {
 	            title: "家服网ID",
-	            width: "15%",
+	            width: "150px",
 	            field: "SellerId",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
 	            title: "省",
-	            width: "10%",
+	            width: "100px",
 	            field: "Province",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -59,7 +59,7 @@ iv = {
 	        },
 	        {
 	            title: "城市",
-	            width: "10%",
+	            width: "100px",
 	            field: "City",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -67,7 +67,7 @@ iv = {
 	        },
 	        {
 	            title: "区域",
-	            width: "10%",
+	            width: "100px",
 	            field: "Area",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -78,20 +78,20 @@ iv = {
 	            width: "100px",
 	            field: "Tel",
 	            encoded: false,
-				attributes:{ 'class':'center'},
-				//values: $.parseJSON($('#role-list').val())
+				attributes:{ 'class':'left'}
 	        },
 	        {
 	            title: "联系地址",
-	            width: "20%",
+	            width: "200px",
 	            field: "Address",
 	            encoded: false,
-				attributes:{ 'class':'center'}
-	        },],
+				attributes:{ 'class':'left'}
+	        }],
 			page:1,
 	        filterable: true,
 	        selectable: "Multiple, Row",
-	        scrollable: false,
+	        scrollable: true,
+	        resizable:true,
 			pageable: {
 				"refresh": true,
 				"autoBind": false,
@@ -140,14 +140,16 @@ iv = {
 							dataTextField: "text",
 							dataValueField: "value",
 							optionLabel:'==请选择区／县==',
-							dataSource: createDataSource(urlArea),
+							dataSource: createDataSource(urlArea)
 						});
 					}
 				});
+				$('#txt-area').data("kendoDropDownList").setDataSource(null);
 			}
 		});
 	},
 	edit:function(id){
+		var p;
 		$.mdlg({
 			title:'制作商',
 			content:function(){
@@ -155,7 +157,6 @@ iv = {
 			},
 			onShow:function(){
 				iv.bindDropDownList();
-
 				$('#txt-city').kendoDropDownList({});
 				$('#txt-area').kendoDropDownList({});
 
@@ -180,9 +181,9 @@ iv = {
 						var city = $('#txt-city').data("kendoDropDownList");
 						city.value(data.City);
 						city.trigger("change");
-
+						
 						$('#txt-area').data("kendoDropDownList").value(data.Area);
-
+						p = $("input[name='Code']").val();
 					});
 				}
 			},
@@ -194,7 +195,7 @@ iv = {
 
 				if(index == 0){
 					var params = $("#form-data").serializeJson();
-
+					params["BeforeCode"] = p;
 					$.post(basePath + 'admin/maker/save',JSON.stringify(params) , function(data) {
 						if(data.result == true){
 							$.mdlg.alert('提示',data.message);
@@ -209,7 +210,7 @@ iv = {
 					$(this).closeDialog(modal);
 				}
 			}
-		})
+		});
 	},
 	delete:function(){
 		$.mdlg.confirm("删除","您确认要删除么？",function(){

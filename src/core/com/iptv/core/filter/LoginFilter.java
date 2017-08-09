@@ -11,8 +11,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspFactory;
+import javax.servlet.jsp.PageContext;
 
 public class LoginFilter implements Filter {
+	PageContext pageContext = null;
 
 	public void destroy() {
 
@@ -26,8 +29,8 @@ public class LoginFilter implements Filter {
 
 		String path = req.getContextPath();
 		String servletPath = req.getServletPath();
-
-		if (servletPath.contains("/admin")) {
+		
+		if (servletPath.contains("/sys") || servletPath.contains("/admin") || servletPath.contains("/wf")) {
 			// 从SESSION获取对象
 			Object obj = req.getSession().getAttribute("userId");
 
@@ -50,6 +53,8 @@ public class LoginFilter implements Filter {
 					out.println("<script>");  
 					out.println("top.location.href='" + basePath + "admin/login'");
 				    out.println("</script>"); 
+				    out.flush();
+				    out.close();
 					//res.sendRedirect(contextPath + "/admin/login");
 				}
 			}

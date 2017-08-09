@@ -82,4 +82,14 @@ public class SysParamServiceImpl extends BaseServiceImpl implements SysParamServ
 		return res;
 	}
 
+	@Override
+	public Map getSysParam(String key, String value) {
+		Map map = new HashMap();
+		map.put("Key", key);
+		map.put("Value", value);
+
+		Map res  = getDao().selectOne("sysParams.getSysDic", map);
+		return res;
+	}
+
 }

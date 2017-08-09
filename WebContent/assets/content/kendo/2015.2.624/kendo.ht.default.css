@@ -603,7 +603,7 @@ s.k-mobile-list .k-edit-field [type=radio]:checked {
 }
 
 .k-loading-image {
-    background-image: url('../../../Images/admin/loader.gif');
+    background-image: url('../../../images/admin/loader.gif');
 }
 
 .k-loading-color {
@@ -612,7 +612,8 @@ s.k-mobile-list .k-edit-field [type=radio]:checked {
 
 
 .k-state-selected, .k-state-selected:link, .k-list > .k-state-selected, .k-list > .k-state-highlight, .k-panel > .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal, .k-draghandle.k-state-selected:hover {
-    background-color: #f5f5f5;
+    background-color: #41bedd;
+    color: #ffffff;
 }
 
 

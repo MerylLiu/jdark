@@ -14,6 +14,9 @@
 	<select id="getSysDic" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 		SELECT a.Text as text,a.KeyValue as value,a.* FROM sys_dictionary a
 		WHERE a.KeyCode = #{Key} AND a.isVisible = 1
+		<if test="Value != null">
+			AND a.KeyValue like #{Value}
+		</if>
 		ORDER BY OrderNum
 	</select>
 </mapper>

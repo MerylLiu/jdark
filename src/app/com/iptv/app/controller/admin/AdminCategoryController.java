@@ -16,8 +16,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.iptv.app.service.CategoryService;
 import com.iptv.core.common.BizException;
+import com.iptv.core.common.KendoResult;
 import com.iptv.core.utils.BaseUtil;
 import com.iptv.core.utils.JsonUtil;
+import com.iptv.sys.controller.admin.AdminBaseController;
+
+
 
 @Controller
 @RequestMapping("/admin/category")
@@ -63,7 +67,7 @@ public class AdminCategoryController extends AdminBaseController {
 			res.put("message", "保存成功。");
 		}
 
-		log.info("添加或者修改分类");
+		log.info("添加或者修改档案分类");
 		return res;
 	}
 
@@ -89,33 +93,16 @@ public class AdminCategoryController extends AdminBaseController {
 			res.put("message", "删除成功。");
 		}
 
-		log.info("删除分类");
+		log.info("删除档案分类");
 		return res;
 	}
 
-	@RequestMapping(value = "/sync", method = RequestMethod.POST)
-	public @ResponseBody Map sync(@RequestBody Map map) {
-		List<String> messages = new ArrayList<String>();
-		Map res = new HashMap();
+	@RequestMapping(value = "/", method = RequestMethod.POST)
+	public @ResponseBody KendoResult orgOptions(@RequestBody Map map) {
+		KendoResult orgs = categoryService.Category(map);
 
-		try {
-			categoryService.sync(map);
-		} catch (BizException biz) {
-			messages.addAll(biz.getMessages());
-		} catch (Exception ex) {
-			log.error("数据库错误：" + ex.getMessage());
-			messages.add("未知错误。");
-		}
-
-		if (messages.size() > 0) {
-			res.put("result", false);
-			res.put("message", BaseUtil.toHtml(messages));
-		}else{
-			res.put("result", true);
-			res.put("message", "同步成功。");
-		}
-
-		log.info("同步分类");
-		return res;
+		log.info("获取档案分类选项:" + JsonUtil.getJson(orgs));
+		return orgs;
 	}
+	
 }

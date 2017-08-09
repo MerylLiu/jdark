@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.cache.annotation.Cacheable;
 
 import com.iptv.core.common.BizException;
+import com.iptv.core.common.KendoResult;
 import com.iptv.core.service.BaseService;
 
 @SuppressWarnings("rawtypes")
@@ -22,4 +23,6 @@ public interface CategoryService extends BaseService {
 	public void sync(Map map) throws BizException;
 	
 	public List getTopCategories();
+
+	public KendoResult Category(Map map);
 }

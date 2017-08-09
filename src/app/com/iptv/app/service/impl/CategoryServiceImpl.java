@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.iptv.app.service.CategoryService;
 import com.iptv.core.common.BizException;
+import com.iptv.core.common.KendoResult;
 import com.iptv.core.service.impl.BaseServiceImpl;
+import com.iptv.core.utils.QueryUtil;
 
 @Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -23,7 +25,7 @@ public class CategoryServiceImpl extends BaseServiceImpl implements CategoryServ
 
 		Map root = new HashMap();
 		root.put("id", 0);
-		root.put("name", "视频分类");
+		root.put("name", "档案分类");
 		root.put("url", null);
 		root.put("open", true);
 		root.put("children", data);
@@ -54,11 +56,17 @@ public class CategoryServiceImpl extends BaseServiceImpl implements CategoryServ
 	@Override
 	public void save(Map map) throws BizException {
 		List errMsg = new ArrayList();
-
-		if (map.get("Name") == null) {
-			errMsg.add("请输入分类名称。");
+		
+		if(map.get("Code") == null){
+			errMsg.add("请输入档案编号。");
 		}
-
+		if (map.get("Name") == null) {
+			errMsg.add("请输入档案名称。");
+		}
+		if (map.get("Level") == null) {
+			errMsg.add("请输入档案层级。");
+		}
+		
 		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
@@ -75,7 +83,7 @@ public class CategoryServiceImpl extends BaseServiceImpl implements CategoryServ
 		List errMsg = new ArrayList();
 
 		if (map.get("Id") == null) {
-			errMsg.add("请选择要删除的分类。");
+			errMsg.add("请选择要删除的档案分类。");
 		}
 
 		if (errMsg.size() > 0) {
@@ -103,4 +111,9 @@ public class CategoryServiceImpl extends BaseServiceImpl implements CategoryServ
 		return data;
 	}
 	
+	@Override
+	public KendoResult Category(Map map) {
+		KendoResult data = QueryUtil.getSelectOptions("category.Category", map);
+		return data;
+	}
 }

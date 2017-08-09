@@ -16,5 +16,5 @@ public interface MakerService extends BaseService{
 	
 	public void delete(Map map) throws BizException; 
 	
-	public KendoResult getAllMakers();
+	public KendoResult getMakersOptions(Map map);
 }

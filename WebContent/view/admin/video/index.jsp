@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 <%@include file="/assets/inc.jsp"%>
-<script type="text/javascript" src="${basePath}assets/Scripts/admin.video.js"></script>
+<script type="text/javascript" src="${basePath}assets/scripts/admin.video.js"></script>
 <script type="text/javascript">
 	var provinces = ${province};
 	var sellers = ${sellers};
@@ -13,6 +13,7 @@
 	var cost = ${cost};
 	var costFZ = ${costFZ};
 	var videoStyle = ${videoStyle};
+	var videoSource = ${videoSource};
 </script>
 </head>
 <body>
@@ -29,7 +30,7 @@
 				</button>
 				<button id='btn-submit' class='btn btn-default' style='' type='Button'
 					onclick=''>
-					<i class='fa fa-check text-primary'></i>提交
+					<i class='fa fa-check text-primary'></i>提交上线
 				</button>
 				<button id='btn-online' class='btn btn-default' style='' type='Button'
 					onclick=''>
@@ -145,14 +146,14 @@
 					<label class="col-sm-2 control-label">简拼</label>
 					<div class="col-sm-4">
 						<div class="col-sm-11">
-							<input type="text" class="form-control" name="Jianpin" placeholder="视频名称简拼" maxlength="20">
+							<input type="text" class="form-control" name="Jianpin" placeholder="视频名称简拼" maxlength="40">
 						</div>
 						<span class="cols-sm-1 required">*</span>
 					</div>
 					<label class="col-sm-2 control-label">全拼</label>
 					<div class="col-sm-4">
 						<div class="col-sm-11">
-							<input type="text" class="form-control" name="Quanpin" placeholder="视频名称全拼" maxlength="20">
+							<input type="text" class="form-control" name="Quanpin" placeholder="视频名称全拼" maxlength="200">
 						</div>
 						<span class="cols-sm-1 required">*</span>
 					</div>

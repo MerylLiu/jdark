@@ -14,12 +14,6 @@
 		ORDER BY a.OrderNum,a.CreateDate DESC
 	</select>
 
-	<!-- <select id="getSellersCount" resultType="java.lang.Integer">
-		SELECT count(*) as Count FROM biz_seller a
-		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
-		ORDER BY a.OrderNum,a.CreateDate DESC
-	</select> -->
-
 	<select id="getSellerById" resultType="java.util.HashMap">
 		SELECT a.* FROM biz_seller a Where a.Id = #{Id}
 	</select>
@@ -29,18 +23,18 @@
 		WHERE a.Code = #{Code} AND (a.IsDel IS NULL OR a.IsDel = 0)
 	</select>	
 
-	<insert id="saveSeller" parameterType="java.util.HashMap">
+	<insert id="saveSeller" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="Id">
 		INSERT INTO biz_seller
-			(Code, Name, SellerId, Tel, Address, Province, City, Area, IsInstall, SetUpDate, CreateDate, OrderNum)
+			(Code, Name, SellerId, Tel, Address, Province, City, Area, IsInstall, SetUpDate, CreateDate, OrderNum,Longitude,Latitude)
 		VALUES
 			(#{Code}, #{Name}, #{SellerId}, #{Tel}, #{Address}, #{Province}, #{City}, #{Area}, 
-			 #{IsInstall}, #{SetUpDate}, #{CreateDate}, #{OrderNum})
+			 #{IsInstall}, #{SetUpDate}, #{CreateDate}, #{OrderNum},#{Longitude},#{Latitude})
 	</insert>
 
 	<update id="updateSeller" parameterType="java.util.HashMap">
 		UPDATE biz_seller SET Code = #{Code}, Name = #{Name}, SellerId = #{SellerId},
 			Tel = #{Tel}, Address = #{Address}, Province = #{Province}, City = #{City}, Area = #{Area},
-			IsInstall = #{IsInstall}, SetUpDate = #{SetUpDate}, OrderNum = #{OrderNum}
+			IsInstall = #{IsInstall}, SetUpDate = #{SetUpDate}, OrderNum = #{OrderNum},Longitude = #{Longitude},Latitude = #{Latitude}
 		WHERE Id = #{Id}
 	</update>
 
@@ -51,4 +45,13 @@
             #{item}   
 		</foreach>
 	</delete>
+
+	<select id="getSellersOptions" resultType="java.util.HashMap">
+		SELECT a.Name as text,a.Id as value FROM biz_seller a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0)
+		<if test="text != null and text != ''">
+			 AND a.Name LIKE CONCAT('%',#{text},'%')
+		</if>
+		ORDER BY a.OrderNum AND a.CreateDate DESC
+	</select>
 </mapper>

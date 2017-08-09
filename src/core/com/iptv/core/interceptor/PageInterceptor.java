@@ -139,8 +139,14 @@ public class PageInterceptor implements Interceptor {
 
 			ArrayList sortField = (ArrayList) param.get("sort");
 			if (sortField != null && sortField.size() > 0) {
-				String sort = String.format(" order by %s %s ", ((Map) sortField.get(0)).get("field"),
-						((Map) sortField.get(0)).get("dir"));
+				String sortStr= ""; 
+
+				for (Object item : sortField) {
+					Map field = (Map)item;
+					sortStr += String.format("%s %s,", field.get("field"),field.get("dir"));
+				}
+
+				String sort = String.format(" order by %s", sortStr.substring(0, sortStr.length() - 1));
 				buffer.append(sort);
 			}
 		} else {
@@ -150,8 +156,14 @@ public class PageInterceptor implements Interceptor {
 
 			ArrayList sortField = (ArrayList) param.get("sort");
 			if (sortField != null && sortField.size() > 0) {
-				String sort = String.format(" order by %s %s ", ((Map) sortField.get(0)).get("field"),
-						((Map) sortField.get(0)).get("dir"));
+				String sortStr= ""; 
+
+				for (Object item : sortField) {
+					Map field = (Map)item;
+					sortStr += String.format("%s %s,", field.get("field"),field.get("dir"));
+				}
+
+				String sort = String.format(" order by %s", sortStr.substring(0, sortStr.length() - 1));
 				buffer.append(sort);
 			}
 		}
@@ -189,7 +201,6 @@ public class PageInterceptor implements Interceptor {
 
 	private String concatCountSql(String sql, Map param) {
 		StringBuffer buffer = new StringBuffer();
-		sql = sql.toLowerCase();
 
 		Map filter = (Map) param.get("filter");
 		Map condition = buildCondition(filter);

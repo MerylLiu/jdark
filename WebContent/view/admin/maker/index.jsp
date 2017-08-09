@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 <%@include file="/assets/inc.jsp"%>
-<script type="text/javascript" src="${basePath}assets/Scripts/admin.maker.js"></script>
+<script type="text/javascript" src="${basePath}assets/scripts/admin.maker.js"></script>
 <script type="text/javascript">
 	var provinces = ${province};
 </script>
@@ -46,7 +46,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">制作商编号</label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control"name="Code" placeholder="制作商编号" maxlength="20">
+					<input type="text" class="form-control" name="Code" placeholder="制作商编号" maxlength="20">
 				</div>
 				<span class="cols-sm-1 required">*</span>
 			</div>
@@ -60,7 +60,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">制作商电话</label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control" name="Tel" placeholder="制作商电话" maxlength="25">
+					<input type="text" class="form-control" name="Tel" placeholder="制作商电话" maxlength="13">
 				</div>
 				<span class="cols-sm-1 required">*</span>
 			</div>
@@ -88,14 +88,14 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">制作商地址</label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control" name="Address" placeholder="制作商地址" maxlength="20">
+					<input type="text" class="form-control" name="Address" placeholder="制作商地址" maxlength="150">
 				</div>
 				<span class="cols-sm-1 required">*</span>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">家服网ID</label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control" name="SellerId" placeholder="家服网ID" maxlength="10">
+					<input type="text" class="form-control" name="SellerId" placeholder="家服网ID" maxlength="20">
 				</div>
 			</div>
 			<div class="form-group">

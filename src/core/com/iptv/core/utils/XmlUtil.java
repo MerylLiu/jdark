@@ -31,7 +31,7 @@ public class XmlUtil {
 	public static Map xml2map(String xmlStr, boolean needRootKey) throws DocumentException {
 		Document doc = DocumentHelper.parseText(xmlStr);
 		Element root = doc.getRootElement();
-		Map<String, Object> map = (Map<String, Object>) xml2map(root);
+		Map<String, Object> map = xml2map(root);
 		if (root.elements().size() == 0 && root.attributes().size() == 0) {
 			return map;
 		}
@@ -56,7 +56,7 @@ public class XmlUtil {
 	public static Map xml2mapWithAttr(String xmlStr, boolean needRootKey) throws DocumentException {
 		Document doc = DocumentHelper.parseText(xmlStr);
 		Element root = doc.getRootElement();
-		Map<String, Object> map = (Map<String, Object>) xml2mapWithAttr(root);
+		Map<String, Object> map = xml2mapWithAttr(root);
 		if (root.elements().size() == 0 && root.attributes().size() == 0) {
 			return map; // 根节点只有一个文本内容
 		}
@@ -241,19 +241,51 @@ public class XmlUtil {
 	 * @throws DocumentException
 	 * @throws IOException
 	 */
-	public static Document map2xml(Map<String, Object> map) throws DocumentException, IOException {
-		Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
-		if (entries.hasNext()) { // 获取第一个键创建根节点
-			Map.Entry<String, Object> entry = entries.next();
-			Document doc = DocumentHelper.createDocument();
-			Element root = DocumentHelper.createElement(entry.getKey());
-			doc.add(root);
-			map2xml((Map) entry.getValue(), root);
-			// System.out.println(doc.asXML());
-			// System.out.println(formatXml(doc));
-			return doc;
+	public static Document map2xml(Map<String, Object> map) {
+		Document doc = DocumentHelper.createDocument();
+		Element root = DocumentHelper.createElement("Data");
+		doc.add(root);
+
+		map2xml(map, root);
+
+		return doc;
+	}
+
+	@SuppressWarnings("unused")
+	private static Document map2xml(Map.Entry<String, Object> entry, Document doc) {
+		String key = entry.getKey();
+		Object value = entry.getValue();
+
+		Element body = DocumentHelper.createElement(entry.getKey());
+		doc.add(body);
+
+		if (key.startsWith("@")) { // 属性
+			body.addAttribute(key.substring(1, key.length()), value.toString());
+		} else if (key.equals("#text")) { // 有属性时的文本
+			body.setText(value.toString());
+		} else {
+			if (value instanceof java.util.List) {
+				List list = (List) value;
+				Object obj;
+				for (int i = 0; i < list.size(); i++) {
+					obj = list.get(i);
+					// list里是map或String，不会存在list里直接是list的，
+					if (obj instanceof java.util.Map) {
+						Element subElement = body.addElement(key);
+						map2xml((Map) list.get(i), subElement);
+					} else {
+						body.addElement(key).setText((String) list.get(i));
+					}
+				}
+			} else if (value instanceof java.util.Map) {
+				Element subElement = body.addElement(key);
+				map2xml((Map) value, subElement);
+			} else {
+				body.addElement(key).setText(value.toString());
+			}
 		}
-		return null;
+
+		return doc;
 	}
 
 	/**
@@ -278,12 +310,66 @@ public class XmlUtil {
 				if (value instanceof java.util.List) {
 					List list = (List) value;
 					Object obj;
+					Element subElement = body.addElement(key);
 					for (int i = 0; i < list.size(); i++) {
 						obj = list.get(i);
 						// list里是map或String，不会存在list里直接是list的，
 						if (obj instanceof java.util.Map) {
-							Element subElement = body.addElement(key);
 							map2xml((Map) list.get(i), subElement);
+						} else {
+							body.addElement(key).setText((String) list.get(i));
+						}
+					}
+				} else if (value instanceof java.util.Map) {
+					Element subElement = body.addElement(key);
+					map2xml((Map) value, subElement);
+				} else {
+					body.addElement(key).setText(value.toString());
+				}
+			}
+			// System.out.println("Key = " + entry.getKey() + ", Value = " +
+			// entry.getValue());
+		}
+		return body;
+	}
+
+	public static Document list2xml(List<Map> data) {
+		Document doc = DocumentHelper.createDocument();
+		Element root = DocumentHelper.createElement("Data");
+		doc.add(root);
+
+		Element rows = root.addElement("Rows");
+		for (Map item : data) {
+			item2xml(item, rows);
+		}
+
+		return doc;
+	}
+
+	private static Element item2xml(Map<String, Object> map, Element body) {
+		Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
+		body= body.addElement("Row");
+
+		while (entries.hasNext()) {
+			Map.Entry<String, Object> entry = entries.next();
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			if (key.startsWith("@")) { // 属性
+				body.addAttribute(key.substring(1, key.length()), value.toString());
+			} else if (key.equals("#text")) { // 有属性时的文本
+				body.setText(value.toString());
+			} else {
+				if (value instanceof java.util.List) {
+					List list = (List) value;
+					Object obj;
+					Element subElement = body.addElement(key);
+					subElement = subElement.addElement("Rows");
+
+					for (int i = 0; i < list.size(); i++) {
+						obj = list.get(i);
+						// list里是map或String，不会存在list里直接是list的，
+						if (obj instanceof java.util.Map) {
+							item2xml((Map) list.get(i), subElement);
 						} else {
 							body.addElement(key).setText((String) list.get(i));
 						}
@@ -309,9 +395,17 @@ public class XmlUtil {
 	 * @throws DocumentException
 	 * @throws IOException
 	 */
-	public static String formatXml(String xmlStr) throws DocumentException, IOException {
-		Document document = DocumentHelper.parseText(xmlStr);
-		return formatXml(document);
+	public static String formatXml(String xmlStr) {
+		Document document;
+		try {
+			document = DocumentHelper.parseText(xmlStr);
+			String res = formatXml(document);
+			return res;
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -322,7 +416,7 @@ public class XmlUtil {
 	 * @throws DocumentException
 	 * @throws IOException
 	 */
-	public static String formatXml(Document document) throws DocumentException, IOException {
+	public static String formatXml(Document document) {
 		// 格式化输出格式
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		// format.setEncoding("UTF-8");
@@ -330,8 +424,32 @@ public class XmlUtil {
 		// 格式化输出流
 		XMLWriter xmlWriter = new XMLWriter(writer, format);
 		// 将document写入到输出流
-		xmlWriter.write(document);
-		xmlWriter.close();
+		try {
+			xmlWriter.write(document);
+			xmlWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return writer.toString();
 	}
+
+	// public static void main(String[] args) {
+	// Map map = new HashMap();
+	// map.put("result", true);
+	//
+	// Map map1 = new HashMap();
+	// map1.put("test", true);
+	// Map map2 = new HashMap();
+	// map2.put("test2", true);
+	// List list = new ArrayList();
+	// list.add(map1);
+	// list.add(map2);
+	//
+	// map.put("data", list);
+	//
+	// String dd = list2xml(list).asXML();
+	// System.out.println(dd);
+	// }
 }

@@ -1,6 +1,7 @@
 package com.iptv.core.service;
 
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("rawtypes")
 public interface SysParamService extends BaseService {
@@ -18,5 +19,23 @@ public interface SysParamService extends BaseService {
 	 */
 	public void saveLog(int opreationType, String operation, String remark);
 
+	/**
+	 * 获取系统参数
+	 * 
+	 * @param key
+	 *            关键字
+	 * @return
+	 */
 	public List getSysParam(String key, Boolean isAll);
+
+	/**
+	 * 获取系统参数
+	 * 
+	 * @param key
+	 *            关键字
+	 * @param Value
+	 *            值
+	 * @return
+	 */
+	public Map getSysParam(String key, String value);
 }

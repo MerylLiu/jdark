@@ -30,18 +30,19 @@
 		WHERE a.Code = #{Code} AND (a.IsDel IS NULL OR a.IsDel = 0)
 	</select>	
 	
-	<insert id="saveVideo" parameterType="java.util.HashMap">
+	<insert id="saveVideo" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="Id">
 		INSERT INTO biz_video
-			(Code, Name, Jianpin, Quanpin, Cost, CostFZ, VideoUrl, StartDate, EndDate, Style, CategoryId, Description,
+			(Code, Name, Jianpin, Quanpin,Subhead,AppVideoUrl,AppImageUrl,Cost, CostFZ, VideoUrl, StartDate, EndDate, Style, CategoryId, Description,
 			 ImageUrl, GifUrl, QrCode, Province, City, Area, Provider, Maker, Status, CreateDate, SellerKeyId, OrderNum,PlayTime)
 		VALUES
-			(#{Code}, #{Name}, #{Jianpin}, #{Quanpin}, #{Cost}, #{CostFZ}, <![CDATA[#{VideoUrl}]]>, #{StartDate}, #{EndDate}, #{Style},
-			 #{CategoryId}, #{Description}, <![CDATA[#{ImageUrl}]]>, <![CDATA[#{GifUrl}]]>, <![CDATA[#{QrCode}]]>, #{Province}, #{City},
+			(#{Code}, #{Name}, #{Jianpin}, #{Quanpin},#{Subhead},<![CDATA[#{AppVideoUrl}]]>,<![CDATA[#{AppImageUrl}]]>, #{Cost}, #{CostFZ}, <![CDATA[#{VideoUrl}]]>, #{StartDate}, #{EndDate}, #{Style},
+			 #{CategoryId}, #{Description},<![CDATA[#{ImageUrl}]]>, <![CDATA[#{GifUrl}]]>, <![CDATA[#{QrCode}]]>, #{Province}, #{City},
 			#{Area}, #{Provider}, #{Maker}, #{Status}, #{CreateDate}, #{SellerKeyId}, #{OrderNum},#{PlayTime})
 	</insert>
 
 	<update id="updateVideo" parameterType="java.util.HashMap">
-		UPDATE biz_video SET Code = #{Code}, Name = #{Name}, Jianpin = #{Jianpin}, Quanpin = #{Quanpin}, Cost = #{Cost},
+		UPDATE biz_video SET Code = #{Code},Subhead = #{Subhead},AppVideoUrl = #{AppVideoUrl},AppImageUrl = #{AppImageUrl},
+			Name = #{Name}, Jianpin = #{Jianpin}, Quanpin = #{Quanpin}, Cost = #{Cost},
 			CostFZ = #{CostFZ}, VideoUrl = <![CDATA[#{VideoUrl}]]>, StartDate = #{StartDate}, EndDate = #{EndDate}, Style = #{Style}, 
 			CategoryId = #{CategoryId}, Description = #{Description}, ImageUrl = <![CDATA[#{ImageUrl}]]>, GifUrl = <![CDATA[#{GifUrl}]]>,
 			QrCode = <![CDATA[#{QrCode}]]>, Province = #{Province}, City = #{City}, Area = #{Area}, Provider = #{Provider},
@@ -58,29 +59,35 @@
 	</update>
 
 	<update id="videoOnline" parameterType="java.util.HashMap">
-		UPDATE biz_video SET Status = 3
+		UPDATE biz_video SET Status = 3,Remark=NULL
 		WHERE Id IN
 		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
             #{item}   
 		 </foreach>
 	</update>
 
-	<update id="videoOffline" parameterType="java.util.HashMap">
-		UPDATE biz_video SET Status = 0
-		WHERE Id IN
-		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
-            #{item}   
-		 </foreach>
+	<update id="videoOffline" parameterType="java.util.HashMap"> 
+	UPDATE biz_video SET Status = 0 WHERE Id IN <foreach collection="Id" index="index" 
+		item="item" open="(" separator="," close=")"> #{item} </foreach> 
 	</update>
+	<!-- <update id="videoOffline" parameterType="java.util.HashMap">
+		UPDATE biz_video SET Status = 7,CorrelateID = #{CorrelateID}, CommitDate = #{CommitDate},Remark=NULl
+		WHERE Id = #{Id}
+	</update> -->
 
 	<update id="videoSubmit" parameterType="java.util.HashMap">
 		UPDATE biz_video SET Status = 2,DxCode = #{DxCode},CorrelateID = #{CorrelateID},
-			CommitDate = #{CommitDate}
+			CommitDate = #{CommitDate},Remark=NULL,XmlForAdd = #{XmlForAdd},XmlForDel = #{XmlForDel}
 		WHERE Id = #{Id}
 	</update>
 
 	<update id="autitSuccess" parameterType="java.util.HashMap">
-		UPDATE biz_video SET Status = 3 
+		UPDATE biz_video SET Status = #{Status}
+		WHERE CorrelateID = #{CorrelateID}
+	</update>
+
+	<update id="autitOffline" parameterType="java.util.HashMap">
+		UPDATE biz_video SET Remark='下线审核成功。',Status = 0
 		WHERE CorrelateID = #{CorrelateID}
 	</update>
 
@@ -98,7 +105,7 @@
 	</select>
 
 	<select id="getHomeVideoPage" resultType="java.util.HashMap">
-		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime
+		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime,a.Subhead
 		FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 		<if test="categoryId != null and categoryId != 0">
@@ -107,6 +114,7 @@
 		ORDER BY a.OrderNum, a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
+	
 	<select id="getHomeVideoPageCount" resultType="java.lang.Integer">
 		SELECT count(1) as Count FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
@@ -132,17 +140,22 @@
 	<select id="getHomeVideoForPreview" resultType="java.util.HashMap">
 		SELECT * FROM (
 			SELECT @rownum:=@rownum+1 AS RowNum,x.* FROM (
-				SELECT a.Id,a.Code,a.Name,a.ImageUrl,a.GifUrl,a.VideoUrl,b.Name AS CategoryName 
+				SELECT a.Id,a.Code,a.Name,a.ImageUrl,a.GifUrl,a.VideoUrl,b.Name AS CategoryName,a.Subhead
 				FROM biz_video a
 				LEFT JOIN biz_category b ON a.CategoryId = b.Id
-				WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3 AND a.CategoryId = #{categoryId}
+				WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+				<if test="categoryId != null and categoryId != 0">
+					AND a.CategoryId = #{categoryId}
+				</if>
 				ORDER BY a.OrderNum, a.CreateDate DESC
+				LIMIT ${offset},${rows}
 			) x,(SELECT @rownum:=0) t
 		) y WHERE y.RowNum IN (1,6,11)
 	</select>
 
 	<select id="getVideoDetail" resultType="java.util.HashMap">
-		SELECT a.Id,a.Name,a.ImageUrl,a.GifUrl,a.VideoUrl,a.QrCode,a.Description,a.DxCode,b.Tel,b.Address,b.Name as SellerName
+		SELECT a.Id,a.Name,a.ImageUrl,a.GifUrl,a.VideoUrl,a.QrCode,a.Description,a.DxCode,b.Tel,b.Address,
+			b.Name as SellerName, a.SellerKeyId,a.CategoryId,a.Status
 		FROM biz_video a
 		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
 		WHERE a.Id = #{id}
@@ -156,14 +169,14 @@
 		LIMIT 0,19
 	</select>
 	<select id="getSearchedCount" resultType="java.lang.Integer">
-		 SELECT count(1) as Count
+		SELECT count(1) as Count
 		FROM biz_video a
 		WHERE ((a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%')))
 			AND (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 	</select>
 
 	<select id="getSearchPage" resultType="java.util.HashMap">
-		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime
+		SELECT a.Id,a.Name,a.ImageUrl,a.VideoUrl,a.GifUrl,a.DxCode,a.PlayTime,a.Subhead
 		FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
 			AND ((a.Jianpin LIKE CONCAT('%',#{name},'%')) OR (a.Quanpin LIKE CONCAT('%',#{name},'%')))
@@ -173,6 +186,7 @@
 		ORDER BY a.OrderNum, a.CreateDate DESC
 		LIMIT ${offset},${rows}
 	</select>
+	
 	<select id="getSearchPageCount" resultType="java.lang.Integer">
 		SELECT count(1) as Count FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
@@ -181,6 +195,7 @@
 			AND a.CategoryId = #{categoryId}
 		</if>
 	</select>
+	
 	<select id="getSearchPageNum" resultType="java.lang.Integer">
 		SELECT CEIL(COUNT(1)/${pageSize}) as Num FROM biz_video a
 		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
@@ -188,5 +203,102 @@
 		<if test="categoryId != null and categoryId != 0">
 			AND a.CategoryId = #{categoryId}
 		</if>
+	</select>
+	
+	<select id="getWapHomeVideoPage" resultType="java.util.HashMap">
+		SELECT a.Id,a.Name,a.Subhead,a.AppImageUrl,a.AppVideoUrl,a.GifUrl,a.DxCode,a.PlayTime,a.Description,b.Name as SellerName
+		FROM biz_video a LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id  
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		<if test="categoryId != null and categoryId != 0">
+			AND a.CategoryId = #{categoryId}
+		</if>
+		ORDER BY a.OrderNum, a.CreateDate DESC
+		LIMIT ${offset},${rows}
+	</select>
+	
+	<select id="getWapHomeVideoPageNum" resultType="java.lang.Integer">
+		SELECT (CEIL((COUNT(1)-6)/${pageSize}) +1) as Num FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		<if test="categoryId != null and categoryId != 0">
+			AND a.CategoryId = #{categoryId}
+		</if>
+	</select>
+	
+	<select id="getVideoDetailById" resultType="java.util.HashMap">
+		SELECT a.*,b.Id as SellerId,b.Name as SellerName,b.Tel as SellerTel,b.Address as SellerAddress,
+			c.Name as CategoryName
+		FROM biz_video a 
+		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
+		LEFT JOIN biz_category c ON a.CategoryId = c.Id
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3 AND a.Id = #{Id}
+	</select>
+	
+	<select id="getRecommendedVideo" resultType="java.util.HashMap">
+		SELECT a.*,b.Name as SellerName 
+		FROM biz_video a 
+		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3 AND a.Id != #{Id}
+		ORDER BY a.CreateDate DESC,a.OrderNum
+		LIMIT 0,3
+	</select>
+	
+	<select id="getRecentUpdatesVideo" resultType="java.util.HashMap">
+		SELECT a.Name,a.Id 
+		FROM biz_video a 
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		ORDER BY a.CreateDate DESC,a.OrderNum
+		LIMIT 0,4
+	</select>
+	
+	<select id="getAssociateSearchPage" resultType="java.util.HashMap">
+		SELECT a.Name,a.Id
+		FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3 AND a.Name LIKE '%${txt}%'
+		ORDER BY a.CreateDate DESC,a.OrderNum
+		LIMIT ${offset},${rows}
+	</select>
+	
+	<select id="getAssociateSearchPageNum" resultType="java.lang.Integer">
+		SELECT CEIL(COUNT(1)/${pageSize}) as Num FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3 AND a.Name LIKE '%${txt}%'
+	</select>
+	
+	<select id="getAssociateSearchCount" resultType="java.lang.Integer">
+		SELECT count(1) as Count FROM biz_video a
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3 AND a.Name LIKE '%${txt}%'
+	</select>
+	
+	<select id="videoExcel" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT a.*,d.Name as ProvinceName,e.Name as CityName,f.Name as AreaName,IFNULL(g.Name,'其它') as CategoryName,
+			h.Text as StatusName,k.Text as CostName,l.Name as SellerName,l.SellerId as SellerId,'视频列表' as title FROM biz_video a
+		LEFT JOIN sys_region d ON a.Province = d.Id
+		LEFT JOIN sys_region e ON a.City = e.Id
+		LEFT JOIN sys_region f ON a.Area = f.Id 
+		LEFT JOIN biz_category g ON a.CategoryId = g.Id
+		LEFT JOIN sys_dictionary h ON a.Status = h.KeyValue AND h.KeyCode = 'VideoStatus'
+		LEFT JOIN sys_dictionary k ON a.Cost = k.KeyValue AND k.KeyCode='VideoCost'
+		LEFT JOIN biz_seller l ON a.SellerKeyId = l.Id 
+		WHERE a.IsDel IS NULL OR a.IsDel = 0
+		ORDER BY a.OrderNum, a.CreateDate DESC
+	</select>
+	
+	<update id="expireById" parameterType="java.lang.Integer">
+		UPDATE biz_video SET Status = 6 ,Remark = '视频已到期'
+		WHERE Id = #{Id} AND Status = 3
+	</update>
+	
+	<select id="getPublishVideoPaged" resultType="java.util.HashMap">
+		SELECT a.*,b.Name as SellerName,IFNULL(c.Name,'其它') as CategoryName,b.Code as SellerCode FROM biz_video a
+		LEFT JOIN biz_seller b ON a.SellerKeyId = b.Id
+		LEFT JOIN biz_category c ON a.CategoryId = c.Id
+		WHERE (a.IsDel IS NULL OR a.IsDel = 0) AND a.Status = 3
+		ORDER BY a.OrderNum, a.CreateDate DESC
+	</select>
+	
+	<!-- 工单详情的查询 -->
+	<select id="getWorkOrderDetail" resultType="java.util.HashMap">
+		select v.CorrelateID,v.XmlForAdd,v.XmlForDel 
+			from biz_video v 
+				where v.Id = #{id}
 	</select>
 </mapper>

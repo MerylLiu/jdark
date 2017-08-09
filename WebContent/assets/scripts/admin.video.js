@@ -13,15 +13,16 @@ iv = {
 		$('#btn-del').click(function(){
 			iv.delete();
 		})
-		$('#btn-submit').click(function(){
-			iv.submit();
-		})
 		$('#btn-online').click(function(){
 			iv.online();
 		})
 		$('#btn-offline').click(function(){
 			iv.offline();
-		})
+		});
+		$('#btn-detail').click(function(){
+			var param = $("#grid").gridSelectedCols("Id");
+			if(param.Id.length >0) iv.workOrderDetail(param.Id[0]);
+		});
 	},
 	bind:function(){
 		$("#grid").kendoGrid({
@@ -38,21 +39,20 @@ iv = {
 	        },
 	        {
 	            title: "视频编号",
-	            width: "15%",
+	            width: "120px",
 	            field: "Code",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
 	            title: "视频名称",
-	            width: "20%",
+	            width: "165px",
 	            field: "Name",
-	            encoded: false,
-				attributes:{ 'class':'center'}
+	            encoded: false
 	        },
 	        {
 	            title: "所属商家",
-	            width: "15%",
+	            width: "120px",
 	            field: "SellerKeyId",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -60,14 +60,14 @@ iv = {
 	        },
 	        {
 	            title: "商家家服网ID",
-	            width: "15%",
+	            width: "120px",
 	            field: "SellerId",
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        },
 	        {
 	            title: "省",
-	            width: "10%",
+	            width: "75px",
 	            field: "Province",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -75,7 +75,7 @@ iv = {
 	        },
 	        {
 	            title: "城市",
-	            width: "10%",
+	            width: "75px",
 	            field: "City",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -83,7 +83,7 @@ iv = {
 	        },
 	        {
 	            title: "区域",
-	            width: "10%",
+	            width: "75px",
 	            field: "Area",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -99,7 +99,7 @@ iv = {
 	        },
 	        {
 	            title: "视频分类",
-	            width: "15%",
+	            width: "100px",
 	            field: "CategoryId",
 	            encoded: false,
 				attributes:{ 'class':'center'},
@@ -107,10 +107,11 @@ iv = {
 	        },
 	        {
 	            title: "视频收费",
-	            width: "15%",
+	            width: "100px",
 	            field: "CostFZ",
 	            encoded: false,
 				attributes:{ 'class':'center'},
+				values:costFZ
 	        },
 	        {
 	            title: "到期时间",
@@ -119,12 +120,25 @@ iv = {
 	            encoded: false,
 				attributes:{ 'class':'center'},
 				format:'{0:yyyy-MM-dd HH:mm:ss}'
+	        },
+	        {
+	            title: "电信code",
+	            width: "160px",
+	            field: "DxCode",
+	            encoded: false
+	        },
+	        {
+	            title: "工单ID",
+	            width: "160px",
+	            field: "CorrelateID",
+	            encoded: false
 	        }],
 			page:1,
 	        filterable: true,
 	        selectable: "Multiple, Row",
-	        scrollable: false,
+	        scrollable: true,
 	        sortable:true,
+	        resizable:true,
 			pageable: {
 				"refresh": true,
 				"autoBind": false,
@@ -163,7 +177,7 @@ iv = {
 			$('#txt-sel-tel').val(data.Tel);
 			$('#txt-sel-sid').val(data.SellerId);
 			$('#txt-sel-addr').val(data.Address);
-			$('#txt-sel-sdate').val(new Date(data.SetUpDate).Format('yyyy-MM-dd'));
+			$('#txt-sel-sdate').val(new Date(data.SetUpDate).format('yyyy-MM-dd'));
 
 			$('input[name="IsInstall"]').prop('checked','false');
 			$('input[value="'+data.IsInstall+'"][name="IsInstall"]').prop('checked','true');
@@ -171,11 +185,11 @@ iv = {
 	},
 	bindDropDownList:function(){
 		$('#txt-sel-name').kendoDropDownList({
-			dataTextField: "Name",
-			dataValueField: "Id",
+			dataTextField: "text",
+			dataValueField: "value",
 			optionLabel:'==请选择商家==',
 			filter: "contains",
-			dataSource: createDataSource(basePath+'admin/video/sellerList'),
+			dataSource: createDataSource(basePath+'admin/video/sellerOptions',{}),
 			change:function(){
 				var id = $('#txt-sel-name').data('kendoDropDownList').value();
 				iv.bindSellerInfo(id);
@@ -206,6 +220,19 @@ iv = {
 			optionLabel:'==请选择视频分类==',
 			dataSource: category
 		});
+		$('input[name="Provider"]').kendoDropDownList({
+			dataTextField: "text",
+			dataValueField: "value",
+			optionLabel:'==请选择视频来源==',
+			dataSource: videoSource
+		});
+		$('input[name="Maker"]').kendoDropDownList({
+			dataTextField: "text",
+			dataValueField: "value",
+			optionLabel:'==请选择视频制作商==',
+			filter:'contains',
+			dataSource: createDataSource(basePath+'admin/video/makerOptions',{})
+		});
 
 		$('#txt-province').kendoDropDownList({
 			dataTextField: "text",
@@ -231,6 +258,8 @@ iv = {
 						});
 					}
 				});
+
+				$('#txt-area').data("kendoDropDownList").setDataSource(null);
 			}
 		});
 	},
@@ -314,8 +343,9 @@ iv = {
 					$(this).closeDialog(modal);
 				}
 			}
-		})
+		});
 	},
+	
 	delete:function(){
 		$.mdlg.confirm("删除","您确认要将所选择的视删除么？",function(){
 			var params = $("#grid").gridSelectedCols('Id');
@@ -327,12 +357,14 @@ iv = {
 				} else {
 					$.mdlg.error('错误',data.message);
 				}
-			}).fail(errors);
-		})
+			});
+		});
 	},
 	online:function(){
-		$.mdlg.confirm("删除","您确认要将所选择的视频上线么？<br/>上线前请线确实该视频是否已经通过电信的审核。",function(){
+		$.mdlg.confirm("上线","您确认要将所选择的视频上线么？<br/>上线前请线确实该视频是否已经通过电信的审核。",function(){
 			var params = $("#grid").gridSelectedCols('Id');
+			var params2 = $("#grid").gridSelectedCols('Status');
+			params.Status = params2.Status;
 
 			$.post(basePath + 'admin/video/online', JSON.stringify(params), function (data) {
 				if (data.result) {
@@ -345,7 +377,7 @@ iv = {
 		})
 	},
 	offline:function(){
-		$.mdlg.confirm("删除","您确认要将所选择的视频下线么？",function(){
+		$.mdlg.confirm("下线","您确认要将所选择的视频下线么？",function(){
 			var params = $("#grid").gridSelectedCols('Id');
 
 			$.post(basePath + 'admin/video/offline', JSON.stringify(params), function (data) {
@@ -359,7 +391,7 @@ iv = {
 		})
 	},
 	submit:function(){
-		$.mdlg.confirm("删除","您确认要将所选择的视频提交到电信进行审核么？",function(){
+		$.mdlg.confirm("审核","您确认要将所选择的视频提交到电信进行审核么？",function(){
 			var params = $("#grid").gridSelectedCols('Id');
 			var params2 = $("#grid").gridSelectedCols('Status');
 			params.Status = params2.Status;
@@ -372,6 +404,38 @@ iv = {
 					$.mdlg.error('错误',data.message);
 				}
 			}).fail(errors);
-		})
-	}
+		});
+	},	
+	workOrderDetail:function(id){//工单详情
+		$.mdlg({
+			title:'工单详情',
+			width:'850px',
+			content:function(){
+				return $('#data-Detail').html();
+			},
+			onShow:function(){
+
+				if(id){
+					$.get(basePath + 'admin/video/getWorkOrderDetail',{Id:id},function(data){
+						$('#txt-correlate-id').html(data.CorrelateID);
+						$('#txt-xmlfor-add').html(iv.htmlEncode(data.XmlForAdd));
+						$('#txt-xmlfor-del').html(iv.htmlEncode(data.XmlForDel));
+					});
+				}
+			},
+			showCloseButton:false,
+		});
+	},
+	htmlEncode:function (str){  
+		var s = "";   
+		if (str.length == 0) return "";   
+		s = str.replace(/&/g, "&gt;");   
+		s = s.replace(/</g, "&lt;");   
+		s = s.replace(/>/g, "&gt;");   
+		s = s.replace(/ /g, "&nbsp;");   
+		s = s.replace(/\'/g, "&#39;");   
+		s = s.replace(/\"/g, "&quot;");   
+		s = s.replace(/\n/g, "<br>");   
+		return s;  
+	} 
 }
