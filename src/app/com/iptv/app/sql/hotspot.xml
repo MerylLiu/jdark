@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hotspot">
+	<insert id="saveHotspot" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="Id">
+		INSERT INTO biz_hotspot (VersionId, HotspotType, Title, Province,
+		 City, Area, BackgroundUrl,BackgroundUrl2, ImageUrl, ThumbnailUrl, ThumbnailUrl2, ThumbnailUrl3,
+		  HotspotVideoId, ActivityUrl, ActivityImages, OrderNum,CreateDate) 
+		VALUES (#{VersionId}, #{HotspotType}, #{Title}, #{Province},
+		 #{City}, #{Area}, #{BackgroundUrl},#{BackgroundUrl2}, #{ImageUrl}, #{ThumbnailUrl}, #{ThumbnailUrl2}, #{ThumbnailUrl3},
+		  #{HotspotVideoId}, #{ActivityUrl}, #{ActivityImages}, #{OrderNum},#{CreateDate}) 
+	</insert>
+	
+	<insert id="saveHotspotVideo" parameterType="java.util.HashMap">
+		INSERT INTO biz_hotspot_video (HotspotId,VideoId) VALUES (#{HotspotId},#{VideoId})
+	</insert>
+	
+	<select id="getHotspotPaged" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT * FROM biz_hotspot ORDER BY OrderNum
+	</select>
+	
+	<select id="getHotspot" resultType="java.util.HashMap" >
+		SELECT * FROM biz_hotspot WHERE Id = #{Id}
+	</select>
+	
+	<select id="getVideoIdByHotspotId" resultType="java.util.HashMap">
+		SELECT VideoId FROM biz_hotspot_video WHERE HotspotId = #{Id}
+	</select>
+	
+	<update id="updateHotspot" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="Id">
+		UPDATE  biz_hotspot SET VersionId = #{VersionId}, HotspotType = #{HotspotType}, Title = #{Title}, Province = #{Province},
+		 City = #{City}, Area = #{Area}, BackgroundUrl = #{BackgroundUrl},BackgroundUrl2=#{BackgroundUrl2}, ImageUrl= #{ImageUrl}, ThumbnailUrl= #{ThumbnailUrl},
+		  ThumbnailUrl2 = #{ThumbnailUrl2}, ThumbnailUrl3= #{ThumbnailUrl3},
+		  HotspotVideoId = #{HotspotVideoId}, ActivityUrl = #{ActivityUrl}, ActivityImages = #{ActivityImages}, OrderNum = #{OrderNum}
+		WHERE Id=#{Id}  
+	</update>
+	
+	<delete id="deleteHotspotVideo" parameterType="java.util.HashMap">
+		DELETE FROM biz_hotspot_video WHERE HotspotId = #{HotspotId}
+	</delete>
+	
+	<delete id="deleteHotspot" parameterType="java.util.HashMap">
+		DELETE FROM biz_hotspot WHERE Id IN 
+		<foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		</foreach>
+	</delete>
+	
+	<delete id="deleteHotspotVideos" parameterType="java.util.HashMap">
+		DELETE FROM biz_hotspot_video WHERE HotspotId IN 
+		<foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		</foreach>
+	</delete>
+	
+	<select id="getHomeRecommend" resultType="java.util.HashMap" >
+		SELECT a.Id,a.Title,a.BackgroundUrl,a.ImageUrl,a.ActivityUrl,a.ThumbnailUrl,
+			a.ThumbnailUrl2,a.ThumbnailUrl3,a.ActivityImages,
+			(SELECT GROUP_CONCAT(CONCAT(y.DxCode,"|",y.PlayTime))
+			 FROM biz_hotspot_video x
+			 LEFT JOIN biz_video y ON x.VideoId = y.Id
+			 WHERE x.HotspotId = a.Id ) AS DxCodeList
+		FROM biz_hotspot a
+		LEFT JOIN biz_version b ON a.VersionId = b.Id
+		WHERE a.HotspotType = 1 AND b.Status = 2
+		ORDER BY  a.OrderNum,a.CreateDate DESC
+		LIMIT 0,7;
+	</select>
+
+	<select id="getHomeTopic" resultType="java.util.HashMap" >
+		SELECT a.Id,a.Title,a.ImageUrl,a.ActivityUrl,a.ThumbnailUrl2,a.ThumbnailUrl3
+		FROM biz_hotspot a
+		LEFT JOIN biz_version b ON a.VersionId = b.Id
+		WHERE a.HotspotType = 2 AND b.Status = 2
+		ORDER BY  a.OrderNum,a.CreateDate DESC
+		LIMIT 0,1
+	</select>
+
+	<select id="getHomeSpecial" resultType="java.util.HashMap" >
+		SELECT a.Id,a.Title,a.ImageUrl,a.ActivityUrl,a.ThumbnailUrl2,a.ThumbnailUrl3
+		FROM biz_hotspot a
+		LEFT JOIN biz_version b ON a.VersionId = b.Id
+		WHERE a.HotspotType = 3 AND b.Status = 2
+		ORDER BY  a.OrderNum,a.CreateDate DESC
+		LIMIT 0,3
+	</select>
+	
+	<select id="getTopicByPage" resultType="java.util.HashMap" >
+		SELECT a.Id,a.Title,a.ImageUrl,a.ThumbnailUrl,a.ThumbnailUrl2,a.ThumbnailUrl3,a.ActivityUrl
+		FROM biz_hotspot a
+		LEFT JOIN biz_version b ON a.VersionId = b.Id
+		WHERE b.Status = 2 AND a.HotspotType = 2
+		ORDER BY a.OrderNum,b.CreateDate DESC
+		LIMIT ${offset},${rows}
+	</select>
+	
+	<select  id="getTopicPageNum" resultType="java.lang.Integer" >
+		SELECT  ceil((count(1)-1)/5)+1
+		FROM biz_hotspot a
+		LEFT JOIN biz_version b ON a.VersionId = b.Id
+		WHERE b.Status = 2 AND a.HotspotType = 2
+		ORDER BY a.OrderNum,b.CreateDate DESC
+	</select>
+
+	<select  id="getHotspotVideos" resultType="java.util.HashMap" >
+		SELECT a.VideoId,b.Name,b.VideoUrl,b.ImageUrl,b.GifUrl,b.PlayTime,b.DxCode
+		FROM biz_hotspot_video a
+		LEFT JOIN biz_video b ON a.VideoId = b.Id
+		WHERE a.HotspotId = #{id}
+	</select>
+</mapper>

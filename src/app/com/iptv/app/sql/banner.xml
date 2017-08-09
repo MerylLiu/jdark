@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="banner">
+	<select id="getBannerPaged" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_banner a 
+	</select>
+
+	<select id="getBannerById" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_banner a Where a.Id = #{Id}
+	</select>
+
+	<insert id="saveBanner" parameterType="java.util.HashMap">
+		INSERT INTO biz_banner
+			(Title,Url, ImageUrl, Province, City, Area, Status,CategoryId)
+		VALUES
+			(#{Title},#{Url}, #{ImageUrl}, #{Province}, #{City}, #{Area}, #{Status} ,#{CategoryId})
+	</insert>
+
+	<update id="updateBanner" parameterType="java.util.HashMap">
+		UPDATE biz_banner SET Title = #{Title}, ImageUrl = #{ImageUrl}, Province = #{Province},
+			City = #{City}, Area = #{Area}, Status = #{Status},Url=#{Url},CategoryId = #{CategoryId}
+		WHERE Id = #{Id}
+	</update>
+
+	<delete id="deleteBanner" parameterType="java.util.HashMap">
+		DELETE FROM biz_banner 
+		WHERE Id IN
+		<foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		</foreach>
+	</delete>
+	
+	<select id="getBannerListByArea" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_banner a 
+		WHERE a.Status = 2 
+		<if test="areaId!=null and areaId!=''">
+			AND Area = #{areaId}
+		</if>
+	</select>
+</mapper>

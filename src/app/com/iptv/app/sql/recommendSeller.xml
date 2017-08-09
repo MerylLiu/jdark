@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="recommendSeller">
+
+	<select id="getSellerPaged" resultType="java.util.HashMap">
+		SELECT a.Id as Id,a.RecommendCategoryId,b.Code, b.Name, b.SellerId, b.Tel,
+		 	b.Address, b.Province, b.City, b.Area, b.IsInstall, 
+		 	b.SetUpDate, b.CreateDate, b.OrderNum,b.Longitude,b.Latitude
+		FROM biz_recommend_seller a 
+		LEFT JOIN biz_seller b ON a.SellerId = b.Id 
+		WHERE b.IsDel IS NULL OR b.IsDel = 0
+	</select>
+	
+	<select id="getSellerList" resultType="java.util.HashMap">
+		SELECT SellerId as Id,RecommendCategoryId
+		FROM biz_recommend_seller
+	</select>
+	
+	<insert id="saveSeller">
+		INSERT INTO biz_recommend_seller (SellerId,RecommendCategoryId) values(#{Id},#{RecommendCategoryId})
+	</insert>
+
+	<update id="deleteSeller" parameterType="java.util.HashMap">
+		DELETE FROM biz_recommend_seller 
+		WHERE Id IN
+		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		 </foreach>
+	</update>
+</mapper>

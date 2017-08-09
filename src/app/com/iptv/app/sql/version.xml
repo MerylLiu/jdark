@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="version">
+	<select id="getVersionPaged" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_version a
+		ORDER BY a.CreateDate DESC
+	</select>
+
+	<select id="getVersionById" resultType="java.util.HashMap">
+		SELECT a.* FROM biz_version a Where a.Id = #{Id}
+	</select>
+
+	<select id="getExistCount" resultType="java.lang.Integer">
+		SELECT count(*) as Count FROM biz_version a
+		WHERE a.Code = #{Code}
+	</select>	
+
+	<insert id="saveVersion" parameterType="java.util.HashMap">
+		INSERT INTO biz_version
+			(Code, StartDate, EndDate,Province, City, Area, CreateDate, Status)
+		VALUES
+			(#{Code}, #{StartDate}, #{EndDate}, #{Province}, #{City}, #{Area}, 
+			 #{CreateDate}, #{Status})
+	</insert>
+
+	<update id="updateVersion" parameterType="java.util.HashMap">
+		UPDATE biz_version SET Code = #{Code}, StartDate = #{StartDate}, EndDate = #{EndDate},
+			Province = #{Province}, City = #{City}, Area = #{Area},Status = #{Status}
+		WHERE Id = #{Id}
+	</update>
+
+	<delete id="deleteVersion" parameterType="java.util.HashMap">
+		DELETE FROM biz_version
+		WHERE Id IN
+		 <foreach collection="Id" index="index" item="item" open="(" separator="," close=")">  
+            #{item}   
+		</foreach>
+	</delete>
+	
+	<select id="getAllVersion" resultType="java.util.HashMap">
+		SELECT a.Code as Text , a.Id as Value,a.Code as text , a.Id as value, a.* FROM biz_version a 
+	</select>
+
+	<update id="beforPublish" parameterType="java.util.HashMap">
+		UPDATE biz_version SET Status = 3
+		<![CDATA[ WHERE EndDate < #{CurrDate} ]]>
+	</update>
+	<update id="publish" parameterType="java.util.HashMap">
+		UPDATE biz_version SET Status = 2
+		<![CDATA[ WHERE StartDate <= #{CurrDate} AND EndDate > #{CurrDate} ]]>
+		ORDER BY EndDate
+		LIMIT 1
+	</update>
+</mapper>
