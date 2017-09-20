@@ -42,7 +42,7 @@
 	</bean>
 	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg index="0" ref="sqlSessionFactory" />
-		<!--<constructor-arg index="1" value="BATCH" /> -->
+		<!-- <constructor-arg index="1" value="BATCH" /> -->
 	</bean>
 	<bean id="basicDao" class="com.iptv.core.dao.BasicDaoImpl">
 		<!--注入SqlSessionTemplate实例 -->
@@ -66,18 +66,18 @@
 			<tx:method name="save*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
 			<tx:method name="insert*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
 			<tx:method name="update*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
+			<tx:method name="select*" propagation="REQUIRED" read-only="true" rollback-for="java.lang.Exception" />
 			<tx:method name="do*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception" />
-			<tx:method name="load*" propagation="SUPPORTS" read-only="true" />
-			<tx:method name="find*" propagation="SUPPORTS" read-only="true" />
-			<tx:method name="search*" propagation="SUPPORTS" read-only="true" />
-			<tx:method name="select*" propagation="SUPPORTS" read-only="true" />
-			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="load*" propagation="SUPPORTS" read-only="true" rollback-for="java.lang.Exception" />
+			<tx:method name="find*" propagation="SUPPORTS" read-only="true" rollback-for="java.lang.Exception" />
+			<tx:method name="search*" propagation="SUPPORTS" read-only="true" rollback-for="java.lang.Exception" />
+			<tx:method name="get*" propagation="SUPPORTS" read-only="true" rollback-for="java.lang.Exception" />
 		</tx:attributes>
 	</tx:advice>
 	<aop:config>
 		<!-- 配置一个切入点 -->
 		<aop:pointcut id="serviceMethods"
-			expression="execution(* com.iptv.*.service.impl.*ServiceImpl.*(..))" />
+			expression="execution(* com.iptv.*.service.*.*(..))" />
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods" />
 	</aop:config>
 </beans>

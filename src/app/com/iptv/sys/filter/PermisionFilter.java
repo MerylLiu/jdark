@@ -43,7 +43,7 @@ public class PermisionFilter implements Filter {
 		String servletPath = req.getServletPath();
 		String requestType = req.getHeader("X-Requested-With");
 
-		if (servletPath.contains("/sys") || servletPath.contains("/admin")) {
+		if (servletPath.contains("/sys") || servletPath.contains("/admin") || servletPath.contains("/wf")) {
 			if (requestType == null || (!requestType.equals("XMLHttpRequest") && !requestType.startsWith("ShockwaveFlash"))) {
 				ResponseWrapper responseWrapper = new ResponseWrapper(res);
 				chain.doFilter(req, responseWrapper);
