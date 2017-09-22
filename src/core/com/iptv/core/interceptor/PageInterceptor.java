@@ -2,18 +2,22 @@ package com.iptv.core.interceptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
+import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
@@ -64,6 +68,13 @@ public class PageInterceptor implements Interceptor {
 
 				try {
 					statement = connection.prepareStatement(countSql);
+
+					List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+					Object parameterObject = boundSql.getParameterObject();
+					BoundSql countBoundSql = new BoundSql(mappedStatement.getConfiguration(), countSql, parameterMappings, parameterObject);
+					ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject, countBoundSql);
+					parameterHandler.setParameters(statement);
+
 					rs = statement.executeQuery();
 					if (rs.next()) {
 						totalCount = rs.getInt(1);

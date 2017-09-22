@@ -26,19 +26,6 @@
 		<property name="suffix" value=".jsp"></property>
 	</bean>
 	
-	<bean id="visitRecordInterceptor" class="com.iptv.app.interceptor.VisitRecordInterceptor"/>
-
-	<!-- 方法拦截器（拦截Controller/Service包中的所有被RequestMapping注解的方法）-->
-	<aop:config proxy-target-class="true">
-		<aop:pointcut id="visitRecordPointcutController" expression="execution(* com.iptv.app.controller..*(..)) and
-        	@annotation(org.springframework.web.bind.annotation.RequestMapping)"/>
-		<aop:advisor advice-ref="visitRecordInterceptor" pointcut-ref="visitRecordPointcutController" />
-	</aop:config>
-	<aop:config proxy-target-class="true">
-		<aop:pointcut id="visitRecordPointcutService" expression="execution(* com.iptv.app.service..*(..))"/>
-		<aop:advisor advice-ref="visitRecordInterceptor" pointcut-ref="visitRecordPointcutService" />
-	</aop:config>
-
 	<!-- 上传文件支持 -->
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
 </beans>

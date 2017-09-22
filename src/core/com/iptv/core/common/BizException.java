@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("serial")
-public class BizException extends RuntimeException {
+public class BizException extends Exception {
 	private final List<String> errorMessage = new ArrayList<String>();
 
 	public BizException(String message){
