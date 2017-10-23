@@ -50,15 +50,16 @@
 	<div class="container-fluid page-container">
 		<div class="form-group clearfix">
 			<div class="col-sm-8">
-				<div class="panel panel-default" data-fit="true" id="editPanel">
-					<div id="collapse-editPanel" class="panel-collapse collapse in">
-						<div class="panel-body" style="height: 130px;"></div>
+				<div class="panel panel-default" id="editPanel" data-fit="true">
+					<div class="panel-heading">代办事项</div>
+					<div class="panel-body no-padding" style="height: 270px;">
+						<div id="todo-grid"></div>
 					</div>
 				</div>
 			</div>
 			<div class="col-sm-4">
-				<div class="panel panel-default" data-fit="true" id="editPanel">
-					<div id="collapse-editPanel" class="panel-collapse collapse in">
+				<div class="panel panel-default">
+					<div id="collapse-editPanel">
 						<div class="panel-body">
 							<marquee direction="up" truespeed="truespeed" height="117px" behavior="scroll" scrolldelay="300">
 								<c:forEach items="${loginRecord}" var="record">
@@ -70,10 +71,18 @@
 					</div>
 				</div>
 			</div>
+			<div class="col-sm-4" style="margin-top:10px;">
+				<div class="panel panel-default">
+					<div class="panel-heading">我的消息</div>
+					<div class="panel-body">
+						<div id="calendar" style="height:117px"></div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="form-group clearfix">
 			<div class="col-sm-6">
-				<div class="panel panel-default" data-fit="true" id="TestPanel">
+				<div class="panel panel-default" id="TestPanel">
 					<div class="toolbar" style="border-bottom: none;">
 						<div class="pull-right">
 							<button class="btn-info" type="button" id="btn-left-chart">
@@ -93,7 +102,7 @@
 				</div>
 			</div>
 			<div class="col-sm-6">
-				<div class="panel panel-default" data-fit="true" id="TestPanel">
+				<div class="panel panel-default" id="TestPanel">
 					<div class="toolbar" style="border-bottom: none;">
 						<div class="pull-right">
 							<button class="btn-info" type="button" id="btn-left-bar">

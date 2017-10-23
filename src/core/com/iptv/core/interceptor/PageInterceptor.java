@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ import com.mysql.jdbc.log.LogUtils;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
+import java.lang.reflect.Field;
 import java.sql.*;
 
 @Intercepts({
@@ -72,6 +74,14 @@ public class PageInterceptor implements Interceptor {
 					List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
 					Object parameterObject = boundSql.getParameterObject();
 					BoundSql countBoundSql = new BoundSql(mappedStatement.getConfiguration(), countSql, parameterMappings, parameterObject);
+
+					Field additionalParametersField = BoundSql.class.getDeclaredField("additionalParameters");
+		            additionalParametersField.setAccessible(true);
+					Map<String, Object> additionalParameters = (Map<String, Object>) additionalParametersField.get(boundSql);
+					for (String key : additionalParameters.keySet()) {
+			            countBoundSql.setAdditionalParameter(key, additionalParameters.get(key));
+			        }
+
 					ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject, countBoundSql);
 					parameterHandler.setParameters(statement);
 
@@ -150,11 +160,11 @@ public class PageInterceptor implements Interceptor {
 
 			ArrayList sortField = (ArrayList) param.get("sort");
 			if (sortField != null && sortField.size() > 0) {
-				String sortStr= ""; 
+				String sortStr = "";
 
 				for (Object item : sortField) {
-					Map field = (Map)item;
-					sortStr += String.format("%s %s,", field.get("field"),field.get("dir"));
+					Map field = (Map) item;
+					sortStr += String.format("%s %s,", field.get("field"), field.get("dir"));
 				}
 
 				String sort = String.format(" order by %s", sortStr.substring(0, sortStr.length() - 1));
@@ -167,11 +177,11 @@ public class PageInterceptor implements Interceptor {
 
 			ArrayList sortField = (ArrayList) param.get("sort");
 			if (sortField != null && sortField.size() > 0) {
-				String sortStr= ""; 
+				String sortStr = "";
 
 				for (Object item : sortField) {
-					Map field = (Map)item;
-					sortStr += String.format("%s %s,", field.get("field"),field.get("dir"));
+					Map field = (Map) item;
+					sortStr += String.format("%s %s,", field.get("field"), field.get("dir"));
 				}
 
 				String sort = String.format(" order by %s", sortStr.substring(0, sortStr.length() - 1));
@@ -365,6 +375,27 @@ public class PageInterceptor implements Interceptor {
 		}
 
 		return data;
+	}
+
+	private static Map buildParams(Map params) {
+		for (Object item : params.entrySet()) {
+			Entry entry = (Entry) item;
+			if (entry.getValue().getClass().isArray()) {
+				Object[] arr = (Object[]) entry.getValue();
+				String res = "";
+
+				for (int i = 0; i < arr.length; i++) {
+					if (i < i - 1) {
+						res += arr[i] + ",";
+					}else{
+						res += arr[i];
+					}
+				}
+				
+				params.put(entry.getKey(), res);
+			}
+		}
+		return params;
 	}
 
 	/*

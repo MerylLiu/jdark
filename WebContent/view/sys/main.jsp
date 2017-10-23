@@ -13,7 +13,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <!-- Set render engine for 360 browser -->
     <meta name="renderer" content="webkit">
     <meta charset="utf-8">
-    <title>后台管理中心</title>
+    <title>CRM-成都翼联科技</title>
     <meta name="description" content="This is page-header (.page-header &gt; h1)">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -72,17 +72,32 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		})
     </script>
 </head>
-
+<style>
+	.my-title{
+		letter-spacing: 1px;
+		color:#00ccff;
+		text-align: center;
+		display: inline-block;
+		margin-top: 1px;
+	}
+	.my-title small{
+		letter-spacing: 0px;
+		font-size: 12px;
+		padding-left:5px;
+		color:#fff;
+	}
+</style>
 <body screen_capture_injected="true">
     <div id="loading"><i class="loadingicon"></i><span>努力加载中...</span></div>
     <div class="navbar">
         <div class="navbar-inner">
             <div class="container-fluid">
                 <a href="#" class="navbar-brand">
-					<small><img src="<%=basePath %>assets/images/admin/logo-18.png">后台管理中心</small>
+					<small><img src="<%=basePath %>assets/images/logo-crm.png" width="22" height="22"></small>
+					<span class="my-title">CRM<small>成都翼联IPTV</small></span>
 				</a>
                 <div class="pull-left nav_shortcuts">
-                    <a class="btn btn-xs btn-danger" href="<%=Configuration.webCfg.getProperty("sso.server") %>/admin/home" title="主页" target="_self"> <i class="fa fa-home" style="font-size:14px;"></i> </a>
+                    <a class="btn btn-xs btn-danger" href="<%=Configuration.webCfg.getProperty("sso.server") %>/admin/home" title="主页" target="_blank"> <i class="fa fa-home" style="font-size:14px;"></i> </a>
                     <span id="shortcut-list"></span>
                 </div>
                 <ul class="nav simplewind-nav pull-right">
