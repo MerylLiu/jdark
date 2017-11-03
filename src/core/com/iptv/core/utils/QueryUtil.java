@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.jdbc.Null;
+
 import com.iptv.core.common.KendoResult;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -18,12 +20,12 @@ public class QueryUtil {
 	 * @return
 	 */
 	public static KendoResult getRecordsPaged(String statement, Map param) {
-		String page = param.get("page").toString();
-		String pageSize = param.get("pageSize").toString();
-		Integer offset = (Integer.valueOf(page) - 1) * Integer.valueOf(pageSize);
+		Integer page = param.get("page") == null ? 1 : Integer.parseInt(param.get("page").toString());
+		Integer pageSize = param.get("pageSize") == null ? 20 : Integer.parseInt(param.get("pageSize").toString());
+		Integer offset = (page - 1) * pageSize;
 
 		param.put("offset", offset);
-		param.put("rows", param.get("pageSize"));
+		param.put("rows", pageSize);
 
 		List data = BaseUtil.getDao().selectList(statement, param);
 		return new KendoResult(data, Integer.valueOf(param.get("total").toString()));

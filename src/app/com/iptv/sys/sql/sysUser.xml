@@ -46,23 +46,23 @@
 	<insert id="save"  parameterType="java.util.HashMap">
 		INSERT INTO sys_user
 			(LoginName,UserName,OrganizationId,Password,Gender,Tel,
-			 Email,CreateTime,UpdateTime,RoleId,Code)
+			 Email,CreateTime,UpdateTime,RoleId,Code,IsLeader)
 		VALUES
-			(#{LoginName},#{UserName},#{OrganizationId},#{Password},
-			 #{Gender},#{Tel},#{Email},#{CreateTime},#{UpdateTime},0,#{Code})
+			(#{LoginName},#{UserName},#{OrganizationId},#{Password},#{Gender},#{Tel},
+			 #{Email},#{CreateTime},#{UpdateTime},0,#{Code},#{IsLeader})
 	</insert>
 
 	<update id="update" parameterType="java.util.HashMap">
 		UPDATE sys_user SET LoginName=#{LoginName},UserName=#{UserName},Password = #{Password},
 			OrganizationId=#{OrganizationId},Gender=#{Gender},Tel=#{Tel},Email=#{Email},
-			UpdateTime=#{UpdateTime},RoleId=0,Code=#{Code}
+			UpdateTime=#{UpdateTime},RoleId=0,Code=#{Code},IsLeader=#{IsLeader}
 		WHERE Id = #{Id}
 	</update>
 
 	<update id="updateNoPasswordModify" parameterType="java.util.HashMap">
 		UPDATE sys_user SET LoginName=#{LoginName},UserName=#{UserName},
 			OrganizationId=#{OrganizationId},Gender=#{Gender},Tel=#{Tel},
-			Email=#{Email},UpdateTime=#{UpdateTime},RoleId=0,Code=#{Code}
+			Email=#{Email},UpdateTime=#{UpdateTime},RoleId=0,Code=#{Code},IsLeader=#{IsLeader}
 		WHERE Id = #{Id}
 	</update>
 
@@ -91,9 +91,9 @@
 	
 	<insert id="addUser" parameterType="java.util.HashMap" keyProperty="Id" useGeneratedKeys="true">
 		INSERT INTO sys_user (LoginName,UserName,OrganizationId,Password,Gender,Tel,
-			 Email,CreateTime,UpdateTime,RoleId,Code) 
+			 Email,CreateTime,UpdateTime,RoleId,Code,IsLeader) 
 		VALUES(#{LoginName},#{UserName},#{OrganizationId},#{Password},
-			 #{Gender},#{Tel},#{Email},#{CreateTime},#{UpdateTime},#{RoleId},#{Code})
+			 #{Gender},#{Tel},#{Email},#{CreateTime},#{UpdateTime},#{RoleId},#{Code},#{IsLeader})
 	</insert>
 	
 	<select id="getUserIdByLoginName" resultType="java.util.HashMap">

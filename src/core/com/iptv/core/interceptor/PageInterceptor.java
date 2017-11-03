@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
+import org.apache.ibatis.jdbc.Null;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
@@ -325,11 +326,11 @@ public class PageInterceptor implements Interceptor {
 	private static Map createSimpleCondition(Map filterDesc) {
 		Map data = new HashMap();
 		String key = String.format("%s_%s", filterDesc.get("field"), UUID.randomUUID());
-		String val = filterDesc.get("value").toString();
+		String val = filterDesc.get("value") == null ? "" : filterDesc.get("value").toString();
 		String value = "'" + val + "'";// StringUtil.isNumeric(val) ? val : "'"
 										// + val + "'";
 
-		String op = filterDesc.get("operator").toString();
+		String op = filterDesc.get("operator") == null ? "" : filterDesc.get("operator").toString();
 
 		if (op.equals("eq")) {
 			data.put("clause", filterDesc.get("field") + " = " + value);
