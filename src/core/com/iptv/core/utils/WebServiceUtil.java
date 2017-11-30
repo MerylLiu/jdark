@@ -102,6 +102,19 @@ public class WebServiceUtil {
 		map.put("DataType", "json");
 		map.put("LoginName", "wanghan");
 
-		System.out.println(cgi(map));
+		//System.out.println(cgi(map));
+
+		Map params = new HashMap();
+		params.put("AppId", "qq");
+		params.put("AppSecret", "ww");
+		params.put("Code", "A001");
+		params.put("CorrelateID", "A001");
+		params.put("Action", "DELETE");
+		params.put("CustomerID", "A001");
+		params.put("Name", "teste");
+		params.put("AreaID", 1144);
+		String res = cgi("http://localhost:8080/sync/services/apiService?wsdl",params);
+		//String res = cgi("http://localhost:8080/csfc/services/apiService?wsdl",params);
+		System.out.println(res);
 	}
 }

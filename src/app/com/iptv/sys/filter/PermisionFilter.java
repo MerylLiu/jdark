@@ -14,12 +14,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.rewrite.RewriteAppender;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.iptv.core.utils.BaseUtil;
+import com.iptv.core.utils.JsonUtil;
 import com.iptv.sys.common.ResponseWrapper;
 import com.iptv.sys.service.SysMenuService;
 
@@ -45,6 +47,7 @@ public class PermisionFilter implements Filter {
 
 		if (servletPath.contains("/sys") || servletPath.contains("/admin") || servletPath.contains("/wf")) {
 			if (requestType == null || (!requestType.equals("XMLHttpRequest") && !requestType.startsWith("ShockwaveFlash"))) {
+
 				ResponseWrapper responseWrapper = new ResponseWrapper(res);
 				chain.doFilter(req, responseWrapper);
 
@@ -58,7 +61,9 @@ public class PermisionFilter implements Filter {
 
 				if (session != null && (mid == null || mid.isEmpty())) {
 					buttons.remove();
-					res.getOutputStream().write(doc.html().getBytes());
+					//res.getOutputStream().write(doc.html().getBytes());
+					res.getWriter().write(doc.html());
+					res.getWriter().flush();
 					return;
 				}
 
@@ -67,31 +72,34 @@ public class PermisionFilter implements Filter {
 				List<Map> permisions = sysMenuService.getCurrentPermisions(userId, menuId);
 
 				for (Element el : buttons) {
-					Boolean isHava = false;
+					Boolean isHave = false;
 					String iconCss = "";
 
 					for (Map p : permisions) {
 						String e  = el.attr("data-permision").trim();
 						String q = p.get("Code").toString();
 						if (e.equals(q)) {
-							isHava = true;
+							isHave = true;
 							iconCss = p.get("IconCss").toString();
 							break;
 						}else{
-							isHava = false;
+							isHave = false;
 						}
 					}
 
-					if (!isHava) {
+					if (!isHave) {
 						el.remove();
 					} else if (!iconCss.trim().isEmpty()) {
 						String icon = String.format("<i class='fa %s'></i>%s", iconCss, el.html());
 						el.html(icon);
 					}
 				}
-
+				
+				
 				String resHtml = doc.html();
-				res.getOutputStream().write(resHtml.getBytes());
+				//res.getOutputStream().write(resHtml.getBytes());
+				res.getWriter().write(resHtml);
+				res.getWriter().flush();
 			} else {
 				chain.doFilter(req, res);
 			}

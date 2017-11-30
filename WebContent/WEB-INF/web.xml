@@ -11,9 +11,7 @@
   </welcome-file-list>
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/classes/applicationContext.xml,
-		
-		</param-value>
+    <param-value>/WEB-INF/classes/applicationContext.xml </param-value>
   </context-param>
   <context-param>
     <param-name>log4jConfigLocation</param-name>
@@ -88,26 +86,14 @@
   <listener>
     <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
   </listener>
+  
+  
   <servlet>
-    <servlet-name>webServices</servlet-name>
-    <servlet-class>
-             com.sun.xml.ws.transport.http.servlet.WSServlet  
-         </servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <servlet-name>AxisServlet</servlet-name>
+    <servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>webServices</servlet-name>
+    <servlet-name>AxisServlet</servlet-name>
     <url-pattern>/services/*</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>cgiServices</servlet-name>
-    <servlet-class>
-             com.sun.xml.ws.transport.http.servlet.WSServlet  
-         </servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>cgiServices</servlet-name>
-    <url-pattern>/services/cgi</url-pattern>
   </servlet-mapping>
 </web-app>
