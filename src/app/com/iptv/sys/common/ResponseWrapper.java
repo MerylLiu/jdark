@@ -10,14 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 public class ResponseWrapper extends HttpServletResponseWrapper {
-	private ByteArrayOutputStream buffer = null;
-	private ServletOutputStream out = null;
-	private PrintWriter writer = null;
+	private ByteArrayOutputStream buffer;
+
+	private WapperedOutputStream out;
+	private PrintWriter writer;
 
 	public ResponseWrapper(HttpServletResponse response) throws IOException {
 		super(response);
 
 		buffer = new ByteArrayOutputStream();
+
 		out = new WapperedOutputStream(buffer);
 		writer = new PrintWriter(new OutputStreamWriter(buffer, this.getCharacterEncoding()));
 	}
@@ -29,6 +31,10 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
 
 	@Override
 	public ServletOutputStream getOutputStream() throws IOException {
+		if (out.size() <= 0) {
+			ServletOutputStream outputStream = super.getOutputStream();
+			return outputStream;
+		}
 		return out;
 	}
 
@@ -62,22 +68,27 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
 		private ByteArrayOutputStream bos = null;
 
 		public WapperedOutputStream(ByteArrayOutputStream stream) throws IOException {
-			bos = stream;
+			this.bos = stream;
 		}
 
 		@Override
 		public void write(int b) throws IOException {
-			bos.write(b);
+			this.bos.write(b);
 		}
 
 		@Override
 		public void write(byte[] b) throws IOException {
 			super.write(b);
 		}
-		
+
 		@Override
 		public void write(byte[] b, int off, int len) throws IOException {
 			super.write(b, off, len);
+		}
+
+		@SuppressWarnings("unused")
+		public int size() {
+			return bos.size();
 		}
 	}
 }

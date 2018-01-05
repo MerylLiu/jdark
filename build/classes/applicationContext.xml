@@ -76,5 +76,5 @@
 		</property>
 	</bean>
 
-	<import resource="com/iptv/app/cfg/app-cfg.xml" />
+<!-- 	<import resource="com/iptv/app/cfg/app-cfg.xml" /> -->
 </beans>

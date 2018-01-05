@@ -25,7 +25,7 @@
 			</div>
 		</div>
 		<div id="collapse-TestPanel" class="panel-collapse collapse in">
-			<div class="panel panel-default t" data-fit="true">
+			<div class="panel panel-default t">
 				<div id="grid"></div>
 			</div>
 		</div>

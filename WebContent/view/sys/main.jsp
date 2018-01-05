@@ -13,7 +13,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <!-- Set render engine for 360 browser -->
     <meta name="renderer" content="webkit">
     <meta charset="utf-8">
-    <title>CRM-成都翼联科技</title>
+    <title>JDarc</title>
     <meta name="description" content="This is page-header (.page-header &gt; h1)">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -68,7 +68,27 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		                }
 		            }
 		        })
-		    })
+		    });
+        	//用户信息 
+	        $("#btn-user-info").click(function(){
+	        	$.mdlg({
+	        		 title: '用户信息',
+	        		 content: function() {
+		                return $('#data-info').html();
+		            },
+		            onShow:function(){
+						 var data = {"id":"${userId}"};
+						 $.get('<%=basePath%>sys/user/getUser', data, function(data) {
+							 if (data!= null && data !='') {
+								 $('#txt-code').html(data.Code);
+								 $('#txt-userName').html(data.UserName);
+								 $('#txt-roleList').html(data.RoleName);
+								 $('#txt-portrait').html('<img alt="" src="">');
+							 }
+						 });
+		            }
+	        	});
+	        });
 		})
     </script>
 </head>
@@ -93,8 +113,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         <div class="navbar-inner">
             <div class="container-fluid">
                 <a href="#" class="navbar-brand">
-					<small><img src="<%=basePath %>assets/images/logo-crm.png" width="22" height="22"></small>
-					<span class="my-title">CRM<small>成都翼联IPTV</small></span>
+					<small><img src="<%=basePath %>assets/images/admin/logo-18.png" width="22" height="22"></small>
+					<span class="my-title">Admin<small>JDarc</small></span>
 				</a>
                 <div class="pull-left nav_shortcuts">
                     <a class="btn btn-xs btn-danger" href="<%=Configuration.webCfg.getProperty("sso.server") %>/admin/home" title="主页" target="_blank"> <i class="fa fa-home" style="font-size:14px;"></i> </a>
@@ -108,8 +128,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<i class="fa fa-caret-down"></i>
 						</a>
                         <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-closer">
-                            <li><a href="javascript:openapp('/index.php?g=admin&m=setting&a=site','index_site','网站信息');"><i class="fa fa-cog"></i> 网站信息</a></li>
-                            <li><a href="javascript:void(0);" id="btn-modify"><i class="fa fa-user"></i> 修改密码</a></li>
+                            <li><a href="javascript:void(0);" id="btn-user-info"><i class="fa fa-user-circle-o"></i> 用户信息</a></li>
+                            <li><a href="javascript:void(0);" id="btn-modify"><i class="fa fa-key"></i> 修改密码</a></li>
                             <li><a href="javascript:void(0);" id="btn-loginout"><i class="fa fa-sign-out"></i> 退出</a></li>
                         </ul>
                     </li>
@@ -195,6 +215,25 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			</div>
 		</form>
 	</script>
+	<script type="text/x-jquery-tmpl" id="data-info">
+		<form class="form-horizontal" id="form-user-info">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">工号</label>
+				<div class="col-sm-8 control-label " style="text-align:left;"id="txt-code"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">姓名</label>
+				<div class="col-sm-8 control-label " style="text-align:left;" id="txt-userName"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">职位</label>
+				<div class="col-sm-8 control-label " style="text-align:left;" id="txt-roleList"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">头像</label>
+				<div class="col-sm-8 control-label " style="text-align:left;" id="txt-portrait"></div>
+			</div>
+		</form>
+	</script>
 </body>
-
 </html>

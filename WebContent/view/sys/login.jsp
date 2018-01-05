@@ -19,7 +19,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <body>
    <div class="loginheader">
-       <p><span class="systemtitle"><span class="bluetxt">IPTV</span>电子档案管理系统</span> <span class="systeminfo">欢迎光临本系统!</span></p>
+       <p><span class="systemtitle"><span class="bluetxt">JDarc</span>&nbsp;管理系统</span> <span class="systeminfo">欢迎光临本系统!</span></p>
        <span class="datetxt">今天是：<span class="datetime">
        <%
 			 java.text.SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("yyyy年MM月dd日");
@@ -33,23 +33,25 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
        <div class="logincontent">
            <div class="loginbox">
                <div class="inputbox">
-                   <form id="form-login">
-                       <label>用户登录</label>
-					   <div class="errorbox"></div>
-                       <div class="inputwrapper">
-                           <i class="icon glyphicon glyphicon-user"></i>
-                           <input type="text" name="LoginName" placeholder="请输入用户名" />
-                       </div>
-                       <div class="inputwrapper">
-                           <i class="icon glyphicon glyphicon-lock"></i>
-                           <input type="password" name="Password" placeholder="请输入用户密码" />
-                       </div>
-					   <div id="drag"></div>
-                       <div class="loginbtnwrapper">
-                           <input type="hidden" name="ValidateCode" id="txt-validate-code"/>
-                           <button type="button" class="loginbtn" id="btn-login">登 录</button>
-                       </div>
-                    </form>
+               	   <div class="form-login">
+					   <form id="form-login">
+						   <label>用户登录</label>
+						   <div class="errorbox"></div>
+						   <div class="inputwrapper">
+							   <i class="icon glyphicon glyphicon-user"></i>
+							   <input type="text" name="LoginName" placeholder="请输入用户名" />
+						   </div>
+						   <div class="inputwrapper">
+							   <i class="icon glyphicon glyphicon-lock"></i>
+							   <input type="password" name="Password" placeholder="请输入用户密码" />
+						   </div>
+						   <div id="drag"></div>
+						   <div class="loginbtnwrapper">
+							   <input type="hidden" name="ValidateCode" id="txt-validate-code"/>
+							   <button type="button" class="loginbtn" id="btn-login">登 录</button>
+						   </div>
+						</form>
+					</div>
                </div>
            </div>
        </div>

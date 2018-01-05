@@ -46,7 +46,8 @@ public class PermisionFilter implements Filter {
 		String requestType = req.getHeader("X-Requested-With");
 
 		if (servletPath.contains("/sys") || servletPath.contains("/admin") || servletPath.contains("/wf")) {
-			if (requestType == null || (!requestType.equals("XMLHttpRequest") && !requestType.startsWith("ShockwaveFlash"))) {
+			if (requestType == null
+					|| (!requestType.equals("XMLHttpRequest") && !requestType.startsWith("ShockwaveFlash"))) {
 
 				ResponseWrapper responseWrapper = new ResponseWrapper(res);
 				chain.doFilter(req, responseWrapper);
@@ -61,9 +62,9 @@ public class PermisionFilter implements Filter {
 
 				if (session != null && (mid == null || mid.isEmpty())) {
 					buttons.remove();
-					//res.getOutputStream().write(doc.html().getBytes());
-					res.getWriter().write(doc.html());
-					res.getWriter().flush();
+					res.getOutputStream().write(doc.html().getBytes());
+					// res.getWriter().write(doc.html());
+					// res.getWriter().flush();
 					return;
 				}
 
@@ -76,13 +77,13 @@ public class PermisionFilter implements Filter {
 					String iconCss = "";
 
 					for (Map p : permisions) {
-						String e  = el.attr("data-permision").trim();
+						String e = el.attr("data-permision").trim();
 						String q = p.get("Code").toString();
 						if (e.equals(q)) {
 							isHave = true;
 							iconCss = p.get("IconCss").toString();
 							break;
-						}else{
+						} else {
 							isHave = false;
 						}
 					}
@@ -94,12 +95,11 @@ public class PermisionFilter implements Filter {
 						el.html(icon);
 					}
 				}
-				
-				
+
 				String resHtml = doc.html();
-				//res.getOutputStream().write(resHtml.getBytes());
-				res.getWriter().write(resHtml);
-				res.getWriter().flush();
+				res.getOutputStream().write(resHtml.getBytes());
+				// res.getWriter().write(resHtml);
+				// res.getWriter().flush();
 			} else {
 				chain.doFilter(req, res);
 			}

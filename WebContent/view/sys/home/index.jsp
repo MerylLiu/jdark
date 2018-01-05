@@ -44,15 +44,41 @@
 	display:inline-block;
 	min-width: 35px;
 }
+.tab-pane{overflow:hidden;}
+.message-left-td{
+	width:70%;
+	border-bottom:1px #dadada solid;
+	text-align:center;
+	overflow:hidden;
+	white-space:nowrap;
+	word-break:keep-all;
+}
+.message-right-td{
+	width:30%;
+	border-bottom:1px #dadada solid;
+	border-left:1px #dadada solid;
+	text-align:center;
+	overflow:hidden;
+	white-space:nowrap;
+	word-break:keep-all;
+}
+.message-tr{
+	height:2em;
+}
 </style>
 </head>
 <body>
 	<div class="container-fluid page-container">
 		<div class="form-group clearfix">
 			<div class="col-sm-8">
-				<div class="panel panel-default" id="editPanel" data-fit="true">
-					<div class="panel-heading">代办事项</div>
-					<div class="panel-body no-padding" style="height: 270px;">
+				<div class="panel panel-default" data-fit="true">
+					<div class="panel-heading">
+						代办工作
+						<div class="wrap-collapse">
+							<a href="javascript:top.openapp('wf/task/toDo','m-78','代办工作',true);" class='pull-right' title="更多"><i class='fa fa-plus'></i></a>
+						</div>
+					</div>
+					<div class="panel-body no-padding" style="height: 285px;">
 						<div id="todo-grid"></div>
 					</div>
 				</div>
@@ -72,54 +98,28 @@
 				</div>
 			</div>
 			<div class="col-sm-4" style="margin-top:10px;">
-				<div class="panel panel-default">
-					<div class="panel-heading">我的消息</div>
-					<div class="panel-body">
-						<div id="calendar" style="height:117px"></div>
+				<div class="panel " >
+					<div class="panel-body no-padding">
+						<ul class="nav nav-tabs" role="tablist">
+							<li role="presentation" class="active"><a href="#message" aria-controls="message" role="tab" data-toggle="tab" id="tab-message">我的消息</a></li>
+							<li role="presentation"><a href="#reminder" aria-controls="reminder" role="tab" data-toggle="tab" id="tab-reminder">我的提醒</a></li>
+						</ul>
+					<div class="tab-content">
+						<div role="tabpanel" class="tab-pane fade in active" id="message" style="height:125px">
+							<table id="grid-message" style="width:100%;"></table>
+						</div>
+						<div role="tabpanel" class="tab-pane fade" id="reminder" style="height:125px">
+							<table id="grid-reminder" style="width:100%;"></table>
+						</div>
 					</div>
+				</div>
 				</div>
 			</div>
 		</div>
 		<div class="form-group clearfix">
 			<div class="col-sm-6">
-				<div class="panel panel-default" id="TestPanel">
-					<div class="toolbar" style="border-bottom: none;">
-						<div class="pull-right">
-							<button class="btn-info" type="button" id="btn-left-chart">
-								<i class='fa fa-chevron-left'></i>
-							</button>
-							<span id="year-chart"></span><span>年</span>
-							<button class="btn-info" type="button" id="btn-right-chart">
-								<i class='fa fa-chevron-right'></i>
-							</button>
-						</div>
-					</div>
-					<div id="collapse-leftPanel" class="panel-collapse collapse in">
-						<div class="panel-body">
-							<div id="chart"></div>
-						</div>
-					</div>
-				</div>
 			</div>
 			<div class="col-sm-6">
-				<div class="panel panel-default" id="TestPanel">
-					<div class="toolbar" style="border-bottom: none;">
-						<div class="pull-right">
-							<button class="btn-info" type="button" id="btn-left-bar">
-								<i class='fa fa-chevron-left text-success'></i>
-							</button>
-							<span id="year-bar"></span><span>年</span>
-							<button class="btn-info" type="button" id="btn-right-bar">
-								<i class='fa fa-chevron-right text-success'></i>
-							</button>
-						</div>
-					</div>
-					<div id="collapse-rightPanel" class="panel-collapse collapse in">
-						<div class="panel-body">
-							<div id="bar"></div>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
