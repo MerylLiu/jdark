@@ -11,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet implementation class CgiServlet
  */
 @WebServlet("/CgiServlet")
-public class CgiServlet extends HttpServlet {
+public class CgiBinServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public CgiServlet() {
+    public CgiBinServlet() {
         super();
         // TODO Auto-generated constructor stub
     }

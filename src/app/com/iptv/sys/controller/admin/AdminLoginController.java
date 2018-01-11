@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.iptv.core.common.BizException;
+import com.iptv.core.common.Configuration;
 import com.iptv.core.utils.BaseUtil;
 import com.iptv.core.utils.EncryptUtil;
 import com.iptv.sys.service.LoginService;
@@ -124,5 +125,14 @@ public class AdminLoginController extends AdminBaseController {
 
 		log.info("访问Controller:admin/main,加载系统菜单");
 		return view("sys/home/index", res);
+	}
+
+	@RequestMapping("/test")
+	public @ResponseBody Map test() {
+		String cfg = Configuration.webCfg.getProperty("sso.server");
+
+		Map map = new HashMap();
+		map.put("cfg", cfg);
+		return map;
 	}
 }

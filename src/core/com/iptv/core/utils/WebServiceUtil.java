@@ -62,6 +62,7 @@ public class WebServiceUtil {
 			String ret = hs.cgi(paramsStr);
 			return ret;
 		} catch (Exception e) {
+			e.printStackTrace();
 			// TODO Auto-generated catch block
 			return null;
 		}
