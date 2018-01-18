@@ -4,21 +4,22 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.media.jai.registry.CIFRegistry;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 import com.iptv.core.common.Configuration;
 import com.iptv.core.service.ApiService;
 
+import api.ApiServiceImplPortSoapBindingStub;
+import api.CgiServiceImplProxy;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class WebServiceUtil {
+	private static final String apiUrl = Configuration.webCfg.getProperty("cfg.webservice.api");
 
 	public static String cgi(Map params) {
 		try {
-			URL url = new URL(Configuration.webCfg.getProperty("cfg.webservice.api"));
-			Service s = Service.create(url, new QName("api", "ApiService"));
-			ApiService hs = s.getPort(new QName("api", "ApiServiceImplPort"), ApiService.class);
-
 			Integer dataType = 1;
 			if (params.get("DataType") == null) {
 				dataType = 1;
@@ -32,7 +33,8 @@ public class WebServiceUtil {
 
 			String paramsStr = dataType == 1 ? JsonUtil.getJson(params) : XmlUtil.map2xml(params).asXML();
 
-			String ret = hs.cgi(paramsStr);
+			CgiServiceImplProxy proxy = new CgiServiceImplProxy();
+			String ret = proxy.cgi(paramsStr);
 			return ret;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -59,7 +61,10 @@ public class WebServiceUtil {
 
 			String paramsStr = dataType == 1 ? JsonUtil.getJson(params) : XmlUtil.map2xml(params).asXML();
 
-			String ret = hs.cgi(paramsStr);
+			CgiServiceImplProxy proxy = new CgiServiceImplProxy();
+			proxy.setEndpoint(url);
+			String ret = proxy.cgi(paramsStr);
+
 			return ret;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -70,11 +75,8 @@ public class WebServiceUtil {
 
 	public static String cgi(String params) {
 		try {
-			URL url = new URL(Configuration.webCfg.getProperty("cfg.webservice.api"));
-			Service s = Service.create(url, new QName("api", "ApiService"));
-			ApiService hs = s.getPort(new QName("api", "ApiServiceImplPort"), ApiService.class);
-
-			String ret = hs.cgi(params);
+			CgiServiceImplProxy proxy = new CgiServiceImplProxy();
+			String ret = proxy.cgi(params);
 			return ret;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -84,11 +86,10 @@ public class WebServiceUtil {
 
 	public static String cgi(String url, String params) {
 		try {
-			URL urlAddr = new URL(url);
-			Service s = Service.create(urlAddr, new QName("api", "ApiService"));
-			ApiService hs = s.getPort(new QName("api", "ApiServiceImplPort"), ApiService.class);
+			CgiServiceImplProxy proxy = new CgiServiceImplProxy();
+			proxy.setEndpoint(url);
+			String ret = proxy.cgi(params);
 
-			String ret = hs.cgi(params);
 			return ret;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

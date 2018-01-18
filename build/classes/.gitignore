@@ -1,10 +1,2 @@
-/.DS_Store
-/applicationContext.xml
+/api/
 /com/
-/development/
-/log4j.properties
-/mvc-servlet.xml
-/mybatis.cfg.xml
-/production/
-/service.json
-/spring-datasource.xml
