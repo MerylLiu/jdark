@@ -56,10 +56,10 @@
 	</context-param>
 
 	<!-- 配置静态资源 -->
-	<servlet-mapping>
-		<servlet-name>default</servlet-name>
-		<url-pattern>/assets/*</url-pattern>
-	</servlet-mapping>
+<!-- 	<servlet-mapping> -->
+<!-- 		<servlet-name>default</servlet-name> -->
+<!-- 		<url-pattern>/assets/*</url-pattern> -->
+<!-- 	</servlet-mapping> -->
 
 	<!-- 配置springmvc的前端控制器 -->
 	<servlet>

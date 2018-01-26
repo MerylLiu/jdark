@@ -30,6 +30,17 @@ public class Configuration {
 				if (jsonCfg != null) {
 					webCfg.putAll(jsonCfg);
 				}
+			} else if(env.equals("test")){
+				inWebCfg = new InputStreamReader(
+						Configuration.class.getResourceAsStream("/test/webconfig.properties"), "UTF-8");
+
+				Map jsonCfg = from("/test/webconfig.json");
+
+				webCfg.load(inWebCfg);
+
+				if (jsonCfg != null) {
+					webCfg.putAll(jsonCfg);
+				}
 			} else {
 				inWebCfg = new InputStreamReader(
 						Configuration.class.getResourceAsStream("/development/webconfig.properties"), "UTF-8");

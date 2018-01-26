@@ -15,6 +15,8 @@ public class JdfServletContextListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent arg0) {
 		if (env != null && env.equals("production")) {
 			System.setProperty("spring.profiles.active", "production");
+		}else if (env.equals("test")) {
+			System.setProperty("spring.profiles.active", "test");
 		} else {
 			System.setProperty("spring.profiles.active", "development");
 		}
