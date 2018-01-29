@@ -25,9 +25,7 @@
 	<!-- 告知javaEE容器，有哪些内容需要添加到上下文中去 -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/classes/applicationContext.xml,
-		<!-- /WEB-INF/classes/mvc-servlet.xml -->
-		</param-value>
+		<param-value>/WEB-INF/classes/applicationContext.xml</param-value>
 	</context-param>
 
 	<!-- 加载LOG4J -->
@@ -56,10 +54,10 @@
 	</context-param>
 
 	<!-- 配置静态资源 -->
-<!-- 	<servlet-mapping> -->
-<!-- 		<servlet-name>default</servlet-name> -->
-<!-- 		<url-pattern>/assets/*</url-pattern> -->
-<!-- 	</servlet-mapping> -->
+	<servlet-mapping>
+		<servlet-name>FileServlet</servlet-name>
+		<url-pattern>/assets/*</url-pattern>
+	</servlet-mapping>
 
 	<!-- 配置springmvc的前端控制器 -->
 	<servlet>

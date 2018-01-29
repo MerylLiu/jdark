@@ -30,7 +30,7 @@ public class Configuration {
 				if (jsonCfg != null) {
 					webCfg.putAll(jsonCfg);
 				}
-			} else if(env.equals("test")){
+			} else if(env != null && env.equals("test")){
 				inWebCfg = new InputStreamReader(
 						Configuration.class.getResourceAsStream("/test/webconfig.properties"), "UTF-8");
 

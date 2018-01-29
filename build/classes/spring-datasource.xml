@@ -30,6 +30,13 @@
 			<property name="password" value="${jdbc.password}"></property>
 		</bean>
 
+		<!-- 使用JNDI -->
+		<!-- <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> -->
+		<!-- <property name="jndiName"> -->
+		<!-- <value>crm</value> -->
+		<!-- </property> -->
+		<!-- </bean> -->
+
 		<!-- 配置Session工厂 -->
 		<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 			<property name="dataSource" ref="dataSource"></property>
@@ -107,6 +114,13 @@
 			<property name="password" value="${jdbc.password}"></property>
 		</bean>
 
+		<!-- 使用JNDI -->
+		<!-- <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> -->
+		<!-- <property name="jndiName"> -->
+		<!-- <value>crm</value> -->
+		<!-- </property> -->
+		<!-- </bean> -->
+
 		<!-- 配置Session工厂 -->
 		<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 			<property name="dataSource" ref="dataSource"></property>
@@ -165,7 +179,7 @@
 			<aop:advisor advice-ref="txAdvice" pointcut-ref="testServiceMethods" />
 		</aop:config>
 	</beans>
-	
+
 	<beans profile="production">
 		<!-- 引入外部数据源配置信息 -->
 		<bean
@@ -183,6 +197,13 @@
 			<property name="username" value="${jdbc.username}"></property>
 			<property name="password" value="${jdbc.password}"></property>
 		</bean>
+
+		<!-- 使用JNDI -->
+		<!-- <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> -->
+		<!-- <property name="jndiName"> -->
+		<!-- <value>crm</value> -->
+		<!-- </property> -->
+		<!-- </bean> -->
 
 		<!-- 配置Session工厂 -->
 		<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
