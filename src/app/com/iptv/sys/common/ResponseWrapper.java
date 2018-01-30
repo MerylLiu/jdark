@@ -4,64 +4,55 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 public class ResponseWrapper extends HttpServletResponseWrapper {
-	private ByteArrayOutputStream buffer;
-
-	private WapperedOutputStream out;
-	private PrintWriter writer;
+	private ByteArrayOutputStream buffer = null;
+	private ServletOutputStream out = null;
+	private PrintWriter writer = null;
 
 	public ResponseWrapper(HttpServletResponse response) throws IOException {
 		super(response);
 
-		buffer = new ByteArrayOutputStream();
-
-		out = new WapperedOutputStream(buffer);
-		writer = new PrintWriter(new OutputStreamWriter(buffer, this.getCharacterEncoding()));
+		this.buffer = new ByteArrayOutputStream();
+		this.out = new WapperedOutputStream(this.buffer);
+		this.writer = new PrintWriter(new OutputStreamWriter(this.buffer, getCharacterEncoding()));
 	}
 
 	@Override
 	public PrintWriter getWriter() throws IOException {
-		return writer;
+		return this.writer;
 	}
 
 	@Override
 	public ServletOutputStream getOutputStream() throws IOException {
-		if (out.size() <= 0) {
-			ServletOutputStream outputStream = super.getOutputStream();
-			return outputStream;
-		}
-		return out;
+		return this.out;
 	}
 
 	@Override
-
 	public void flushBuffer() throws IOException {
-		if (out != null) {
-			out.flush();
+		if (this.out != null) {
+			this.out.flush();
 		}
-
-		if (writer != null) {
-			writer.flush();
+		if (this.writer != null) {
+			this.writer.flush();
 		}
 	}
 
 	@Override
 	public void reset() {
-		buffer.reset();
+		this.buffer.reset();
 	}
 
 	public String getContent() {
 		try {
-			return new String(buffer.toByteArray(), "UTF-8");
+			return new String(this.buffer.toByteArray(), "UTF-8");
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "";
 		}
+		return "";
 	}
 
 	private class WapperedOutputStream extends ServletOutputStream {
@@ -84,11 +75,6 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
 		@Override
 		public void write(byte[] b, int off, int len) throws IOException {
 			super.write(b, off, len);
-		}
-
-		@SuppressWarnings("unused")
-		public int size() {
-			return bos.size();
 		}
 	}
 }

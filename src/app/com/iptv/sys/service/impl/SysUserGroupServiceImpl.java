@@ -20,21 +20,21 @@ public class SysUserGroupServiceImpl extends BaseServiceImpl implements SysUserG
 		List nodes = new ArrayList<Map>();
 		List roledata = getDao().selectList("sysUserGroup.getGroupNodes");
 		List userdata = getDao().selectList("sysUserGroup.getUserNodes");
-		
+
 		Map roleRoot = new HashMap();
 		roleRoot.put("id", 0);
 		roleRoot.put("name", "用户分组");
 		roleRoot.put("open", true);
 		roleRoot.put("children", roledata);
 		nodes.add(roleRoot);
-		
+
 		Map userRoot = new HashMap();
 		userRoot.put("id", 0);
 		userRoot.put("name", "用户列表");
 		userRoot.put("open", true);
 		userRoot.put("children", userdata);
 		nodes.add(userRoot);
-		
+
 		return nodes;
 	}
 
@@ -42,21 +42,21 @@ public class SysUserGroupServiceImpl extends BaseServiceImpl implements SysUserG
 	public void doSave(Map map) throws BizException {
 		List errMsg = new ArrayList();
 		Map data = new HashMap();
-		
-		if(map.get("userId")==null){
+
+		if (map.get("userId") == null) {
 			errMsg.add("请选择用户");
 		}
-		
-		if(errMsg.size()>0){
+
+		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
-		getDao().delete("sysUserGroup.deleteGroupList",map);
-		
+
+		getDao().delete("sysUserGroup.deleteGroupList", map);
+
 		List list = (List) map.get("param");
 		data.put("UserId", map.get("userId"));
-		
-		for(Object groupId:list){
+
+		for (Object groupId : list) {
 			data.put("GroupId", groupId.toString());
 			getDao().insert("sysUserGroup.saveGroup", data);
 		}
@@ -66,8 +66,8 @@ public class SysUserGroupServiceImpl extends BaseServiceImpl implements SysUserG
 	public List groupList(Map map) {
 		Map data = new HashMap();
 		data.put("UserId", map.get("id"));
-		
-		List list = getDao().selectList("sysUserGroup.getGroupList",data);
+
+		List list = getDao().selectList("sysUserGroup.getGroupList", data);
 		return list;
 	}
 

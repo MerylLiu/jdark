@@ -22,32 +22,32 @@ import com.iptv.sys.service.SysDictionaryService;
 @Controller
 @RequestMapping("/sys/dictionary")
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class SysDictionaryController extends AdminBaseController{
+public class SysDictionaryController extends AdminBaseController {
 	@Resource
 	SysDictionaryService sysDictionaryService;
-	
+
 	@RequestMapping("/index")
-	public ModelAndView index(){
+	public ModelAndView index() {
 		return view();
 	}
-	
+
 	@RequestMapping("/dictionaryList")
-	public @ResponseBody KendoResult dictionaryList(@RequestBody Map param){
+	public @ResponseBody KendoResult dictionaryList(@RequestBody Map param) {
 		KendoResult data = sysDictionaryService.getDictionaryPaged(param);
 		return data;
 	}
-	
-	@RequestMapping("/getDictionary")	
-	public @ResponseBody Map getDictionary(@RequestParam Map param){
+
+	@RequestMapping("/getDictionary")
+	public @ResponseBody Map getDictionary(@RequestParam Map param) {
 		Map map = sysDictionaryService.findDictionary(param);
 		return map;
 	}
-	
-	@RequestMapping("/update")	
-	public @ResponseBody Map update(@RequestBody Map param){
+
+	@RequestMapping("/update")
+	public @ResponseBody Map update(@RequestBody Map param) {
 		List errmsg = new ArrayList();
 		Map map = new HashMap();
-		
+
 		try {
 			sysDictionaryService.update(param);
 		} catch (BizException e) {
@@ -57,25 +57,24 @@ public class SysDictionaryController extends AdminBaseController{
 			BaseUtil.saveLog(0, "系统参数保存修改", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", BaseUtil.toHtml(errmsg));
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "操作成功");
 		}
-		
+
 		log.info("系统参数保存修改");
 		return map;
 	}
-	
-	
+
 	@RequestMapping("/delete")
-	public @ResponseBody Map delete(@RequestBody Map param){
+	public @ResponseBody Map delete(@RequestBody Map param) {
 		List errmsg = new ArrayList();
 		Map map = new HashMap();
-		
+
 		try {
 			sysDictionaryService.delete(param);
 		} catch (BizException e) {
@@ -85,15 +84,15 @@ public class SysDictionaryController extends AdminBaseController{
 			BaseUtil.saveLog(0, "删除系统参数", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", errmsg);
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "删除成功");
 		}
-		
+
 		log.info("删除系统参数");
 		return map;
 	}

@@ -92,13 +92,13 @@ public class SysMenuServiceImpl extends BaseServiceImpl implements SysMenuServic
 		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
+
 		getDao().delete("sysMenu.deleteMenu", map);
 	}
 
 	@Override
 	public List<Map> getUserMenus(Integer userId) {
-		List res = getDao().selectList("sysMenu.getUserMenus",userId);
+		List res = getDao().selectList("sysMenu.getUserMenus", userId);
 		return res;
 	}
 
@@ -108,7 +108,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl implements SysMenuServic
 		map.put("userId", userId);
 		map.put("menuId", menuId);
 
-		List res = getDao().selectList("sysMenu.getCurrentPermisions",map);
+		List res = getDao().selectList("sysMenu.getCurrentPermisions", map);
 		return res;
 	}
 
@@ -118,7 +118,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl implements SysMenuServic
 		map.put("userId", userId);
 		map.put("menuId", menuId);
 
-		List res = getDao().selectList("sysMenu.getCurrentPermisionComponents",map);
+		List res = getDao().selectList("sysMenu.getCurrentPermisionComponents", map);
 		return res;
 	}
 }

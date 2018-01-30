@@ -348,7 +348,7 @@ public class XmlUtil {
 
 	private static Element item2xml(Map<String, Object> map, Element body) {
 		Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
-		body= body.addElement("Row");
+		body = body.addElement("Row");
 
 		while (entries.hasNext()) {
 			Map.Entry<String, Object> entry = entries.next();

@@ -22,7 +22,7 @@ public class SysSynchronizeServiceImpl extends BaseServiceImpl implements SysSyn
 
 	@Override
 	public void doSynchronize() throws Exception {
-		
+
 		Map userNameMap = new HashMap();
 		userNameMap.put("Code", "A00101");
 		userNameMap.put("Token", token);
@@ -33,19 +33,19 @@ public class SysSynchronizeServiceImpl extends BaseServiceImpl implements SysSyn
 		List<Map> targetData = (List<Map>) JsonUtil.getObject(ret);
 		Map deleteMap = new HashMap();
 		List deleteList = new ArrayList();
-		
-		for(Map map:list){
-			if(!targetData.contains(map)){
-				deleteList.add(((Map)getDao().selectOne("user.getUserIdByLoginName",map)).get("Id"));
+
+		for (Map map : list) {
+			if (!targetData.contains(map)) {
+				deleteList.add(((Map) getDao().selectOne("user.getUserIdByLoginName", map)).get("Id"));
 			}
 		}
-		
+
 		deleteMap.put("Id", deleteList);
-		
-		if(deleteMap.get("Id")!=null && ((List)deleteMap.get("Id")).size()>0){
-			getDao().delete("user.delete",deleteMap);
+
+		if (deleteMap.get("Id") != null && ((List) deleteMap.get("Id")).size() > 0) {
+			getDao().delete("user.delete", deleteMap);
 		}
-	
+
 		for (Map map : targetData) {
 
 			boolean isContains = list.contains(map) ? true : false;
@@ -86,7 +86,7 @@ public class SysSynchronizeServiceImpl extends BaseServiceImpl implements SysSyn
 			Map roleMap = XmlUtil.xml2map(roleXml, false);
 
 			if (isContains) {
-				user.put("Id", ((Map)getDao().selectOne("user.getUserIdByLoginName",map.get("LoginName"))).get("Id"));
+				user.put("Id", ((Map) getDao().selectOne("user.getUserIdByLoginName", map.get("LoginName"))).get("Id"));
 				getDao().insert("user.update", user);
 			} else {
 				getDao().insert("user.addUser", user);
@@ -105,9 +105,9 @@ public class SysSynchronizeServiceImpl extends BaseServiceImpl implements SysSyn
 				Map data = new HashMap();
 				data.put("UserId", user.get("Id"));
 				data.put("userId", user.get("Id"));
-				
-				getDao().delete("sysUserRole.deleteRoleList",data);
-				
+
+				getDao().delete("sysUserRole.deleteRoleList", data);
+
 				for (Map copyRole : roles) {
 					List<Map> roleNames = getDao().selectList("role.getRoleByName", copyRole);
 

@@ -12,8 +12,8 @@ public class BaseController {
 	public Logger log = Logger.getLogger(this.getClass());
 	@Resource
 	HttpServletRequest request;
-	
-	public ModelAndView view(){
+
+	public ModelAndView view() {
 		String path = request.getServletPath();
 		ModelAndView mv = new ModelAndView(path);
 

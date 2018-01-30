@@ -5,17 +5,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.ibatis.executor.parameter.ParameterHandler;
-import org.apache.ibatis.executor.resultset.ResultSetHandler;
-import org.apache.ibatis.executor.statement.SimpleStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
-import org.apache.ibatis.jdbc.Null;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
@@ -25,19 +20,8 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.log4j.Logger;
-import org.aspectj.weaver.ast.Var;
-import org.springframework.util.StringUtils;
-
-import com.iptv.core.common.BizException;
-import com.iptv.core.common.KendoResult;
 import com.iptv.core.utils.BaseUtil;
 import com.iptv.core.utils.JsonUtil;
-import com.iptv.core.utils.StringUtil;
-import com.mysql.jdbc.log.LogUtils;
-import com.sun.xml.internal.ws.api.pipe.NextAction;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-
 import java.lang.reflect.Field;
 import java.sql.*;
 
@@ -592,8 +576,8 @@ public class PageInterceptorBak implements Interceptor {
 	public static void main(String[] args) {
 		String sql = "select * from test where id = #{id} and test = #{test}";
 		Map pm = new HashMap();
-		//String reString = new PageInterceptor().(null, sql, pm);
+		// String reString = new PageInterceptor().(null, sql, pm);
 
-		//System.out.println(reString);
+		// System.out.println(reString);
 	}
 }

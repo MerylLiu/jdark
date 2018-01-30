@@ -11,14 +11,14 @@ public class KendoResult {
 	private int pageSize;
 	private int pageNum;
 
-	public KendoResult(){
+	public KendoResult() {
 	}
 
-	public KendoResult(List data){
+	public KendoResult(List data) {
 		this.data = data;
 	}
-	
-	public KendoResult(List data,Integer total){
+
+	public KendoResult(List data, Integer total) {
 		this.data = data;
 		this.total = total;
 	}
@@ -62,6 +62,5 @@ public class KendoResult {
 	public void setPageNum(int pageNum) {
 		this.pageNum = pageNum;
 	}
-	
-}
 
+}

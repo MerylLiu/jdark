@@ -1,9 +1,11 @@
 package com.iptv.sys.filter;
 
+import com.iptv.core.utils.BaseUtil;
+import com.iptv.sys.common.ResponseWrapper;
+import com.iptv.sys.service.SysMenuService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -13,42 +15,30 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.log4j.rewrite.RewriteAppender;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import com.iptv.core.utils.BaseUtil;
-import com.iptv.core.utils.JsonUtil;
-import com.iptv.sys.common.ResponseWrapper;
-import com.iptv.sys.service.SysMenuService;
 
 public class PermisionFilter implements Filter {
 	private SysMenuService sysMenuService = (SysMenuService) BaseUtil.getService("sysMenuServiceImpl");
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain chain)
 			throws IOException, ServletException {
-		// TODO Auto-generated method stub
-
 		HttpServletRequest req = (HttpServletRequest) arg0;
 		HttpServletResponse res = (HttpServletResponse) arg1;
 
 		String servletPath = req.getServletPath();
 		String requestType = req.getHeader("X-Requested-With");
-
-		if (servletPath.contains("/sys") || servletPath.contains("/admin") || servletPath.contains("/wf")) {
-			if (requestType == null
-					|| (!requestType.equals("XMLHttpRequest") && !requestType.startsWith("ShockwaveFlash"))) {
-
+		if ((servletPath.contains("/sys")) || (servletPath.contains("/admin")) || (servletPath.contains("/wf"))) {
+			if ((requestType == null)
+					|| ((!requestType.equals("XMLHttpRequest")) && (!requestType.startsWith("ShockwaveFlash")))) {
 				ResponseWrapper responseWrapper = new ResponseWrapper(res);
 				chain.doFilter(req, responseWrapper);
 
@@ -59,47 +49,38 @@ public class PermisionFilter implements Filter {
 				HttpSession session = req.getSession();
 
 				String mid = req.getParameter("mid");
-
-				if (session != null && (mid == null || mid.isEmpty())) {
+				if ((session != null) && ((mid == null) || (mid.isEmpty()))) {
 					buttons.remove();
-					res.getOutputStream().write(doc.html().getBytes());
-					// res.getWriter().write(doc.html());
-					// res.getWriter().flush();
+
+					res.getWriter().write(doc.html());
 					return;
 				}
-
 				Integer userId = Integer.valueOf(session.getAttribute("userId").toString());
 				Integer menuId = Integer.valueOf(mid);
-				List<Map> permisions = sysMenuService.getCurrentPermisions(userId, menuId);
-
+				List<Map> permisions = this.sysMenuService.getCurrentPermisions(userId, menuId);
 				for (Element el : buttons) {
-					Boolean isHave = false;
+					Boolean isHave = Boolean.valueOf(false);
 					String iconCss = "";
-
 					for (Map p : permisions) {
 						String e = el.attr("data-permision").trim();
 						String q = p.get("Code").toString();
 						if (e.equals(q)) {
-							isHave = true;
+							isHave = Boolean.valueOf(true);
 							iconCss = p.get("IconCss").toString();
 							break;
-						} else {
-							isHave = false;
 						}
+						isHave = Boolean.valueOf(false);
 					}
-
-					if (!isHave) {
+					if (!isHave.booleanValue()) {
 						el.remove();
 					} else if (!iconCss.trim().isEmpty()) {
-						String icon = String.format("<i class='fa %s'></i>%s", iconCss, el.html());
+						String icon = String.format("<i class='fa %s'></i>%s", new Object[] { iconCss, el.html() });
 						el.html(icon);
 					}
 				}
-
 				String resHtml = doc.html();
-				res.getOutputStream().write(resHtml.getBytes());
-				// res.getWriter().write(resHtml);
-				// res.getWriter().flush();
+
+				res.getWriter().write(resHtml);
 			} else {
 				chain.doFilter(req, res);
 			}
@@ -110,7 +91,5 @@ public class PermisionFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig arg0) throws ServletException {
-		// TODO Auto-generated method stub
-
 	}
 }

@@ -23,7 +23,7 @@ public class SysUserMenuServiceImpl extends BaseServiceImpl implements SysUserMe
 		List orgdata = getDao().selectList("sysUserMenu.getOrgRootNodes");
 		getNodes(menudata);
 		getOrgUser(orgdata);
-		
+
 		Map userRoot = new HashMap();
 		userRoot.put("id", 0);
 		userRoot.put("name", "用户列表");
@@ -40,25 +40,25 @@ public class SysUserMenuServiceImpl extends BaseServiceImpl implements SysUserMe
 
 		return nodes;
 	}
-	
-	public void getOrgUser(List<Map> list){
+
+	public void getOrgUser(List<Map> list) {
 		List<Integer> l = new ArrayList();
-		for(int i = 0;i<list.size();i++){
+		for (int i = 0; i < list.size(); i++) {
 			Map map = list.get(i);
 			List children = getDao().selectList("sysUserMenu.getUserNodes", map.get("orgId"));
-			if(children.size()<=0||children == null){
+			if (children.size() <= 0 || children == null) {
 				l.add(i);
-			}else{
-				map.put("children",children );
+			} else {
+				map.put("children", children);
 			}
 		}
-		for(int i = list.size();i>=0;i--){
-			if(l.contains(i)){
+		for (int i = list.size(); i >= 0; i--) {
+			if (l.contains(i)) {
 				list.remove(i);
 			}
 		}
 	}
-	
+
 	public void getNodes(List<Map> list) {
 		for (Object obj : list) {
 			Map map = (Map) obj;
@@ -89,12 +89,11 @@ public class SysUserMenuServiceImpl extends BaseServiceImpl implements SysUserMe
 				child1.put("nocheck", true);
 				child1.put("title", "");
 				child1.put("icon", "javascript:void(0)");
-				
+
 				List children1 = new ArrayList();
 				children1.add(child1);
 				gchild.put("children", children1);
-				
-				
+
 				Map cchild = new HashMap();
 				cchild.put("id", "crm" + map.get("id"));
 				cchild.put("open", 1);
@@ -113,7 +112,7 @@ public class SysUserMenuServiceImpl extends BaseServiceImpl implements SysUserMe
 				child2.put("nocheck", true);
 				child2.put("title", "");
 				child2.put("icon", "javascript:void(0)");
-				
+
 				List children2 = new ArrayList();
 				children2.add(child2);
 				cchild.put("children", children2);
@@ -148,7 +147,7 @@ public class SysUserMenuServiceImpl extends BaseServiceImpl implements SysUserMe
 		StringBuilder builder = new StringBuilder();
 		builder.append("<div style='display:inline-block'>");
 		List<Map> componentData = getDao().selectList("permisionComponent.getAllPermision");
-		
+
 		for (Map item : componentData) {
 			String in = String.format(
 					"<input type='checkbox' name='chk-%s' value='%s' class='js-component-chk' style='margin:0'> %s &nbsp;&nbsp;",
@@ -174,27 +173,26 @@ public class SysUserMenuServiceImpl extends BaseServiceImpl implements SysUserMe
 		}
 
 		getDao().delete("sysUserMenu.deleteMenuList", map);
-		getDao().delete("sysUserMenuComponent.deleteMenuList",map);
+		getDao().delete("sysUserMenuComponent.deleteMenuList", map);
 
 		List<Map> list = (List) map.get("param");
 		data.put("userId", map.get("userId"));
 
 		for (Map item : list) {
-			if(item.get("id").toString().startsWith("c")||item.get("id").toString().startsWith("p")){
+			if (item.get("id").toString().startsWith("c") || item.get("id").toString().startsWith("p")) {
 				continue;
-			}else{
+			} else {
 				data.put("menuId", item.get("id"));
 			}
-			
 
-			if (item.get("permision") != null && ((ArrayList)item.get("permision")).size() > 0) {
+			if (item.get("permision") != null && ((ArrayList) item.get("permision")).size() > 0) {
 				List pList = (ArrayList) item.get("permision");
 				for (Object p : pList) {
-					
-					if(p.toString().indexOf("[")>0){
-						data.put("permisionId", p.toString().substring(0,p.toString().indexOf("[")));
+
+					if (p.toString().indexOf("[") > 0) {
+						data.put("permisionId", p.toString().substring(0, p.toString().indexOf("[")));
 						getDao().insert("sysUserMenuComponent.saveMenu", data);
-					}else{
+					} else {
 						data.put("permisionId", p);
 						getDao().insert("sysUserMenu.saveMenu", data);
 					}

@@ -27,8 +27,8 @@ import com.iptv.sys.service.SysUserService;
 
 @Controller
 @RequestMapping("/sys/user")
-@SuppressWarnings({"rawtypes","unchecked"})
-public class SysUserController extends AdminBaseController{
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class SysUserController extends AdminBaseController {
 	@Resource
 	SysUserService sysUserService;
 	@Resource
@@ -37,24 +37,24 @@ public class SysUserController extends AdminBaseController{
 	SysOrganizationService sysOrganizationService;
 	@Resource
 	SysSynchronizeService sysSynchronizeService;
-	
+
 	@RequestMapping("/index")
-	public ModelAndView index(){
+	public ModelAndView index() {
 		Map res = new HashMap();
 		List sex = BaseUtil.getSysParam("Sex");
 		res.put("sex", JsonUtil.getJson(sex));
 
 		return view(res);
 	}
-	
+
 	@RequestMapping("/userList")
-	public @ResponseBody KendoResult userList(@RequestBody Map param){
+	public @ResponseBody KendoResult userList(@RequestBody Map param) {
 		KendoResult data = sysUserService.getUserPaged(param);
 		return data;
 	}
-	
+
 	@RequestMapping("/getUser")
-	public @ResponseBody Map getUser(@RequestParam Map param){
+	public @ResponseBody Map getUser(@RequestParam Map param) {
 		Map map = sysUserService.findUserById(param);
 
 		try {
@@ -64,19 +64,18 @@ public class SysUserController extends AdminBaseController{
 			log.error("通过id获得用户信息时发生错误 :" + e.getMessage());
 			BaseUtil.saveLog(0, "通过id获得用户信息时发生错误", e.getMessage());
 		}
-		
+
 		return map;
 	}
-	
-	
+
 	@RequestMapping("/roleList")
-	public @ResponseBody KendoResult roleList(){
+	public @ResponseBody KendoResult roleList() {
 		List list = sysRoleService.getRoleList();
 		return new KendoResult(list);
 	}
-	
+
 	@RequestMapping("/save")
-	public @ResponseBody Map save(@RequestBody Map param){
+	public @ResponseBody Map save(@RequestBody Map param) {
 		List errmsg = new ArrayList();
 		Map map = new HashMap();
 
@@ -89,25 +88,24 @@ public class SysUserController extends AdminBaseController{
 			BaseUtil.saveLog(0, "用户保存修改", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", BaseUtil.toHtml(errmsg));
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "操作成功");
 		}
-		
+
 		log.info("用户保存修改");
 		return map;
 	}
-	
-	
+
 	@RequestMapping("/delete")
-	public @ResponseBody Map delete(@RequestBody Map param){
+	public @ResponseBody Map delete(@RequestBody Map param) {
 		List errmsg = new ArrayList();
 		Map map = new HashMap();
-		
+
 		try {
 			sysUserService.delete(param);
 		} catch (BizException e) {
@@ -117,15 +115,15 @@ public class SysUserController extends AdminBaseController{
 			BaseUtil.saveLog(0, "用户删除", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", errmsg);
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "删除成功");
 		}
-		
+
 		log.info("用户删除");
 		return map;
 	}
@@ -137,54 +135,54 @@ public class SysUserController extends AdminBaseController{
 		log.info("获取组织机构选项:" + JsonUtil.getJson(orgs));
 		return orgs;
 	}
-	
+
 	@RequestMapping("/passwordModify")
-	public @ResponseBody Map passwordModify(@RequestBody Map param){
+	public @ResponseBody Map passwordModify(@RequestBody Map param) {
 		List errmsg = new ArrayList();
 		Map map = new HashMap();
-		
-		try{
+
+		try {
 			sysUserService.passwordModiy(param);
-		}catch(BizException e){
+		} catch (BizException e) {
 			errmsg.addAll(e.getMessages());
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			log.error("错误信息-用户密码修改：" + ex.getMessage());
 			BaseUtil.saveLog(0, "用户密码修改", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", BaseUtil.toHtml(errmsg));
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "修改成功。");
 		}
-		
+
 		log.info("用户密码修改");
 		return map;
 	}
-	
+
 	@RequestMapping("/synchronize")
-	public @ResponseBody Map synchronize(){
+	public @ResponseBody Map synchronize() {
 		Map map = new HashMap();
 		List errmsg = new ArrayList();
-		try{
+		try {
 			sysSynchronizeService.doSynchronize();
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			log.error("错误信息-用户同步：" + ex.getMessage());
 			BaseUtil.saveLog(0, "用户同步", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", errmsg);
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "同步成功。");
 		}
-		
+
 		return map;
 	}
 }

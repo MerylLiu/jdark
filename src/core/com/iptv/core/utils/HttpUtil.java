@@ -1,12 +1,6 @@
 package com.iptv.core.utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.List;
 import java.util.Map;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -16,10 +10,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.util.HashMap;
 import java.util.Iterator;
 
 public class HttpUtil {
@@ -89,8 +79,8 @@ public class HttpUtil {
 		return response;
 	}
 
-//	public static void main(String[] args) {
-//		String reString = sendGet("http://www.baidu.com", "");
-//		System.out.println(reString);
-//	}
+	// public static void main(String[] args) {
+	// String reString = sendGet("http://www.baidu.com", "");
+	// System.out.println(reString);
+	// }
 }

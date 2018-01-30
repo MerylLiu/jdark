@@ -22,30 +22,30 @@ import com.iptv.sys.service.SysPermisionService;
 @Controller
 @RequestMapping("/sys/permision")
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class SysPermisionController extends AdminBaseController{
+public class SysPermisionController extends AdminBaseController {
 	@Resource
 	SysPermisionService sysPermisionService;
-	
+
 	@RequestMapping("/index")
-	public ModelAndView index(){
-		
+	public ModelAndView index() {
+
 		return view();
 	}
-	
+
 	@RequestMapping("/permisionList")
-	public @ResponseBody KendoResult permisionList(@RequestBody Map param){
+	public @ResponseBody KendoResult permisionList(@RequestBody Map param) {
 		KendoResult data = sysPermisionService.getPermisionPaged(param);
 		return data;
 	}
-	
-	@RequestMapping("/getPermision")	
-	public @ResponseBody Map getPermision(@RequestParam Map param){
+
+	@RequestMapping("/getPermision")
+	public @ResponseBody Map getPermision(@RequestParam Map param) {
 		Map map = sysPermisionService.findPermisionById(param);
 		return map;
 	}
-	
-	@RequestMapping("/save")	
-	public @ResponseBody Map save(@RequestBody Map param){
+
+	@RequestMapping("/save")
+	public @ResponseBody Map save(@RequestBody Map param) {
 		List errmsg = new ArrayList();
 		Map map = new HashMap();
 		try {
@@ -57,22 +57,21 @@ public class SysPermisionController extends AdminBaseController{
 			BaseUtil.saveLog(0, "权限保存修改", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", BaseUtil.toHtml(errmsg));
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "操作成功");
 		}
-		
+
 		log.info("保存修改权限");
 		return map;
 	}
-	
-	
+
 	@RequestMapping("/delete")
-	public @ResponseBody Map delete(@RequestBody Map param){
+	public @ResponseBody Map delete(@RequestBody Map param) {
 		List errmsg = new ArrayList();
 		Map map = new HashMap();
 		try {
@@ -84,15 +83,15 @@ public class SysPermisionController extends AdminBaseController{
 			BaseUtil.saveLog(0, "删除权限", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", errmsg);
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "删除成功");
 		}
-		
+
 		log.info("删除权限");
 		return map;
 	}

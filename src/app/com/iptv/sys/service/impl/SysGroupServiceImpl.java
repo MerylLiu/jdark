@@ -37,7 +37,7 @@ public class SysGroupServiceImpl extends BaseServiceImpl implements SysGroupServ
 			Map map = new HashMap();
 			map.put("parentId", node.get("id"));
 			List children = getDao().selectList("sysGroup.getNodesByParentID", map);
-			
+
 			if (!children.isEmpty()) {
 				node.put("children", children);
 				getNodes(children);
@@ -48,7 +48,7 @@ public class SysGroupServiceImpl extends BaseServiceImpl implements SysGroupServ
 	@Override
 	public void save(Map map) throws BizException {
 		List errMsg = new ArrayList();
-		
+
 		if (map.get("Code") == null) {
 			errMsg.add("请输入分组编码。");
 		}
@@ -58,21 +58,21 @@ public class SysGroupServiceImpl extends BaseServiceImpl implements SysGroupServ
 		if (map.get("Level") == null) {
 			errMsg.add("请输入分组层级。");
 		}
-		if (map.get("Level") != null&&!(map.get("Level").toString().matches("^\\d+$"))) {
+		if (map.get("Level") != null && !(map.get("Level").toString().matches("^\\d+$"))) {
 			errMsg.add("分组层级请输入纯数字。");
 		}
-		if(map.get("Enable")==null){
+		if (map.get("Enable") == null) {
 			errMsg.add("请选择是否启用。");
 		}
 		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
-		if(map.get("ParentId")!=null){
-			Map parentCode = getDao().selectOne("sysGroup.getParentCode",map.get("ParentId"));
+
+		if (map.get("ParentId") != null) {
+			Map parentCode = getDao().selectOne("sysGroup.getParentCode", map.get("ParentId"));
 			map.put("ParentCode", parentCode.get("Code"));
 		}
-		
+
 		if (map.get("Id") == null || map.get("Id").equals(0)) {
 			getDao().insert("sysGroup.saveGroup", map);
 		} else {
@@ -83,7 +83,7 @@ public class SysGroupServiceImpl extends BaseServiceImpl implements SysGroupServ
 	@Override
 	public void delete(Map map) throws BizException {
 		List errMsg = new ArrayList();
-		
+
 		if (map.get("Id") == null) {
 			errMsg.add("请选择要删除的分组。");
 		}
@@ -91,28 +91,28 @@ public class SysGroupServiceImpl extends BaseServiceImpl implements SysGroupServ
 		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
+
 		List list = new ArrayList();
 		List a = new ArrayList();
 		map.put("id", map.get("Id"));
 		a.add(map);
 		list.add(map);
-		getDeleteNodes(list,a);
-		
-		getDao().delete("sysGroupMenu.deleteGroupMenuList",a);
-		getDao().delete("sysGroupMenuComponent.deleteGroupMenuComponentList",a);
+		getDeleteNodes(list, a);
+
+		getDao().delete("sysGroupMenu.deleteGroupMenuList", a);
+		getDao().delete("sysGroupMenuComponent.deleteGroupMenuComponentList", a);
 		getDao().delete("sysGroup.deleteGroup", a);
 	}
-	
-	private void getDeleteNodes(List<Map> list,List a) {
+
+	private void getDeleteNodes(List<Map> list, List a) {
 		for (Map item : list) {
 			Map map = new HashMap();
 			map.put("parentId", item.get("id"));
 			List children = getDao().selectList("sysGroup.getDeleteNodesByParentID", map);
-			
-			if (!children.isEmpty()&&children.size()>0) {
+
+			if (!children.isEmpty() && children.size() > 0) {
 				a.addAll(children);
-				getDeleteNodes(children,a);
+				getDeleteNodes(children, a);
 			}
 		}
 	}

@@ -30,7 +30,6 @@ public class SysGroupController extends AdminBaseController {
 		return view();
 	}
 
-
 	@RequestMapping(value = "/groupNodes", method = RequestMethod.GET)
 	public @ResponseBody List organizationNodes() {
 		List data = sysGroupService.getALlGroupForNode();
@@ -56,7 +55,7 @@ public class SysGroupController extends AdminBaseController {
 		if (messages.size() > 0) {
 			res.put("result", false);
 			res.put("message", BaseUtil.toHtml(messages));
-		}else{
+		} else {
 			res.put("result", true);
 			res.put("message", "保存成功。");
 		}
@@ -84,7 +83,7 @@ public class SysGroupController extends AdminBaseController {
 		if (messages.size() > 0) {
 			res.put("result", false);
 			res.put("message", BaseUtil.toHtml(messages));
-		}else{
+		} else {
 			res.put("result", true);
 			res.put("message", "删除成功。");
 		}

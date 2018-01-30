@@ -22,7 +22,7 @@ public class SysLogLoginServiceImpl extends BaseServiceImpl implements SysLogLog
 
 	@Override
 	public List getLogLoginLatest() {
-		List list =  getDao().selectList("sysLogLogin.getLogLoginLatest");
+		List list = getDao().selectList("sysLogLogin.getLogLoginLatest");
 		return list;
 	}
 }

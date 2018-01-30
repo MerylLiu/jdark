@@ -7,17 +7,17 @@ import java.util.List;
 public class BizException extends Exception {
 	private final List<String> errorMessage = new ArrayList<String>();
 
-	public BizException(String message){
+	public BizException(String message) {
 		super(message);
 
 		errorMessage.add(message);
 	}
 
-	public BizException(List<String> messages){
+	public BizException(List<String> messages) {
 		errorMessage.addAll(messages);
 	}
-	
-	public List<String> getMessages(){
+
+	public List<String> getMessages() {
 		return errorMessage;
 	}
 }

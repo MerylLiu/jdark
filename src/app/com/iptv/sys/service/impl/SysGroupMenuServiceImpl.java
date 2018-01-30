@@ -21,30 +21,30 @@ public class SysGroupMenuServiceImpl extends BaseServiceImpl implements SysGroup
 		List roledata = getDao().selectList("sysGroupMenu.getGroupNodes");
 		List menudata = getDao().selectList("sysGroupMenu.getMenuRootNodes");
 		getNodes(menudata);
-		
+
 		Map roleRoot = new HashMap();
 		roleRoot.put("id", 0);
 		roleRoot.put("name", "分组列表");
 		roleRoot.put("open", true);
 		roleRoot.put("children", roledata);
 		nodes.add(roleRoot);
-		
+
 		Map menuRoot = new HashMap();
 		menuRoot.put("id", 0);
 		menuRoot.put("name", "分组权限");
 		menuRoot.put("open", true);
 		menuRoot.put("children", menudata);
 		nodes.add(menuRoot);
-		
+
 		return nodes;
 	}
-	
-	public void getNodes(List<Map> list){
+
+	public void getNodes(List<Map> list) {
 		for (Object obj : list) {
 			Map map = (Map) obj;
 			Map data = new HashMap();
 			data.put("parentId", map.get("id"));
-			List nodes = getDao().selectList("sysGroupMenu.getMenuNodesForParentId",data);
+			List nodes = getDao().selectList("sysGroupMenu.getMenuNodesForParentId", data);
 
 			if (!nodes.isEmpty()) {
 				map.put("children", nodes);
@@ -69,12 +69,11 @@ public class SysGroupMenuServiceImpl extends BaseServiceImpl implements SysGroup
 				child1.put("nocheck", true);
 				child1.put("title", "");
 				child1.put("icon", "javascript:void(0)");
-				
+
 				List children1 = new ArrayList();
 				children1.add(child1);
 				gchild.put("children", children1);
-				
-				
+
 				Map cchild = new HashMap();
 				cchild.put("id", "crm" + map.get("id"));
 				cchild.put("open", 1);
@@ -93,7 +92,7 @@ public class SysGroupMenuServiceImpl extends BaseServiceImpl implements SysGroup
 				child2.put("nocheck", true);
 				child2.put("title", "");
 				child2.put("icon", "javascript:void(0)");
-				
+
 				List children2 = new ArrayList();
 				children2.add(child2);
 				cchild.put("children", children2);
@@ -107,7 +106,7 @@ public class SysGroupMenuServiceImpl extends BaseServiceImpl implements SysGroup
 			}
 		}
 	}
-	
+
 	private String getPermisionCheckboxList() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<div style='display:inline-block'>");
@@ -128,7 +127,7 @@ public class SysGroupMenuServiceImpl extends BaseServiceImpl implements SysGroup
 		StringBuilder builder = new StringBuilder();
 		builder.append("<div style='display:inline-block'>");
 		List<Map> componentData = getDao().selectList("permisionComponent.getAllPermision");
-		
+
 		for (Map item : componentData) {
 			String in = String.format(
 					"<input type='checkbox' name='chk-%s' value='%s' class='js-component-chk' style='margin:0'> %s &nbsp;&nbsp;",
@@ -139,41 +138,41 @@ public class SysGroupMenuServiceImpl extends BaseServiceImpl implements SysGroup
 
 		return builder.toString();
 	}
-	
+
 	@Override
 	public void doSave(Map map) throws BizException {
 		List errMsg = new ArrayList();
 		Map data = new HashMap();
-		
-		if(map.get("groupId")==null){
+
+		if (map.get("groupId") == null) {
 			errMsg.add("请选择分组");
 		}
-		
-		if(errMsg.size()>0){
+
+		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
-		getDao().delete("sysGroupMenu.deleteMenuList",map);
-		getDao().delete("sysGroupMenuComponent.deleteMenuList",map);
-		
+
+		getDao().delete("sysGroupMenu.deleteMenuList", map);
+		getDao().delete("sysGroupMenuComponent.deleteMenuList", map);
+
 		List<Map> list = (List) map.get("param");
 		data.put("groupId", map.get("groupId"));
-		
+
 		for (Map item : list) {
-			if(item.get("id").toString().startsWith("c")||item.get("id").toString().startsWith("p")){
+			if (item.get("id").toString().startsWith("c") || item.get("id").toString().startsWith("p")) {
 				continue;
-			}else{
+			} else {
 				data.put("menuId", item.get("id"));
 			}
 
-			if (item.get("permision") != null && ((ArrayList)item.get("permision")).size() > 0) {
+			if (item.get("permision") != null && ((ArrayList) item.get("permision")).size() > 0) {
 				List pList = (ArrayList) item.get("permision");
 				for (Object p : pList) {
-					
-					if(p.toString().indexOf("[")>0){
-						data.put("permisionId", p.toString().substring(0,p.toString().indexOf("[")));
+
+					if (p.toString().indexOf("[") > 0) {
+						data.put("permisionId", p.toString().substring(0, p.toString().indexOf("[")));
 						getDao().insert("sysGroupMenuComponent.saveMenu", data);
-					}else{
+					} else {
 						data.put("permisionId", p);
 						getDao().insert("sysGroupMenu.saveMenu", data);
 					}
@@ -184,15 +183,13 @@ public class SysGroupMenuServiceImpl extends BaseServiceImpl implements SysGroup
 			}
 		}
 	}
-	
-	
-	
+
 	@Override
 	public List menuList(Map map) {
 		Map data = new HashMap();
 		data.put("groupId", map.get("id"));
-		
-		List list = getDao().selectList("sysGroupMenu.getMenuList",data);
+
+		List list = getDao().selectList("sysGroupMenu.getMenuList", data);
 		return list;
 	}
 

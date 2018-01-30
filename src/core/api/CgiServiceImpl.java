@@ -8,5 +8,5 @@
 package api;
 
 public interface CgiServiceImpl extends java.rmi.Remote {
-    public java.lang.String cgi(java.lang.String params) throws java.rmi.RemoteException;
+	public java.lang.String cgi(java.lang.String params) throws java.rmi.RemoteException;
 }

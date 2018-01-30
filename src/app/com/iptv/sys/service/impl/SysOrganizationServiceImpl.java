@@ -39,7 +39,7 @@ public class SysOrganizationServiceImpl extends BaseServiceImpl implements SysOr
 			Map map = new HashMap();
 			map.put("parentId", node.get("id"));
 			List children = getDao().selectList("sysOrganization.getNodesByParentID", map);
-			
+
 			if (!children.isEmpty()) {
 				node.put("children", children);
 				getNodes(children);
@@ -50,7 +50,7 @@ public class SysOrganizationServiceImpl extends BaseServiceImpl implements SysOr
 	@Override
 	public void save(Map map) throws BizException {
 		List errMsg = new ArrayList();
-		
+
 		if (map.get("Code") == null) {
 			errMsg.add("请输入机构编码。");
 		}
@@ -60,21 +60,21 @@ public class SysOrganizationServiceImpl extends BaseServiceImpl implements SysOr
 		if (map.get("Level") == null) {
 			errMsg.add("请输入机构层级。");
 		}
-		if (map.get("Level") != null&&!(map.get("Level").toString().matches("^\\d+$"))) {
+		if (map.get("Level") != null && !(map.get("Level").toString().matches("^\\d+$"))) {
 			errMsg.add("机构层级请输入纯数字。");
 		}
-		if(map.get("Enable")==null){
+		if (map.get("Enable") == null) {
 			errMsg.add("请选择是否启用。");
 		}
 		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
-		if(map.get("ParentId")!=null){
-			Map parentCode = getDao().selectOne("sysOrganization.getParentCode",map.get("ParentId"));
+
+		if (map.get("ParentId") != null) {
+			Map parentCode = getDao().selectOne("sysOrganization.getParentCode", map.get("ParentId"));
 			map.put("ParentCode", parentCode.get("Code"));
 		}
-		
+
 		if (map.get("Id") == null || map.get("Id").equals(0)) {
 			getDao().insert("sysOrganization.saveOrganization", map);
 		} else {
@@ -85,24 +85,24 @@ public class SysOrganizationServiceImpl extends BaseServiceImpl implements SysOr
 	@Override
 	public void delete(Map map) throws BizException {
 		List errMsg = new ArrayList();
-		
+
 		if (map.get("Id") == null) {
 			errMsg.add("请选择要删除的机构。");
 		}
-		
+
 		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
+
 		List list = new ArrayList();
 		List a = new ArrayList();
 		map.put("id", map.get("Id"));
 		a.add(map);
 		list.add(map);
-		getDeleteNodes(list,a);
-		
-		getDao().delete("sysOrgMenu.deleteOrgMenuList",a);
-		getDao().delete("sysOrgMenuComponent.deleteOrgMenuComponentList",a);
+		getDeleteNodes(list, a);
+
+		getDao().delete("sysOrgMenu.deleteOrgMenuList", a);
+		getDao().delete("sysOrgMenuComponent.deleteOrgMenuComponentList", a);
 		getDao().delete("sysOrganization.deleteOrganization", a);
 	}
 
@@ -111,16 +111,16 @@ public class SysOrganizationServiceImpl extends BaseServiceImpl implements SysOr
 		KendoResult data = QueryUtil.getSelectOptions("sysOrganization.getOrgOptions", map);
 		return data;
 	}
-	
-	private void getDeleteNodes(List<Map> list,List a) {
+
+	private void getDeleteNodes(List<Map> list, List a) {
 		for (Map item : list) {
 			Map map = new HashMap();
 			map.put("parentId", item.get("id"));
 			List children = getDao().selectList("sysOrganization.getDeleteNodesByParentID", map);
-			
-			if (!children.isEmpty()&&children.size()>0) {
+
+			if (!children.isEmpty() && children.size() > 0) {
 				a.addAll(children);
-				getDeleteNodes(children,a);
+				getDeleteNodes(children, a);
 			}
 		}
 	}

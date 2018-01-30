@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 public class StringUtil {
 
 	/**
-     * 判断字符串是否是整数
-     */
+	 * 判断字符串是否是整数
+	 */
 	public static boolean isInteger(String str) {
 		if (null == str || "".equals(str)) {
 			return false;
@@ -17,8 +17,8 @@ public class StringUtil {
 	}
 
 	/**
-     * 判断字符串是否是浮点数
-     */
+	 * 判断字符串是否是浮点数
+	 */
 	public static boolean isDouble(String str) {
 		if (null == str || "".equals(str)) {
 			return false;
@@ -28,8 +28,8 @@ public class StringUtil {
 	}
 
 	/**
-     * 判断字符串是否是数字
-     */
+	 * 判断字符串是否是数字
+	 */
 	public static boolean isNumeric(String str) {
 		Pattern pattern = Pattern.compile("[0-9]*");
 		Matcher isNum = pattern.matcher(str);

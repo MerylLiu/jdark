@@ -1,7 +1,5 @@
 package com.iptv.core.utils;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,17 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import com.iptv.core.common.Configuration;
-import com.sun.tools.doclets.formats.html.resources.standard;
 
 public class FtpUtil {
 	private static FTPClient ftpClient;
@@ -43,7 +36,7 @@ public class FtpUtil {
 				if (flag) {
 					ftpClient.setControlEncoding("UTF-8");
 					// binary file
-					ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+					ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 					ftpClient.enterLocalPassiveMode();
 				} else {
 					result = false;
@@ -73,7 +66,7 @@ public class FtpUtil {
 				if (flag) {
 					fc.setControlEncoding("UTF-8");
 					// binary file
-					fc.setFileType(FTPClient.BINARY_FILE_TYPE);
+					fc.setFileType(FTP.BINARY_FILE_TYPE);
 					fc.enterLocalPassiveMode();
 				} else {
 					result = false;

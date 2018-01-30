@@ -5,6 +5,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 public class BasicDaoImpl implements BasicDao {
 	public SqlSessionTemplate sqlSessionTemplate;
 
+	@Override
 	public void setSqlSessionTemplate(SqlSessionTemplate sqlSession) {
 		this.sqlSessionTemplate = sqlSession;
 	}

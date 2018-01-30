@@ -62,7 +62,7 @@ public class SysMenuController extends AdminBaseController {
 		if (messages.size() > 0) {
 			res.put("result", false);
 			res.put("message", BaseUtil.toHtml(messages));
-		}else{
+		} else {
 			res.put("result", true);
 			res.put("message", "保存成功。");
 		}
@@ -89,7 +89,7 @@ public class SysMenuController extends AdminBaseController {
 		if (messages.size() > 0) {
 			res.put("result", false);
 			res.put("message", BaseUtil.toHtml(messages));
-		}else{
+		} else {
 			res.put("result", true);
 			res.put("message", "删除成功。");
 		}

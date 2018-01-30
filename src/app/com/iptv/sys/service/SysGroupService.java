@@ -7,9 +7,9 @@ import com.iptv.core.common.BizException;
 import com.iptv.core.service.BaseService;
 
 @SuppressWarnings("rawtypes")
-public interface SysGroupService extends BaseService{
+public interface SysGroupService extends BaseService {
 	public List<Map> getALlGroupForNode();
-	
+
 	public void save(Map map) throws BizException;
 
 	public void delete(Map map) throws BizException;

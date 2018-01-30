@@ -16,17 +16,17 @@ import com.iptv.sys.service.SysLogLoginService;
 @Controller
 @RequestMapping("/sys/logLogin")
 @SuppressWarnings({ "rawtypes" })
-public class SysLogLoginController extends AdminBaseController{
+public class SysLogLoginController extends AdminBaseController {
 	@Resource
 	SysLogLoginService sysLogLoginService;
-	
+
 	@RequestMapping("/index")
-	public ModelAndView index(){
+	public ModelAndView index() {
 		return view();
 	}
-	
+
 	@RequestMapping("/logLoginList")
-	public @ResponseBody KendoResult dictionaryList(@RequestBody Map param){
+	public @ResponseBody KendoResult dictionaryList(@RequestBody Map param) {
 		KendoResult data = sysLogLoginService.getLogLoginPaged(param);
 		return data;
 	}

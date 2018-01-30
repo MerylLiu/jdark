@@ -31,14 +31,14 @@ public class SysPermisionServiceImpl extends BaseServiceImpl implements SysPermi
 	@Override
 	public void update(Map map) throws BizException {
 		List errMsg = new ArrayList();
-		
-		if (map.get("Code") == null||map.get("Code").toString().trim().isEmpty()) {
+
+		if (map.get("Code") == null || map.get("Code").toString().trim().isEmpty()) {
 			errMsg.add("请输入编号。");
 		}
-		if (map.get("Name") == null||map.get("Name").toString().trim().isEmpty()) {
+		if (map.get("Name") == null || map.get("Name").toString().trim().isEmpty()) {
 			errMsg.add("请输入名称。");
 		}
-		if (map.get("IconCss") == null||map.get("IconCss").toString().trim().isEmpty()) {
+		if (map.get("IconCss") == null || map.get("IconCss").toString().trim().isEmpty()) {
 			errMsg.add("请输入图标样式。");
 		}
 		if (map.get("IsEnable") == null) {
@@ -47,7 +47,7 @@ public class SysPermisionServiceImpl extends BaseServiceImpl implements SysPermi
 
 		if (map.get("BeforeCode") == null || !(map.get("BeforeCode").equals(map.get("Code")))) {
 			Map Code = getDao().selectOne("permision.findPermisionByCode", map.get("Code"));
-			
+
 			if (Code != null) {
 				errMsg.add("编号不能重复");
 			}
@@ -57,13 +57,13 @@ public class SysPermisionServiceImpl extends BaseServiceImpl implements SysPermi
 			if (errMsg.size() > 0) {
 				throw new BizException(errMsg);
 			}
-			
+
 			getDao().insert("permision.save", map);
 		} else {
 			if (errMsg.size() > 0) {
 				throw new BizException(errMsg);
 			}
-			
+
 			getDao().update("permision.update", map);
 		}
 	}
@@ -78,7 +78,7 @@ public class SysPermisionServiceImpl extends BaseServiceImpl implements SysPermi
 		if (errmsg.size() > 0) {
 			throw new BizException(errmsg);
 		}
-		
+
 		getDao().delete("permision.delete", map);
 	}
 

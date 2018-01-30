@@ -11,10 +11,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.deser.Deserializers.Base;
 import com.iptv.core.service.SysParamService;
 import com.iptv.core.utils.BaseUtil;
 import com.iptv.core.utils.DateUtil;
@@ -51,6 +49,7 @@ public class SysParamServiceImpl extends BaseServiceImpl implements SysParamServ
 	 * @param remark
 	 *            错误信息
 	 */
+	@Override
 	public void saveLog(int opreationType, String operation, String remark) {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		HttpSession session = request.getSession();
@@ -88,7 +87,7 @@ public class SysParamServiceImpl extends BaseServiceImpl implements SysParamServ
 		map.put("Key", key);
 		map.put("Value", value);
 
-		Map res  = getDao().selectOne("sysParams.getSysDic", map);
+		Map res = getDao().selectOne("sysParams.getSysDic", map);
 		return res;
 	}
 

@@ -22,29 +22,29 @@ import com.iptv.sys.service.SysRoleService;
 @Controller
 @RequestMapping("/sys/role")
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class SysRoleController extends AdminBaseController{
+public class SysRoleController extends AdminBaseController {
 	@Resource
 	SysRoleService sysRoleService;
-	
+
 	@RequestMapping("/index")
-	public ModelAndView index(){
+	public ModelAndView index() {
 		return view();
 	}
-	
+
 	@RequestMapping("/roleList")
-	public @ResponseBody KendoResult roleList(@RequestBody Map param){
+	public @ResponseBody KendoResult roleList(@RequestBody Map param) {
 		KendoResult data = sysRoleService.getRolePaged(param);
 		return data;
 	}
-	
-	@RequestMapping("/getRole")	
-	public @ResponseBody Map getRole(@RequestParam Map param){
+
+	@RequestMapping("/getRole")
+	public @ResponseBody Map getRole(@RequestParam Map param) {
 		Map map = sysRoleService.findUserById(param);
 		return map;
 	}
-	
-	@RequestMapping("/save")	
-	public @ResponseBody Map save(@RequestBody Map param){
+
+	@RequestMapping("/save")
+	public @ResponseBody Map save(@RequestBody Map param) {
 		List errmsg = new ArrayList();
 		Map map = new HashMap();
 		try {
@@ -56,22 +56,21 @@ public class SysRoleController extends AdminBaseController{
 			BaseUtil.saveLog(0, "角色保存修改", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", BaseUtil.toHtml(errmsg));
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "操作成功");
 		}
-		
+
 		log.info("保存修改角色");
 		return map;
 	}
-	
-	
+
 	@RequestMapping("/delete")
-	public @ResponseBody Map delete(@RequestBody Map param){
+	public @ResponseBody Map delete(@RequestBody Map param) {
 		List errmsg = new ArrayList();
 		Map map = new HashMap();
 		try {
@@ -83,15 +82,15 @@ public class SysRoleController extends AdminBaseController{
 			BaseUtil.saveLog(0, "删除角色", ex.getMessage());
 			errmsg.add("未知错误。");
 		}
-		
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			map.put("result", false);
 			map.put("message", errmsg);
-		}else{
+		} else {
 			map.put("result", true);
 			map.put("message", "删除成功");
 		}
-		
+
 		log.info("删除角色");
 		return map;
 	}

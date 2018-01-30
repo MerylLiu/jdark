@@ -22,7 +22,7 @@ import com.iptv.sys.service.SysUserService;
 @Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SysUserServiceImpl extends BaseServiceImpl implements SysUserService {
-	
+
 	private static final String token = Configuration.webCfg.getProperty("cfg.webservice.token");
 
 	@Override
@@ -40,20 +40,20 @@ public class SysUserServiceImpl extends BaseServiceImpl implements SysUserServic
 	@Override
 	public void save(Map map) throws Exception {
 		List errMsg = new ArrayList();
-		
-		if (map.get("Code") == null||map.get("Code").toString().trim().isEmpty()) {
+
+		if (map.get("Code") == null || map.get("Code").toString().trim().isEmpty()) {
 			errMsg.add("请输入用户编号。");
 		}
-		if (map.get("UserName") == null||map.get("UserName").toString().trim().isEmpty()) {
+		if (map.get("UserName") == null || map.get("UserName").toString().trim().isEmpty()) {
 			errMsg.add("请输入真实姓名。");
 		}
-		if (map.get("LoginName") == null||map.get("LoginName").toString().trim().isEmpty()) {
+		if (map.get("LoginName") == null || map.get("LoginName").toString().trim().isEmpty()) {
 			errMsg.add("请输入登录名。");
 		}
-		if (map.get("Password") == null||map.get("Password").toString().trim().isEmpty()) {
+		if (map.get("Password") == null || map.get("Password").toString().trim().isEmpty()) {
 			errMsg.add("请输入密码。");
 		}
-		if (map.get("ConfrimPassword") == null||map.get("ConfrimPassword").toString().trim().isEmpty()) {
+		if (map.get("ConfrimPassword") == null || map.get("ConfrimPassword").toString().trim().isEmpty()) {
 			errMsg.add("请再次输入密码。");
 		}
 		if (map.get("Password") != null && map.get("ConfrimPassword") != null
@@ -61,12 +61,12 @@ public class SysUserServiceImpl extends BaseServiceImpl implements SysUserServic
 			errMsg.add("您两次输入的密码不一致，请重新输入。");
 		}
 		if (map.get("Password") != null && map.get("Password").toString().length() < 6) {
-				errMsg.add("密码长度不能少于6位。");
+			errMsg.add("密码长度不能少于6位。");
 		}
-		if (map.get("ConfrimPassword") != null&&map.get("ConfrimPassword").toString().length() < 6) {
-				errMsg.add("确认密码长度不能少于6位。");
+		if (map.get("ConfrimPassword") != null && map.get("ConfrimPassword").toString().length() < 6) {
+			errMsg.add("确认密码长度不能少于6位。");
 		}
-		if (map.get("OrganizationId") != null&&!(map.get("OrganizationId").toString().matches("^\\d+$"))) {
+		if (map.get("OrganizationId") != null && !(map.get("OrganizationId").toString().matches("^\\d+$"))) {
 			errMsg.add("所属部门必须数字。");
 		}
 		if (map.get("OrganizationId") == null) {
@@ -75,12 +75,12 @@ public class SysUserServiceImpl extends BaseServiceImpl implements SysUserServic
 		if (map.get("Gender") == null) {
 			errMsg.add("请输入性别。");
 		}
-		if (map.get("Tel") == null||map.get("Tel").toString().trim().isEmpty()) {
+		if (map.get("Tel") == null || map.get("Tel").toString().trim().isEmpty()) {
 			errMsg.add("请输入电话。");
 		}
-		
+
 		String regex = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
-		
+
 		if (map.get("Email") == null) {
 			errMsg.add("请输入邮箱。");
 		} else if (!map.get("Email").toString().matches(regex)) {
@@ -98,7 +98,7 @@ public class SysUserServiceImpl extends BaseServiceImpl implements SysUserServic
 			if (errMsg.size() > 0) {
 				throw new BizException(errMsg);
 			}
-			
+
 			map.put("CreateTime", DateUtil.getNow());
 			map.put("Password", EncryptUtil.encrypt(map.get("Password").toString()));
 			getDao().insert("user.save", map);
@@ -106,7 +106,7 @@ public class SysUserServiceImpl extends BaseServiceImpl implements SysUserServic
 			if (errMsg.size() > 0) {
 				throw new BizException(errMsg);
 			}
-			
+
 			Map confrim = getDao().selectOne("user.findUserById", map.get("Id"));
 			map.put("Password", EncryptUtil.encrypt(map.get("Password").toString()));
 
@@ -126,61 +126,61 @@ public class SysUserServiceImpl extends BaseServiceImpl implements SysUserServic
 		if (map.get("Id") == null || ids.size() <= 0) {
 			errmsg.add("请选择用户。");
 		}
-		if(ids.contains(1)){
+		if (ids.contains(1)) {
 			errmsg.add("您选择的用户中含有超级管理员，超级管理员不允许被删除。");
 		}
-		
+
 		if (errmsg.size() > 0) {
 			throw new BizException(errmsg);
 		}
-		
-		getDao().delete("sysUserRole.deleteUserRoleList",map);
-		getDao().delete("sysUserMenu.deleteUserMenuList",map);
-		getDao().delete("sysUserGroup.deleteUserGroupList",map);
-		getDao().delete("sysUserMenuComponent.deleteRoleMenuComponentList",map);
+
+		getDao().delete("sysUserRole.deleteUserRoleList", map);
+		getDao().delete("sysUserMenu.deleteUserMenuList", map);
+		getDao().delete("sysUserGroup.deleteUserGroupList", map);
+		getDao().delete("sysUserMenuComponent.deleteRoleMenuComponentList", map);
 		getDao().delete("user.delete", map);
 	}
 
 	@Override
 	public void passwordModiy(Map map) throws Exception {
 		List errmsg = new ArrayList();
-		
+
 		String api = Configuration.webCfg.getProperty("cfg.webservice.api");
-		
-		if(map.get("Id")==null){
+
+		if (map.get("Id") == null) {
 			errmsg.add("请您先登录。");
 		}
-		if(map.get("BeforePassword")==null){
+		if (map.get("BeforePassword") == null) {
 			errmsg.add("请输入旧密码。");
 		}
-		if(map.get("Password") == null||map.get("Password").toString().trim().isEmpty()) {
+		if (map.get("Password") == null || map.get("Password").toString().trim().isEmpty()) {
 			errmsg.add("请输入新密码。");
 		}
-		if(map.get("ConfirmPassword") == null||map.get("ConfirmPassword").toString().trim().isEmpty()) {
+		if (map.get("ConfirmPassword") == null || map.get("ConfirmPassword").toString().trim().isEmpty()) {
 			errmsg.add("请再次输入新密码。");
 		}
-		if(map.get("Password") != null && map.get("ConfirmPassword") != null
+		if (map.get("Password") != null && map.get("ConfirmPassword") != null
 				&& !(map.get("Password").equals(map.get("ConfirmPassword")))) {
 			errmsg.add("您两次输入的新密码不一致，请重新输入。");
 		}
-		if(map.get("Password")!=null){
+		if (map.get("Password") != null) {
 			map.put("Password", EncryptUtil.encrypt(map.get("Password").toString()));
 		}
-		if(map.get("BeforePassword")!=null){
+		if (map.get("BeforePassword") != null) {
 			map.put("BeforePassword", EncryptUtil.encrypt(map.get("BeforePassword").toString()));
 		}
-		
+
 		List data = getDao().selectList("user.checkBeforePassword", map);
-		
-		if(data.size()<=0){
+
+		if (data.size() <= 0) {
 			errmsg.add("您输入的旧密码不正确，请重新输入。");
 		}
-		
-		if(api==null||api.isEmpty()){
+
+		if (api == null || api.isEmpty()) {
 			errmsg.add("密码修改不成功。");
-		}else{
+		} else {
 			Map user = getDao().selectOne("user.findUserById", map.get("Id"));
-			
+
 			Map userMap = new HashMap();
 			userMap.put("Code", "A00102");
 			userMap.put("DataType", "xml");
@@ -188,7 +188,7 @@ public class SysUserServiceImpl extends BaseServiceImpl implements SysUserServic
 			userMap.put("LoginName", user.get("LoginName"));
 
 			Map copyUser = XmlUtil.xml2map(WebServiceUtil.cgi(userMap), false);
-			
+
 			Map passmodifyMap = new HashMap();
 			passmodifyMap.put("Code", "A00106");
 			passmodifyMap.put("Token", token);
@@ -196,23 +196,23 @@ public class SysUserServiceImpl extends BaseServiceImpl implements SysUserServic
 			passmodifyMap.put("Id", copyUser.get("Id"));
 			passmodifyMap.put("Password", map.get("Password"));
 			String result = WebServiceUtil.cgi(passmodifyMap);
-			
-			if(result!=null && !(result.equals("null"))&&
-					((Map)JsonUtil.getObject(result)).get("ResultCode")!=null){
+
+			if (result != null && !(result.equals("null"))
+					&& ((Map) JsonUtil.getObject(result)).get("ResultCode") != null) {
 				errmsg.add("密码修改不成功。");
 			}
 		}
-					
-		if(errmsg.size()>0){
+
+		if (errmsg.size() > 0) {
 			throw new BizException(errmsg);
 		}
-		
+
 		getDao().update("user.updatePasswordModify", map);
 	}
-	
+
 	@Override
-	public KendoResult findAllUser(Map map){
-		KendoResult data = QueryUtil.getSelectOptions("user.findAllUser",map);
+	public KendoResult findAllUser(Map map) {
+		KendoResult data = QueryUtil.getSelectOptions("user.findAllUser", map);
 		return data;
 	}
 }

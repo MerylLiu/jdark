@@ -4,14 +4,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.jai.registry.CIFRegistry;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 import com.iptv.core.common.Configuration;
 import com.iptv.core.service.ApiService;
 
-import api.ApiServiceImplPortSoapBindingStub;
 import api.CgiServiceImplProxy;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -104,7 +102,7 @@ public class WebServiceUtil {
 		map.put("DataType", "json");
 		map.put("LoginName", "wanghan");
 
-		//System.out.println(cgi(map));
+		// System.out.println(cgi(map));
 
 		Map params = new HashMap();
 		params.put("AppId", "qq");
@@ -115,8 +113,9 @@ public class WebServiceUtil {
 		params.put("CustomerID", "A001");
 		params.put("Name", "teste");
 		params.put("AreaID", 1144);
-		String res = cgi("http://localhost:8080/sync/services/apiService?wsdl",params);
-		//String res = cgi("http://localhost:8080/csfc/services/apiService?wsdl",params);
+		String res = cgi("http://localhost:8080/sync/services/apiService?wsdl", params);
+		// String res =
+		// cgi("http://localhost:8080/csfc/services/apiService?wsdl",params);
 		System.out.println(res);
 	}
 }

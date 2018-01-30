@@ -20,21 +20,21 @@ public class SysUserRoleServiceImpl extends BaseServiceImpl implements SysUserRo
 		List nodes = new ArrayList<Map>();
 		List roledata = getDao().selectList("sysUserRole.getRoleNodes");
 		List userdata = getDao().selectList("sysUserRole.getUserNodes");
-		
+
 		Map roleRoot = new HashMap();
 		roleRoot.put("id", 0);
 		roleRoot.put("name", "用户角色");
 		roleRoot.put("open", true);
 		roleRoot.put("children", roledata);
 		nodes.add(roleRoot);
-		
+
 		Map userRoot = new HashMap();
 		userRoot.put("id", 0);
 		userRoot.put("name", "用户列表");
 		userRoot.put("open", true);
 		userRoot.put("children", userdata);
 		nodes.add(userRoot);
-		
+
 		return nodes;
 	}
 
@@ -42,21 +42,21 @@ public class SysUserRoleServiceImpl extends BaseServiceImpl implements SysUserRo
 	public void doSave(Map map) throws BizException {
 		List errMsg = new ArrayList();
 		Map data = new HashMap();
-		
-		if(map.get("userId")==null){
+
+		if (map.get("userId") == null) {
 			errMsg.add("请选择用户");
 		}
-		
-		if(errMsg.size()>0){
+
+		if (errMsg.size() > 0) {
 			throw new BizException(errMsg);
 		}
-		
-		getDao().delete("sysUserRole.deleteRoleList",map);
-		
+
+		getDao().delete("sysUserRole.deleteRoleList", map);
+
 		List list = (List) map.get("param");
 		data.put("UserId", map.get("userId"));
-		
-		for(Object roleId:list){
+
+		for (Object roleId : list) {
 			data.put("RoleId", roleId.toString());
 			getDao().insert("sysUserRole.saveRole", data);
 		}
@@ -66,8 +66,8 @@ public class SysUserRoleServiceImpl extends BaseServiceImpl implements SysUserRo
 	public List roleList(Map map) {
 		Map data = new HashMap();
 		data.put("UserId", map.get("id"));
-		
-		List list = getDao().selectList("sysUserRole.getRoleList",data);
+
+		List list = getDao().selectList("sysUserRole.getRoleList", data);
 		return list;
 	}
 

@@ -8,15 +8,15 @@ import com.iptv.core.common.KendoResult;
 import com.iptv.core.service.BaseService;
 
 @SuppressWarnings("rawtypes")
-public interface SysRoleService extends BaseService{
+public interface SysRoleService extends BaseService {
 	public KendoResult getRolePaged(Map map);
-	
-	public Map findUserById(Map map) ;
-	
-	public void update(Map map)throws BizException;
-	
-	public void delete(Map map)throws BizException;
-	
+
+	public Map findUserById(Map map);
+
+	public void update(Map map) throws BizException;
+
+	public void delete(Map map) throws BizException;
+
 	public List getRoleList();
-	
+
 }

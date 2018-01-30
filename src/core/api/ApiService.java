@@ -8,9 +8,9 @@
 package api;
 
 public interface ApiService extends javax.xml.rpc.Service {
-    public java.lang.String getApiServiceImplPortAddress();
+	public java.lang.String getApiServiceImplPortAddress();
 
-    public api.CgiServiceImpl getApiServiceImplPort() throws javax.xml.rpc.ServiceException;
+	public api.CgiServiceImpl getApiServiceImplPort() throws javax.xml.rpc.ServiceException;
 
-    public api.CgiServiceImpl getApiServiceImplPort(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
+	public api.CgiServiceImpl getApiServiceImplPort(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
 }

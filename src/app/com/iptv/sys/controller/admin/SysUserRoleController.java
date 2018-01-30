@@ -31,39 +31,38 @@ public class SysUserRoleController extends AdminBaseController {
 		return view();
 	}
 
-
 	@RequestMapping(value = "/userRoleNodes", method = RequestMethod.GET)
 	public @ResponseBody List userRoleNodes() {
 		List data = sysUserRoleService.getAllUserRoleForNode();
 		return data;
 	}
-	
+
 	@RequestMapping(value = "/roleList", method = RequestMethod.GET)
-	public @ResponseBody List roleList(@RequestParam Map map){
+	public @ResponseBody List roleList(@RequestParam Map map) {
 		List list = sysUserRoleService.roleList(map);
 		return list;
 	}
-	
+
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public @ResponseBody Map save(@RequestBody Map map) {
 		List<String> messages = new ArrayList<String>();
 		Map res = new HashMap();
-		
-		try{
+
+		try {
 			sysUserRoleService.doSave(map);
-		}catch(BizException ex){
+		} catch (BizException ex) {
 			messages.addAll(ex.getMessages());
-		}catch (Exception ex) {
+		} catch (Exception ex) {
 			log.error("未知错误：" + ex.getMessage());
 			BaseUtil.saveLog(0, "添加或者修改用户角色", ex.getMessage());
 			messages.add("未知错误。");
 		}
-		
+
 		if (messages.size() > 0) {
 			res.put("result", false);
 			res.put("message", BaseUtil.toHtml(messages));
-		}else{
+		} else {
 			res.put("result", true);
 			res.put("message", "保存成功。");
 		}

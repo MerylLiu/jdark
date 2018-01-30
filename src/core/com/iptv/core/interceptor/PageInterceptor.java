@@ -9,9 +9,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.ibatis.executor.parameter.ParameterHandler;
-import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
-import org.apache.ibatis.jdbc.Null;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
@@ -21,16 +19,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.log4j.Logger;
-import org.springframework.util.StringUtils;
-
-import com.iptv.core.common.KendoResult;
 import com.iptv.core.utils.BaseUtil;
-import com.iptv.core.utils.JsonUtil;
-import com.iptv.core.utils.StringUtil;
-import com.mysql.jdbc.log.LogUtils;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-
 import java.lang.reflect.Field;
 import java.sql.*;
 
@@ -74,16 +63,19 @@ public class PageInterceptor implements Interceptor {
 
 					List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
 					Object parameterObject = boundSql.getParameterObject();
-					BoundSql countBoundSql = new BoundSql(mappedStatement.getConfiguration(), countSql, parameterMappings, parameterObject);
+					BoundSql countBoundSql = new BoundSql(mappedStatement.getConfiguration(), countSql,
+							parameterMappings, parameterObject);
 
 					Field additionalParametersField = BoundSql.class.getDeclaredField("additionalParameters");
-		            additionalParametersField.setAccessible(true);
-					Map<String, Object> additionalParameters = (Map<String, Object>) additionalParametersField.get(boundSql);
+					additionalParametersField.setAccessible(true);
+					Map<String, Object> additionalParameters = (Map<String, Object>) additionalParametersField
+							.get(boundSql);
 					for (String key : additionalParameters.keySet()) {
-			            countBoundSql.setAdditionalParameter(key, additionalParameters.get(key));
-			        }
+						countBoundSql.setAdditionalParameter(key, additionalParameters.get(key));
+					}
 
-					ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject, countBoundSql);
+					ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject,
+							countBoundSql);
 					parameterHandler.setParameters(statement);
 
 					rs = statement.executeQuery();
@@ -388,11 +380,11 @@ public class PageInterceptor implements Interceptor {
 				for (int i = 0; i < arr.length; i++) {
 					if (i < i - 1) {
 						res += arr[i] + ",";
-					}else{
+					} else {
 						res += arr[i];
 					}
 				}
-				
+
 				params.put(entry.getKey(), res);
 			}
 		}

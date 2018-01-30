@@ -69,12 +69,11 @@ public class SysRoleMenuServiceImpl extends BaseServiceImpl implements SysRoleMe
 				child1.put("nocheck", true);
 				child1.put("title", "");
 				child1.put("icon", "javascript:void(0)");
-				
+
 				List children1 = new ArrayList();
 				children1.add(child1);
 				gchild.put("children", children1);
-				
-				
+
 				Map cchild = new HashMap();
 				cchild.put("id", "crm" + map.get("id"));
 				cchild.put("open", 1);
@@ -93,7 +92,7 @@ public class SysRoleMenuServiceImpl extends BaseServiceImpl implements SysRoleMe
 				child2.put("nocheck", true);
 				child2.put("title", "");
 				child2.put("icon", "javascript:void(0)");
-				
+
 				List children2 = new ArrayList();
 				children2.add(child2);
 				cchild.put("children", children2);
@@ -123,12 +122,12 @@ public class SysRoleMenuServiceImpl extends BaseServiceImpl implements SysRoleMe
 		builder.append("</div>");
 		return builder.toString();
 	}
-	
+
 	private String getComponentPermisionCheckboxList() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<div style='display:inline-block'>");
 		List<Map> componentData = getDao().selectList("permisionComponent.getAllPermision");
-		
+
 		for (Map item : componentData) {
 			String in = String.format(
 					"<input type='checkbox' name='chk-%s' value='%s' class='js-component-chk' style='margin:0'> %s &nbsp;&nbsp;",
@@ -154,26 +153,26 @@ public class SysRoleMenuServiceImpl extends BaseServiceImpl implements SysRoleMe
 		}
 
 		getDao().delete("sysRoleMenu.deleteMenuList", map);
-		getDao().delete("sysRoleMenuComponent.deleteMenuList",map);
+		getDao().delete("sysRoleMenuComponent.deleteMenuList", map);
 
 		List<Map> list = (List) map.get("param");
 		data.put("roleId", map.get("roleId"));
 
 		for (Map item : list) {
-			if(item.get("id").toString().startsWith("c")||item.get("id").toString().startsWith("p")){
+			if (item.get("id").toString().startsWith("c") || item.get("id").toString().startsWith("p")) {
 				continue;
-			}else{
+			} else {
 				data.put("menuId", item.get("id"));
 			}
 
-			if (item.get("permision") != null && ((ArrayList)item.get("permision")).size() > 0) {
+			if (item.get("permision") != null && ((ArrayList) item.get("permision")).size() > 0) {
 				List pList = (ArrayList) item.get("permision");
 				for (Object p : pList) {
-					
-					if(p.toString().indexOf("[")>0){
-						data.put("permisionId", p.toString().substring(0,p.toString().indexOf("[")));
+
+					if (p.toString().indexOf("[") > 0) {
+						data.put("permisionId", p.toString().substring(0, p.toString().indexOf("[")));
 						getDao().insert("sysRoleMenuComponent.saveMenu", data);
-					}else{
+					} else {
 						data.put("permisionId", p);
 						getDao().insert("sysRoleMenu.saveMenu", data);
 					}

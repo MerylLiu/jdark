@@ -31,18 +31,18 @@ public class SysRoleServiceImpl extends BaseServiceImpl implements SysRoleServic
 	@Override
 	public void update(Map map) throws BizException {
 		List errMsg = new ArrayList();
-		
-		if (map.get("Code") == null||map.get("Code").toString().trim().isEmpty()) {
+
+		if (map.get("Code") == null || map.get("Code").toString().trim().isEmpty()) {
 			errMsg.add("请输入编号。");
 		}
-		if (map.get("Name") == null||map.get("Name").toString().trim().isEmpty()) {
+		if (map.get("Name") == null || map.get("Name").toString().trim().isEmpty()) {
 			errMsg.add("请输入角色名称。");
 		}
-		if (map.get("Level") == null||map.get("Level").toString().trim().isEmpty()) {
+		if (map.get("Level") == null || map.get("Level").toString().trim().isEmpty()) {
 			errMsg.add("请输入角色等级。");
 		}
 
-		if (map.get("Level") != null&&!(map.get("Level").toString().matches("^\\d+$"))) {
+		if (map.get("Level") != null && !(map.get("Level").toString().matches("^\\d+$"))) {
 			errMsg.add("角色等级请输入纯数字。");
 		}
 		if (map.get("Enable") == null) {
@@ -51,13 +51,13 @@ public class SysRoleServiceImpl extends BaseServiceImpl implements SysRoleServic
 		if (map.get("IsSystem") == null) {
 			errMsg.add("请选择是否是系统级。");
 		}
-		if (map.get("OrderNum") == null||map.get("OrderNum").toString().trim().isEmpty()) {
+		if (map.get("OrderNum") == null || map.get("OrderNum").toString().trim().isEmpty()) {
 			errMsg.add("请输入排序号。");
 		}
 
 		if (map.get("BeforeCode") == null || !(map.get("BeforeCode").equals(map.get("Code")))) {
 			Map Code = getDao().selectOne("role.findRoleByCode", map.get("Code"));
-			
+
 			if (Code != null) {
 				errMsg.add("编号不能重复");
 			}
@@ -67,13 +67,13 @@ public class SysRoleServiceImpl extends BaseServiceImpl implements SysRoleServic
 			if (errMsg.size() > 0) {
 				throw new BizException(errMsg);
 			}
-			
+
 			getDao().insert("role.save", map);
 		} else {
 			if (errMsg.size() > 0) {
 				throw new BizException(errMsg);
 			}
-			
+
 			getDao().update("role.update", map);
 		}
 	}
@@ -88,7 +88,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl implements SysRoleServic
 		if (errmsg.size() > 0) {
 			throw new BizException(errmsg);
 		}
-		
+
 		getDao().delete("sysRoleMenu.deleteRoleMenuList", map);
 		getDao().delete("sysRoleMenuComponent.deleteRoleMenuComponentList", map);
 		getDao().delete("role.delete", map);

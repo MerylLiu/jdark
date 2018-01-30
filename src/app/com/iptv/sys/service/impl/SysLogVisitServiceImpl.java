@@ -8,8 +8,9 @@ import com.iptv.core.common.KendoResult;
 import com.iptv.core.service.impl.BaseServiceImpl;
 import com.iptv.core.utils.QueryUtil;
 import com.iptv.sys.service.SysLogVisitService;
+
 @Service
-@SuppressWarnings({ "rawtypes"})
+@SuppressWarnings({ "rawtypes" })
 public class SysLogVisitServiceImpl extends BaseServiceImpl implements SysLogVisitService {
 
 	@Override
