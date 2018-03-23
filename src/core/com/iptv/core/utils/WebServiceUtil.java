@@ -42,10 +42,6 @@ public class WebServiceUtil {
 
 	public static String cgi(String url, Map params) {
 		try {
-			URL urlAddr = new URL(url);
-			Service s = Service.create(urlAddr, new QName("api", "ApiService"));
-			ApiService hs = s.getPort(new QName("api", "ApiServiceImplPort"), ApiService.class);
-
 			Integer dataType = 1;
 			if (params.get("DataType") == null) {
 				dataType = 1;
