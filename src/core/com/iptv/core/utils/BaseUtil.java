@@ -1,11 +1,14 @@
 package com.iptv.core.utils;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -224,9 +227,9 @@ public class BaseUtil {
 			throws BizException, Exception {
 		Object service = BaseUtil.getService(serviceName);
 		Class clazz = service.getClass();
-		
+
 		try {
-			Method method = clazz.getDeclaredMethod(methodName,Map.class);
+			Method method = clazz.getDeclaredMethod(methodName, Map.class);
 			Object res = method.invoke(service, params);
 			return res;
 		} catch (Exception e) {
@@ -235,6 +238,115 @@ public class BaseUtil {
 
 		Method method = clazz.getDeclaredMethod(methodName);
 		Object res = method.invoke(service);
+		return res;
+	}
+
+	/**
+	 * 动态调用方法
+	 * 
+	 * @param serviceName
+	 * @param methodName
+	 * @param params
+	 * @return
+	 * @throws BizException
+	 * @throws Exception
+	 */
+	public static Object invokeMethodWithArgs(String serviceName, String methodName, Object params)
+			throws BizException, Exception {
+		Object service = BaseUtil.getService(serviceName);
+		Class clazz = service.getClass();
+
+		try {
+			if (params instanceof Integer) {
+				int value = ((Integer) params).intValue();
+
+				Method method = clazz.getDeclaredMethod(methodName, Integer.class);
+				Object res = method.invoke(service, value);
+				return res;
+			} else if (params instanceof BigInteger) {
+				int value = ((BigInteger) params).intValue();
+
+				Method method = clazz.getDeclaredMethod(methodName, BigInteger.class);
+				Object res = method.invoke(service, value);
+				return res;
+			} else if (params instanceof String) {
+				String s = (String) params;
+
+				Method method = clazz.getDeclaredMethod(methodName, String.class);
+				Object res = method.invoke(service, s);
+				return res;
+			} else if (params instanceof Double) {
+				double d = ((Double) params).doubleValue();
+
+				Method method = clazz.getDeclaredMethod(methodName, Double.class);
+				Object res = method.invoke(service, d);
+				return res;
+			} else if (params instanceof Float) {
+				float f = ((Float) params).floatValue();
+
+				Method method = clazz.getDeclaredMethod(methodName, Float.class);
+				Object res = method.invoke(service, f);
+				return res;
+			} else if (params instanceof Long) {
+				long l = ((Long) params).longValue();
+
+				Method method = clazz.getDeclaredMethod(methodName, Long.class);
+				Object res = method.invoke(service, l);
+				return res;
+			} else if (params instanceof Boolean) {
+				boolean b = ((Boolean) params).booleanValue();
+
+				Method method = clazz.getDeclaredMethod(methodName, Boolean.class);
+				Object res = method.invoke(service, b);
+				return res;
+			} else if (params instanceof Date) {
+				Date d = (Date) params;
+
+				Method method = clazz.getDeclaredMethod(methodName, Date.class);
+				Object res = method.invoke(service, d);
+				return res;
+			} else if (params instanceof Timestamp) {
+				Timestamp d = (Timestamp) params;
+
+				Method method = clazz.getDeclaredMethod(methodName, Timestamp.class);
+				Object res = method.invoke(service, d);
+				return res;
+			} else if (params instanceof BigDecimal) {
+				BigDecimal d = (BigDecimal) params;
+
+				Method method = clazz.getDeclaredMethod(methodName, BigDecimal.class);
+				Object res = method.invoke(service, d);
+				return res;
+			}
+		} catch (Exception e) {
+			throw new BizException("调用的方法名不存在或参数类型不匹配");
+		}
+
+		return null;
+	}
+
+	/**
+	 * 动态调用方法
+	 * 
+	 * @param serviceName
+	 * @param methodName
+	 * @param args
+	 * @return
+	 * @throws BizException
+	 * @throws Exception
+	 */
+	public static Object invokeMethod(String serviceName, String methodName, Object... args)
+			throws BizException, Exception {
+		Class[] argsClass = new Class[args.length];
+		for (int i = 0, j = args.length; i < j; i++) {
+			argsClass[i] = args[i].getClass();
+		}
+
+		Object service = BaseUtil.getService(serviceName);
+		Class clazz = service.getClass();
+		Method method = clazz.getDeclaredMethod(methodName, argsClass);
+		Object res = method.invoke(service, args);
+
 		return res;
 	}
 }
