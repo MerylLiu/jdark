@@ -4,14 +4,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ResponseWrapper extends HttpServletResponseWrapper {
 	private ByteArrayOutputStream buffer = null;
 	private ServletOutputStream out = null;
 	private PrintWriter writer = null;
+	private Map<String, String> headers = new HashMap<String, String>();
 
 	public ResponseWrapper(HttpServletResponse response) throws IOException {
 		super(response);
@@ -46,13 +51,18 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
 		this.buffer.reset();
 	}
 
-	public String getContent() {
+	public Map getContent() {
 		try {
-			return new String(this.buffer.toByteArray(), "UTF-8");
+			Map res = new HashMap();
+			res.put("ByteData", this.buffer.toByteArray());
+			res.put("StringData", new String(this.buffer.toByteArray(), "UTF-8"));
+
+			return res;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return "";
+
+		return null;
 	}
 
 	private class WapperedOutputStream extends ServletOutputStream {
@@ -76,5 +86,19 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
 		public void write(byte[] b, int off, int len) throws IOException {
 			super.write(b, off, len);
 		}
+	}
+
+	@Override
+	public String getHeader(String name) {
+		return headers.get(name);
+	}
+
+	@Override
+	public void setHeader(String name, String value) {
+		headers.put(name, value);
+	}
+
+	public Map<String, String> getHeaders() {
+		return headers;
 	}
 }

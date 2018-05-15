@@ -75,7 +75,6 @@ iv = {
 	 				"onclick='iv.viewDetail(this)'>" +
 	 				"#=Remark#</a>"+"#}#"
 	        }],
-			page:1,
 	        filterable: true,
 	        selectable: "Multiple, Row",
 	        scrollable: true,

@@ -566,10 +566,18 @@
 	
 	window.fit = function(){
 		var padding = ($('.page-container').css('padding')+'').replace('px','');	
+		var tabHeight = $('.nav-tabs > li').height();
+		
+		var nheight = 0;
+		$('.panel').not('.panel[data-fit="true"]').each(function(){
+			var marginBottom = $(this).css('margin-bottom').replace('px');
+			nheight += $(this).outerHeight()+parseInt(marginBottom);
+		})
+
 		$('.panel[data-fit="true"]').each(function(){
 			var borderWidth = $(this).css('border-width').replace('px','');
-			var ht = $(window).height() - $(this).find('.panel-heading').outerHeight() - padding * 2 - $(this).find('.toolbar').outerHeight() - borderWidth * 2;
-			$(this).find('.panel-collapse').height(ht)
+			var ht = $(window).height() - $(this).find('.panel-heading').outerHeight() - padding * 2 - $(this).find('.toolbar').outerHeight() - borderWidth * 2 - tabHeight;
+			$(this).find('.panel-collapse').height(ht-nheight)
 		})
 
 		var gridElement = $(".panel[data-fit='true'] .k-grid"),
@@ -583,7 +591,7 @@
 			otherElementsHeight += $(this).outerHeight();
 		});
 		
-		var height = gridHeight - otherElementsHeight;
+		var height = gridHeight - otherElementsHeight; 
 		if(dataArea.height() < height){
 			$('.k-grid-content table').css('border-bottom','solid #e6e6e6 1px');
 		}
@@ -626,6 +634,7 @@
             showCloseButton: true,
             buttons: [],
             buttonStyles: [],
+            buttonIds: [],
             bootstrapModalOption: {},//{backdrop: 'static'},
             onShow: function() {},
             onShown: function() {},
@@ -664,12 +673,16 @@
         return this.each(function() {
             var obj = $(this);
             modalID = getModalID();
-            var tmpHtml = '<div class="modal fade" id="{ID}" role="dialog" aria-hidden="true"><div class="modal-dialog" style="width:{width}"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">{title}</h4></div><div class="modal-body {body-css}">{body}</div><div class="modal-footer">{button}</div></div></div></div>';
+            var tmpHtml = '<div class="modal fade" id="{ID}" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false"><div class="modal-dialog" style="width:{width}"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">{title}</h4></div><div class="modal-body {body-css}">{body}</div><div class="modal-footer">{button}</div></div></div></div>';
             var buttonHtml = '';
             // 生成按钮
             var btnClass = 'cls-' + modalID;
             for (var i = 0; i < options.buttons.length; i++) {
-                buttonHtml += '<button buttonIndex="' + i + '" class="' + btnClass + ' btn ' + options.buttonStyles[i] + '">' + options.buttons[i] + '</button>';
+            	if(typeof options.buttonIds[i] !== 'undefined'){
+					buttonHtml += '<button buttonIndex="' + i + '" class="' + btnClass + ' btn ' + options.buttonStyles[i] + '" id="'+options.buttonIds[i]+'">' + options.buttons[i] + '</button>';
+            	}else{
+					buttonHtml += '<button buttonIndex="' + i + '" class="' + btnClass + ' btn ' + options.buttonStyles[i] + '">' + options.buttons[i] + '</button>';
+            	}
             }
 
             if (options.showCloseButton) {
@@ -843,8 +856,10 @@
     				contentType: 'application/json; charset=utf-8',
     				type: "POST"
     			},
-				parameterMap: function (options) {
-					return JSON.stringify(options);
+				parameterMap: function (options,operation) {
+					var paramData = JSON.stringify(options);
+
+					return paramData;
 				}
     		},
     		pageSize: typeof pageSize == 'undefined' ? 20 : pageSize,
@@ -856,6 +871,7 @@
     			total: function(d){return d.total},
     			errors: "errors",
     			model: {
+    				id:"Id",
     				fields: fields
     			}
     		},

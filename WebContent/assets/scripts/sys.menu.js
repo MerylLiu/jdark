@@ -40,7 +40,7 @@ $(document).ready( function() {
 		$.get(basePath + '/sys/menu/menuNodes', null, function(data) {
 			zTreeObj = $.fn.zTree.init($("#tree-menu"), setting, data);
 		})
-		
+
 		fit();
 	};
 

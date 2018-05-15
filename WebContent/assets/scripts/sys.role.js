@@ -79,7 +79,6 @@ iv = {
                     "# }else{ #"+
                     "<span>是</span> # } #"
                 }],
-            page: 1,
             filterable: true,
             selectable: "Multiple, Row",
             scrollable: true,

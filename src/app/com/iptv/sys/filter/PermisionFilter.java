@@ -4,8 +4,12 @@ import com.iptv.core.utils.BaseUtil;
 import com.iptv.sys.common.ResponseWrapper;
 import com.iptv.sys.service.SysMenuService;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -15,10 +19,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.axis.utils.ByteArray;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.w3c.dom.ls.LSInput;
 
 public class PermisionFilter implements Filter {
 	private SysMenuService sysMenuService = (SysMenuService) BaseUtil.getService("sysMenuServiceImpl");
@@ -42,7 +49,24 @@ public class PermisionFilter implements Filter {
 				ResponseWrapper responseWrapper = new ResponseWrapper(res);
 				chain.doFilter(req, responseWrapper);
 
-				String html = responseWrapper.getContent();
+				Map content = responseWrapper.getContent();
+				String html = "";
+
+				String resType = responseWrapper.getHeader("X-Responsed-With");
+				if (resType != null && resType.equals("file-stream")) {
+					byte[] buffer = (byte[]) content.get("ByteData");
+
+					Map<String, String> headers = responseWrapper.getHeaders();
+					for (Entry<String, String> header : headers.entrySet()) {
+						res.setHeader(header.getKey(), header.getValue());
+					}
+
+					res.getOutputStream().write(buffer);
+					return;
+				} else {
+					html = content.get("StringData").toString();
+				}
+
 				Document doc = Jsoup.parse(html);
 				Elements buttons = doc.getElementsByAttribute("data-permision");
 

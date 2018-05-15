@@ -52,7 +52,6 @@ iv = {
 				attributes:{ 'class':'center'},
 				values:isEnableList
 	        }],
-			page:1,
 	        filterable: true,
 	        selectable: "Multiple, Row",
 	        scrollable: true,

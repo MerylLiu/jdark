@@ -106,22 +106,8 @@ iv = {
                     attributes: {
                         'class': 'left'
                     }
-                },
-                {
-                    title: "部门负责人",
-                    width: "100px",
-                    field: "IsLeader",
-                    encoded: false,
-                    attributes: {
-                        'class': 'center'
-                    },
-                    template:  "# if (IsLeader == 1) { #" +  
-                    "<span>是</span>" +  
-                    "# }else{ #"+
-                    "<span>否</span> # } #"
                 }
             ],
-            page: 1,
             filterable: true,
             selectable: "Multiple, Row",
             scrollable: true,
@@ -253,10 +239,10 @@ iv = {
     	$.post(basePath+'sys/user/synchronize',function(data){
     		$('.modal').modal('hide');
     		if(data.result){
-                $.mdlg.alert('提示', data.message);
-                iv.getInfo();
+                    $.mdlg.alert('提示', data.message);
+                    iv.getInfo();
             } else {
-                $.mdlg.error('错误', data.message);
+                    $.mdlg.error('错误', data.message);
             }
     	}).fail(errors);
     }

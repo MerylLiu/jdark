@@ -146,7 +146,8 @@ public class FtpUtil {
 			in = new FileInputStream(file);
 
 			result = ftpClient.changeWorkingDirectory(remotePath);
-			result = ftpClient.storeFile(fileName, in);
+			if (result)
+				result = ftpClient.storeFile(fileName, in);
 
 			return result;
 		} catch (IOException e) {
@@ -185,8 +186,10 @@ public class FtpUtil {
 			File file = new File(localPath + fileName);
 			out = new FileOutputStream(file);
 
-			ftpClient.changeWorkingDirectory(remotePath);
-			ftpClient.retrieveFile(fileName, out);
+			result = ftpClient.changeWorkingDirectory(remotePath);
+			if (result)
+				result = ftpClient.retrieveFile(fileName, out);
+
 			return result;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -205,8 +208,10 @@ public class FtpUtil {
 			File file = new File(localPath + fileName);
 			out = new FileOutputStream(file);
 
-			ftpClient.changeWorkingDirectory(remotePath);
-			ftpClient.retrieveFile(fileName, out);
+			result = ftpClient.changeWorkingDirectory(remotePath);
+			if (result)
+				result = ftpClient.retrieveFile(fileName, out);
+
 			return result;
 		} catch (IOException e) {
 			e.printStackTrace();

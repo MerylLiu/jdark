@@ -51,7 +51,6 @@ iv = {
 	            encoded: false,
 				attributes:{ 'class':'center'}
 	        }],
-			page:1,
 	        filterable: true,
 	        selectable: "Multiple, Row",
 	        scrollable: true,

@@ -23,8 +23,7 @@ iv = {
 
         var setting = {
 			view: {
-				nameIsHTML: true,
-				showTitle:false
+				nameIsHTML: true
 			},
             callback: {
                 onClick: function(event, treeId, treeNode) {

@@ -33,8 +33,21 @@
 }
 
 .panel-body {
-	/* padding: 6px; */
-	
+	padding: 6px;
+}
+
+.panel-query {
+	margin: 0 0 6px 0;
+}
+
+.panel-query .k-textbox>input, .k-autocomplete .k-input, .k-picker-wrap .k-input, .k-numeric-wrap .k-input, .k-dropdown-wrap .k-input, .k-selectbox .k-input{
+	height: 1.9em!important;
+    line-height: 1.9em!important;
+}
+
+.panel .k-picker-wrap .k-select, .k-numeric-wrap .k-select, .k-dropdown-wrap .k-select{
+	min-height: 1.9em!important;
+    line-height: 1.9em!important;
 }
 
 .navbar .btn, .navbar .btn-group {
@@ -69,6 +82,18 @@
 	-webkit-background-clip: padding-box;
 	-moz-background-clip: padding;
 	background-clip: padding-box;
+}
+
+::selection
+{
+	color:#fff;
+	background-color:#49AFC8
+}
+
+::-moz-selection
+{
+	color:#fff;
+	background-color:#49AFC8
 }
 
 .dropdown-menu .divider {
@@ -324,7 +349,7 @@ a:hover {
 }
 
 table>tbody>tr:nth-of-type(odd) {
-	background-color: #f9f9f9;
+	background-color: #fff;
 }
 
 .container-page>*:not (.toolbar ) {
@@ -337,6 +362,7 @@ table>tbody>tr:nth-of-type(odd) {
 	/*position: fixed;
     top: 0;*/
 	width: 100%;
+	min-height: 39px;
 	background-color: #fff;
 }
 
@@ -1756,9 +1782,12 @@ a.macro-component-tabclose:hover {
 	border-top: 0 solid #ddd;
 }
 
+.ztree li {
+    position: relative;
+}
 .ztree .pull-right {
 	position: absolute;
-	right: 30px;
+	right: 0px;
 }
 
 .ztree li a.curSelectedNode .pull-right {
@@ -1791,4 +1820,19 @@ a.macro-component-tabclose:hover {
 .checkbox label, .radio label {
 	margin-left: 0 !important;
 	margin-right: 10px !important;
+}
+
+
+
+.k-grid-header th.k-header, .k-filter-row th{
+	text-align:center!important;
+}
+.k-grid table .center{
+	text-align:center!important;
+}
+.k-grid table .left{
+	text-align:left!important;
+}
+.k-grid table .right{
+	text-align:right!important;
 }
