@@ -13,6 +13,7 @@ public class CORSInterceptor implements HandlerInterceptor {
 			throws Exception {
 
 		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
 		return true;
 	}
