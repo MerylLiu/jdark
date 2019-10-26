@@ -1,0 +1,12 @@
+stages:
+- name: 编译
+  steps:
+  - runScriptConfig:
+      image: node:latest
+      shellScript: npm start
+  when:
+    branch:
+      include:
+      - master
+timeout: 60
+notification: {}
